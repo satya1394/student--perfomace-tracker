@@ -14,15 +14,16 @@
 
 ## 🛠️ Tech Stack
 
-
-
-
-
-
-
-
-
-
+- [Python](https://www.python.org/) — Main programming language.
+- [Plotly Dash](https://dash.plotly.com/) — Interactive web dashboard.
+- [Flask](https://flask.palletsprojects.com/) — Backend server and routing.
+- [SQLAlchemy](https://www.sqlalchemy.org/) — Database ORM and data models.
+- [SQLite](https://www.sqlite.org/) — Local application database.
+- [Scikit-learn](https://scikit-learn.org/) — Machine learning models.
+- [XGBoost](https://xgboost.readthedocs.io/) — Academic performance predictions.
+- [SHAP](https://shap.readthedocs.io/) — Explainable AI insights.
+- [Plotly](https://plotly.com/python/) — Interactive academic visualizations.
+- [Flask-Login](https://flask-login.readthedocs.io/) — Student authentication.
 
 ### Core Technologies
 
