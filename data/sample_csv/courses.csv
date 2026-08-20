@@ -1,0 +1,115 @@
+course_id,course_code,course_name,credits,semester,department
+CRS_CS101,CS101,Introduction to Programming,4,1,Computer Science
+CRS_CS102,CS102,Discrete Mathematics,4,1,Computer Science
+CRS_CS103,CS103,Digital Logic Design,3,1,Computer Science
+CRS_CS104,CS104,Engineering Physics,3,1,Computer Science
+CRS_CS105,CS105,Communication Skills,2,1,Computer Science
+CRS_CS201,CS201,Data Structures & Algorithms,4,2,Computer Science
+CRS_CS202,CS202,Object Oriented Programming,4,2,Computer Science
+CRS_CS203,CS203,Computer Organization & Arch,3,2,Computer Science
+CRS_CS204,CS204,Probability & Statistics,3,2,Computer Science
+CRS_CS205,CS205,Environmental Science,2,2,Computer Science
+CRS_CS301,CS301,Database Management Systems,4,3,Computer Science
+CRS_CS302,CS302,Operating Systems,4,3,Computer Science
+CRS_CS303,CS303,Theory of Computation,3,3,Computer Science
+CRS_CS304,CS304,Software Engineering,3,3,Computer Science
+CRS_CS305,CS305,Web Technologies,3,3,Computer Science
+CRS_CS401,CS401,Computer Networks,4,4,Computer Science
+CRS_CS402,CS402,Design & Analysis of Algorithms,4,4,Computer Science
+CRS_CS403,CS403,Microprocessors & Interfacing,3,4,Computer Science
+CRS_CS404,CS404,Artificial Intelligence,3,4,Computer Science
+CRS_CS405,CS405,Cyber Security Fundamentals,3,4,Computer Science
+CRS_CS501,CS501,Machine Learning,4,5,Computer Science
+CRS_CS502,CS502,Compiler Design,4,5,Computer Science
+CRS_CS503,CS503,Cloud Computing,3,5,Computer Science
+CRS_CS504,CS504,Data Warehousing & Mining,3,5,Computer Science
+CRS_CS505,CS505,DevOps & Agile Practices,3,5,Computer Science
+CRS_CS601,CS601,Deep Learning & Neural Nets,4,6,Computer Science
+CRS_CS602,CS602,Distributed Systems,4,6,Computer Science
+CRS_CS603,CS603,Big Data Analytics,3,6,Computer Science
+CRS_CS604,CS604,Natural Language Processing,3,6,Computer Science
+CRS_CS605,CS605,Mobile App Development,3,6,Computer Science
+CRS_CS701,CS701,High Performance Computing,4,7,Computer Science
+CRS_CS702,CS702,Blockchain Technologies,3,7,Computer Science
+CRS_CS703,CS703,Computer Vision,3,7,Computer Science
+CRS_CS704,CS704,Major Project Phase I,4,7,Computer Science
+CRS_CS801,CS801,Internet of Things (IoT),3,8,Computer Science
+CRS_CS802,CS802,Quantum Computing Intro,3,8,Computer Science
+CRS_CS803,CS803,Major Project Phase II,8,8,Computer Science
+CRS_EC101,EC101,Basic Electrical Engineering,4,1,Electronics & Comm
+CRS_EC102,EC102,Engineering Mathematics I,4,1,Electronics & Comm
+CRS_EC103,EC103,Engineering Chemistry,3,1,Electronics & Comm
+CRS_EC104,EC104,Engineering Graphics,3,1,Electronics & Comm
+CRS_EC105,EC105,Basic Workshop Practice,2,1,Electronics & Comm
+CRS_EC201,EC201,Electronic Devices & Circuits,4,2,Electronics & Comm
+CRS_EC202,EC202,Network Theory,4,2,Electronics & Comm
+CRS_EC203,EC203,Signals and Systems,3,2,Electronics & Comm
+CRS_EC204,EC204,Engineering Mathematics II,3,2,Electronics & Comm
+CRS_EC301,EC301,Analog Circuits,4,3,Electronics & Comm
+CRS_EC302,EC302,Digital Electronics,4,3,Electronics & Comm
+CRS_EC303,EC303,Electromagnetic Fields,3,3,Electronics & Comm
+CRS_EC401,EC401,Analog Communication,4,4,Electronics & Comm
+CRS_EC402,EC402,Microcontrollers & Embedded Sys,4,4,Electronics & Comm
+CRS_EC403,EC403,Control Systems,3,4,Electronics & Comm
+CRS_EC501,EC501,Digital Signal Processing,4,5,Electronics & Comm
+CRS_EC502,EC502,Digital Communication,4,5,Electronics & Comm
+CRS_EC503,EC503,VLSI Design,3,5,Electronics & Comm
+CRS_EC601,EC601,Antenna & Wave Propagation,4,6,Electronics & Comm
+CRS_EC602,EC602,Embedded IoT Systems,4,6,Electronics & Comm
+CRS_EC603,EC603,Wireless Networks,3,6,Electronics & Comm
+CRS_EC701,EC701,Optical Communication,4,7,Electronics & Comm
+CRS_EC702,EC702,Radar & Satellite Comm,3,7,Electronics & Comm
+CRS_EC703,EC703,Project Work I,4,7,Electronics & Comm
+CRS_EC801,EC801,RF Circuit Design,3,8,Electronics & Comm
+CRS_EC802,EC802,Nanoelectronics,3,8,Electronics & Comm
+CRS_EC803,EC803,Major Project Phase II,8,8,Electronics & Comm
+CRS_ME101,ME101,Engineering Mechanics,4,1,Mechanical Eng
+CRS_ME102,ME102,Mathematics for Engineers,4,1,Mechanical Eng
+CRS_ME103,ME103,Applied Physics,3,1,Mechanical Eng
+CRS_ME104,ME104,Workshop Technology,3,1,Mechanical Eng
+CRS_ME201,ME201,Thermodynamics,4,2,Mechanical Eng
+CRS_ME202,ME202,Material Science,4,2,Mechanical Eng
+CRS_ME203,ME203,Strength of Materials,3,2,Mechanical Eng
+CRS_ME301,ME301,Fluid Mechanics,4,3,Mechanical Eng
+CRS_ME302,ME302,Manufacturing Processes,4,3,Mechanical Eng
+CRS_ME303,ME303,Kinematics of Machinery,3,3,Mechanical Eng
+CRS_ME401,ME401,Heat & Mass Transfer,4,4,Mechanical Eng
+CRS_ME402,ME402,Dynamics of Machines,4,4,Mechanical Eng
+CRS_ME403,ME403,Applied Thermal Eng,3,4,Mechanical Eng
+CRS_ME501,ME501,Design of Machine Elements,4,5,Mechanical Eng
+CRS_ME502,ME502,Turbo Machinery,4,5,Mechanical Eng
+CRS_ME503,ME503,CAD/CAM Systems,3,5,Mechanical Eng
+CRS_ME601,ME601,Finite Element Analysis,4,6,Mechanical Eng
+CRS_ME602,ME602,Automobile Engineering,4,6,Mechanical Eng
+CRS_ME603,ME603,Operations Research,3,6,Mechanical Eng
+CRS_ME701,ME701,Refrigeration & Air Conditioning,4,7,Mechanical Eng
+CRS_ME702,ME702,Robotics & Automation,3,7,Mechanical Eng
+CRS_ME703,ME703,Capstone Design I,4,7,Mechanical Eng
+CRS_ME801,ME801,Renewable Energy Systems,3,8,Mechanical Eng
+CRS_ME802,ME802,Industrial Management,3,8,Mechanical Eng
+CRS_ME803,ME803,Major Project Phase II,8,8,Mechanical Eng
+CRS_CE101,CE101,Building Materials & Construction,4,1,Civil Eng
+CRS_CE102,CE102,Calculus & Linear Algebra,4,1,Civil Eng
+CRS_CE103,CE103,Engineering Geology,3,1,Civil Eng
+CRS_CE104,CE104,Surveying Fundamentals,3,1,Civil Eng
+CRS_CE201,CE201,Structural Analysis I,4,2,Civil Eng
+CRS_CE202,CE202,Fluid Mechanics for Civil,4,2,Civil Eng
+CRS_CE203,CE203,Advanced Surveying,3,2,Civil Eng
+CRS_CE301,CE301,Structural Analysis II,4,3,Civil Eng
+CRS_CE302,CE302,Concrete Technology,4,3,Civil Eng
+CRS_CE303,CE303,Soil Mechanics,3,3,Civil Eng
+CRS_CE401,CE401,Design of RC Structures,4,4,Civil Eng
+CRS_CE402,CE402,Hydrology & Water Resources,4,4,Civil Eng
+CRS_CE403,CE403,Geotechnical Engineering,3,4,Civil Eng
+CRS_CE501,CE501,Design of Steel Structures,4,5,Civil Eng
+CRS_CE502,CE502,Transportation Engineering,4,5,Civil Eng
+CRS_CE503,CE503,Environmental Engineering I,3,5,Civil Eng
+CRS_CE601,CE601,Foundation Engineering,4,6,Civil Eng
+CRS_CE602,CE602,Environmental Engineering II,4,6,Civil Eng
+CRS_CE603,CE603,Construction Management,3,6,Civil Eng
+CRS_CE701,CE701,Earthquake Resistant Design,4,7,Civil Eng
+CRS_CE702,CE702,Remote Sensing & GIS,3,7,Civil Eng
+CRS_CE703,CE703,Civil Design Project I,4,7,Civil Eng
+CRS_CE801,CE801,Urban Planning & Smart Cities,3,8,Civil Eng
+CRS_CE802,CE802,Bridge Engineering,3,8,Civil Eng
+CRS_CE803,CE803,Major Capstone Project,8,8,Civil Eng

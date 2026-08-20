@@ -1,0 +1,1051 @@
+student_id,name,email,department,enrollment_year
+STU2024CS0001,Tanvi Patel,tanvi.patel1@university.edu,Computer Science,2021
+STU2024CS0002,Vikram Rao,vikram.rao2@university.edu,Computer Science,2022
+STU2024CS0003,Nikhil Mishra,nikhil.mishra3@university.edu,Computer Science,2021
+STU2024CS0004,Aditi Sharma,aditi.sharma4@university.edu,Computer Science,2021
+STU2024CS0005,Kavya Saxena,kavya.saxena5@university.edu,Computer Science,2021
+STU2024CS0006,Shreya Mishra,shreya.mishra6@university.edu,Computer Science,2024
+STU2024CS0007,Meera Mehta,meera.mehta7@university.edu,Computer Science,2021
+STU2024CS0008,Rahul Bhat,rahul.bhat8@university.edu,Computer Science,2023
+STU2024CS0009,Neha Kumar,neha.kumar9@university.edu,Computer Science,2021
+STU2024CS0010,Priya Das,priya.das10@university.edu,Computer Science,2023
+STU2024CS0011,Manish Verma,manish.verma11@university.edu,Computer Science,2024
+STU2024CS0012,Suresh Joshi,suresh.joshi12@university.edu,Computer Science,2021
+STU2024CS0013,Deepika Saxena,deepika.saxena13@university.edu,Computer Science,2023
+STU2024CS0014,Shreya Gupta,shreya.gupta14@university.edu,Computer Science,2021
+STU2024CS0015,Bhavna Singh,bhavna.singh15@university.edu,Computer Science,2021
+STU2024CS0016,Harsh Patel,harsh.patel16@university.edu,Computer Science,2024
+STU2024CS0017,Tanvi Das,tanvi.das17@university.edu,Computer Science,2022
+STU2024CS0018,Neha Mehta,neha.mehta18@university.edu,Computer Science,2021
+STU2024CS0019,Rahul Mishra,rahul.mishra19@university.edu,Computer Science,2022
+STU2024CS0020,Divya Mehta,divya.mehta20@university.edu,Computer Science,2022
+STU2024CS0021,Deepika Verma,deepika.verma21@university.edu,Computer Science,2022
+STU2024CS0022,Manish Kumar,manish.kumar22@university.edu,Computer Science,2024
+STU2024CS0023,Neha Pandey,neha.pandey23@university.edu,Computer Science,2023
+STU2024CS0024,Riya Joshi,riya.joshi24@university.edu,Computer Science,2024
+STU2024CS0025,Ananya Rao,ananya.rao25@university.edu,Computer Science,2023
+STU2024CS0026,Siddharth Pandey,siddharth.pandey26@university.edu,Computer Science,2024
+STU2024CS0027,Ananya Pillai,ananya.pillai27@university.edu,Computer Science,2024
+STU2024CS0028,Aditi Patel,aditi.patel28@university.edu,Computer Science,2022
+STU2024CS0029,Manish Bhat,manish.bhat29@university.edu,Computer Science,2021
+STU2024CS0030,Aditya Deshmukh,aditya.deshmukh30@university.edu,Computer Science,2023
+STU2024CS0031,Harsh Sharma,harsh.sharma31@university.edu,Computer Science,2021
+STU2024CS0032,Varun Mehta,varun.mehta32@university.edu,Computer Science,2023
+STU2024CS0033,Siddharth Nair,siddharth.nair33@university.edu,Computer Science,2024
+STU2024CS0034,Amit Mehta,amit.mehta34@university.edu,Computer Science,2022
+STU2024CS0035,Priya Singh,priya.singh35@university.edu,Computer Science,2022
+STU2024CS0036,Bhavna Nair,bhavna.nair36@university.edu,Computer Science,2021
+STU2024CS0037,Riya Sharma,riya.sharma37@university.edu,Computer Science,2021
+STU2024CS0038,Gauri Singh,gauri.singh38@university.edu,Computer Science,2022
+STU2024CS0039,Gauri Pandey,gauri.pandey39@university.edu,Computer Science,2021
+STU2024CS0040,Riya Gupta,riya.gupta40@university.edu,Computer Science,2022
+STU2024CS0041,Riya Mishra,riya.mishra41@university.edu,Computer Science,2022
+STU2024CS0042,Harsh Saxena,harsh.saxena42@university.edu,Computer Science,2024
+STU2024CS0043,Suresh Mishra,suresh.mishra43@university.edu,Computer Science,2022
+STU2024CS0044,Divya Das,divya.das44@university.edu,Computer Science,2024
+STU2024CS0045,Ishaan Patel,ishaan.patel45@university.edu,Computer Science,2022
+STU2024CS0046,Pooja Sharma,pooja.sharma46@university.edu,Computer Science,2022
+STU2024CS0047,Aarav Gupta,aarav.gupta47@university.edu,Computer Science,2021
+STU2024CS0048,Gauri Verma,gauri.verma48@university.edu,Computer Science,2023
+STU2024CS0049,Vikram Mehta,vikram.mehta49@university.edu,Computer Science,2024
+STU2024CS0050,Ananya Pandey,ananya.pandey50@university.edu,Computer Science,2024
+STU2024CS0051,Riya Bhat,riya.bhat51@university.edu,Computer Science,2022
+STU2024CS0052,Nikhil Bhat,nikhil.bhat52@university.edu,Computer Science,2023
+STU2024CS0053,Ishaan Verma,ishaan.verma53@university.edu,Computer Science,2021
+STU2024CS0054,Amit Kumar,amit.kumar54@university.edu,Computer Science,2021
+STU2024CS0055,Neha Mishra,neha.mishra55@university.edu,Computer Science,2024
+STU2024CS0056,Rahul Mehta,rahul.mehta56@university.edu,Computer Science,2024
+STU2024CS0057,Suresh Gupta,suresh.gupta57@university.edu,Computer Science,2024
+STU2024CS0058,Harsh Mishra,harsh.mishra58@university.edu,Computer Science,2021
+STU2024CS0059,Varun Sharma,varun.sharma59@university.edu,Computer Science,2021
+STU2024CS0060,Harsh Rao,harsh.rao60@university.edu,Computer Science,2022
+STU2024CS0061,Riya Iyer,riya.iyer61@university.edu,Computer Science,2024
+STU2024CS0062,Rahul Joshi,rahul.joshi62@university.edu,Computer Science,2021
+STU2024CS0063,Sneha Deshmukh,sneha.deshmukh63@university.edu,Computer Science,2023
+STU2024CS0064,Amit Mishra,amit.mishra64@university.edu,Computer Science,2024
+STU2024CS0065,Karan Iyer,karan.iyer65@university.edu,Computer Science,2021
+STU2024CS0066,Varun Verma,varun.verma66@university.edu,Computer Science,2023
+STU2024CS0067,Meera Choudhury,meera.choudhury67@university.edu,Computer Science,2022
+STU2024CS0068,Kavya Gupta,kavya.gupta68@university.edu,Computer Science,2022
+STU2024CS0069,Rohan Rao,rohan.rao69@university.edu,Computer Science,2024
+STU2024CS0070,Gauri Pandey,gauri.pandey70@university.edu,Computer Science,2022
+STU2024CS0071,Aditi Saxena,aditi.saxena71@university.edu,Computer Science,2021
+STU2024CS0072,Meera Pandey,meera.pandey72@university.edu,Computer Science,2023
+STU2024CS0073,Neha Kumar,neha.kumar73@university.edu,Computer Science,2022
+STU2024CS0074,Ananya Singh,ananya.singh74@university.edu,Computer Science,2024
+STU2024CS0075,Bhavna Gupta,bhavna.gupta75@university.edu,Computer Science,2021
+STU2024CS0076,Meera Patel,meera.patel76@university.edu,Computer Science,2021
+STU2024CS0077,Kavya Mehta,kavya.mehta77@university.edu,Computer Science,2022
+STU2024CS0078,Gauri Gupta,gauri.gupta78@university.edu,Computer Science,2022
+STU2024CS0079,Rahul Deshmukh,rahul.deshmukh79@university.edu,Computer Science,2023
+STU2024CS0080,Manish Pillai,manish.pillai80@university.edu,Computer Science,2021
+STU2024CS0081,Varun Singh,varun.singh81@university.edu,Computer Science,2021
+STU2024CS0082,Ananya Mehta,ananya.mehta82@university.edu,Computer Science,2021
+STU2024CS0083,Amit Mishra,amit.mishra83@university.edu,Computer Science,2022
+STU2024CS0084,Aditya Iyer,aditya.iyer84@university.edu,Computer Science,2023
+STU2024CS0085,Tanvi Mehta,tanvi.mehta85@university.edu,Computer Science,2024
+STU2024CS0086,Suresh Verma,suresh.verma86@university.edu,Computer Science,2021
+STU2024CS0087,Deepika Mehta,deepika.mehta87@university.edu,Computer Science,2021
+STU2024CS0088,Bhavna Reddy,bhavna.reddy88@university.edu,Computer Science,2023
+STU2024CS0089,Ishaan Mishra,ishaan.mishra89@university.edu,Computer Science,2024
+STU2024CS0090,Priya Gupta,priya.gupta90@university.edu,Computer Science,2022
+STU2024CS0091,Deepika Das,deepika.das91@university.edu,Computer Science,2022
+STU2024CS0092,Aditi Singh,aditi.singh92@university.edu,Computer Science,2023
+STU2024CS0093,Manish Verma,manish.verma93@university.edu,Computer Science,2023
+STU2024CS0094,Vikram Patel,vikram.patel94@university.edu,Computer Science,2023
+STU2024CS0095,Gauri Bhat,gauri.bhat95@university.edu,Computer Science,2022
+STU2024CS0096,Vikram Nair,vikram.nair96@university.edu,Computer Science,2022
+STU2024CS0097,Aarav Nair,aarav.nair97@university.edu,Computer Science,2023
+STU2024CS0098,Siddharth Rao,siddharth.rao98@university.edu,Computer Science,2023
+STU2024CS0099,Shreya Patel,shreya.patel99@university.edu,Computer Science,2024
+STU2024CS0100,Harsh Choudhury,harsh.choudhury100@university.edu,Computer Science,2022
+STU2024CS0101,Suresh Deshmukh,suresh.deshmukh101@university.edu,Computer Science,2023
+STU2024CS0102,Manish Rao,manish.rao102@university.edu,Computer Science,2022
+STU2024CS0103,Neha Joshi,neha.joshi103@university.edu,Computer Science,2023
+STU2024CS0104,Rohan Mehta,rohan.mehta104@university.edu,Computer Science,2023
+STU2024CS0105,Divya Mishra,divya.mishra105@university.edu,Computer Science,2023
+STU2024CS0106,Priya Mehta,priya.mehta106@university.edu,Computer Science,2022
+STU2024CS0107,Sneha Verma,sneha.verma107@university.edu,Computer Science,2021
+STU2024CS0108,Arjun Kumar,arjun.kumar108@university.edu,Computer Science,2024
+STU2024CS0109,Kavya Patel,kavya.patel109@university.edu,Computer Science,2024
+STU2024CS0110,Neha Mehta,neha.mehta110@university.edu,Computer Science,2021
+STU2024CS0111,Aarav Pillai,aarav.pillai111@university.edu,Computer Science,2022
+STU2024CS0112,Rohan Kumar,rohan.kumar112@university.edu,Computer Science,2023
+STU2024CS0113,Priya Singh,priya.singh113@university.edu,Computer Science,2023
+STU2024CS0114,Pooja Joshi,pooja.joshi114@university.edu,Computer Science,2023
+STU2024CS0115,Neha Bhat,neha.bhat115@university.edu,Computer Science,2024
+STU2024CS0116,Gauri Nair,gauri.nair116@university.edu,Computer Science,2023
+STU2024CS0117,Deepika Sharma,deepika.sharma117@university.edu,Computer Science,2023
+STU2024CS0118,Siddharth Pandey,siddharth.pandey118@university.edu,Computer Science,2023
+STU2024CS0119,Ishaan Iyer,ishaan.iyer119@university.edu,Computer Science,2024
+STU2024CS0120,Manish Nair,manish.nair120@university.edu,Computer Science,2021
+STU2024CS0121,Nikhil Saxena,nikhil.saxena121@university.edu,Computer Science,2023
+STU2024CS0122,Bhavna Rao,bhavna.rao122@university.edu,Computer Science,2023
+STU2024CS0123,Neha Reddy,neha.reddy123@university.edu,Computer Science,2021
+STU2024CS0124,Riya Saxena,riya.saxena124@university.edu,Computer Science,2021
+STU2024CS0125,Gauri Pandey,gauri.pandey125@university.edu,Computer Science,2022
+STU2024CS0126,Divya Choudhury,divya.choudhury126@university.edu,Computer Science,2024
+STU2024CS0127,Tanvi Sharma,tanvi.sharma127@university.edu,Computer Science,2021
+STU2024CS0128,Vikram Nair,vikram.nair128@university.edu,Computer Science,2024
+STU2024CS0129,Vikram Patel,vikram.patel129@university.edu,Computer Science,2024
+STU2024CS0130,Ishaan Pillai,ishaan.pillai130@university.edu,Computer Science,2023
+STU2024CS0131,Gauri Deshmukh,gauri.deshmukh131@university.edu,Computer Science,2024
+STU2024CS0132,Varun Deshmukh,varun.deshmukh132@university.edu,Computer Science,2022
+STU2024CS0133,Riya Deshmukh,riya.deshmukh133@university.edu,Computer Science,2023
+STU2024CS0134,Deepika Mehta,deepika.mehta134@university.edu,Computer Science,2024
+STU2024CS0135,Sneha Deshmukh,sneha.deshmukh135@university.edu,Computer Science,2021
+STU2024CS0136,Vikram Mehta,vikram.mehta136@university.edu,Computer Science,2023
+STU2024CS0137,Varun Gupta,varun.gupta137@university.edu,Computer Science,2022
+STU2024CS0138,Divya Reddy,divya.reddy138@university.edu,Computer Science,2022
+STU2024CS0139,Siddharth Kumar,siddharth.kumar139@university.edu,Computer Science,2024
+STU2024CS0140,Neha Bhat,neha.bhat140@university.edu,Computer Science,2024
+STU2024CS0141,Meera Sharma,meera.sharma141@university.edu,Computer Science,2024
+STU2024CS0142,Arjun Singh,arjun.singh142@university.edu,Computer Science,2024
+STU2024CS0143,Deepika Bhat,deepika.bhat143@university.edu,Computer Science,2022
+STU2024CS0144,Sneha Bhat,sneha.bhat144@university.edu,Computer Science,2024
+STU2024CS0145,Pooja Joshi,pooja.joshi145@university.edu,Computer Science,2022
+STU2024CS0146,Suresh Reddy,suresh.reddy146@university.edu,Computer Science,2021
+STU2024CS0147,Meera Pandey,meera.pandey147@university.edu,Computer Science,2021
+STU2024CS0148,Siddharth Reddy,siddharth.reddy148@university.edu,Computer Science,2024
+STU2024CS0149,Sneha Joshi,sneha.joshi149@university.edu,Computer Science,2023
+STU2024CS0150,Pooja Kumar,pooja.kumar150@university.edu,Computer Science,2024
+STU2024CS0151,Deepika Bhat,deepika.bhat151@university.edu,Computer Science,2023
+STU2024CS0152,Riya Sharma,riya.sharma152@university.edu,Computer Science,2021
+STU2024CS0153,Arjun Rao,arjun.rao153@university.edu,Computer Science,2021
+STU2024CS0154,Tanvi Verma,tanvi.verma154@university.edu,Computer Science,2021
+STU2024CS0155,Neha Sharma,neha.sharma155@university.edu,Computer Science,2022
+STU2024CS0156,Riya Patel,riya.patel156@university.edu,Computer Science,2022
+STU2024CS0157,Sneha Das,sneha.das157@university.edu,Computer Science,2022
+STU2024CS0158,Amit Patel,amit.patel158@university.edu,Computer Science,2022
+STU2024CS0159,Priya Pandey,priya.pandey159@university.edu,Computer Science,2021
+STU2024CS0160,Meera Joshi,meera.joshi160@university.edu,Computer Science,2024
+STU2024CS0161,Neha Gupta,neha.gupta161@university.edu,Computer Science,2022
+STU2024CS0162,Bhavna Singh,bhavna.singh162@university.edu,Computer Science,2021
+STU2024CS0163,Meera Verma,meera.verma163@university.edu,Computer Science,2023
+STU2024CS0164,Nikhil Das,nikhil.das164@university.edu,Computer Science,2021
+STU2024CS0165,Pooja Sharma,pooja.sharma165@university.edu,Computer Science,2024
+STU2024CS0166,Priya Bhat,priya.bhat166@university.edu,Computer Science,2023
+STU2024CS0167,Deepika Deshmukh,deepika.deshmukh167@university.edu,Computer Science,2022
+STU2024CS0168,Amit Pillai,amit.pillai168@university.edu,Computer Science,2023
+STU2024CS0169,Suresh Mishra,suresh.mishra169@university.edu,Computer Science,2024
+STU2024CS0170,Deepika Pandey,deepika.pandey170@university.edu,Computer Science,2023
+STU2024CS0171,Vikram Gupta,vikram.gupta171@university.edu,Computer Science,2023
+STU2024CS0172,Vikram Deshmukh,vikram.deshmukh172@university.edu,Computer Science,2024
+STU2024CS0173,Riya Kumar,riya.kumar173@university.edu,Computer Science,2022
+STU2024CS0174,Arjun Mehta,arjun.mehta174@university.edu,Computer Science,2023
+STU2024CS0175,Aditya Mehta,aditya.mehta175@university.edu,Computer Science,2021
+STU2024CS0176,Neha Gupta,neha.gupta176@university.edu,Computer Science,2022
+STU2024CS0177,Riya Mishra,riya.mishra177@university.edu,Computer Science,2022
+STU2024CS0178,Tanvi Choudhury,tanvi.choudhury178@university.edu,Computer Science,2024
+STU2024CS0179,Rohan Singh,rohan.singh179@university.edu,Computer Science,2022
+STU2024CS0180,Vikram Singh,vikram.singh180@university.edu,Computer Science,2023
+STU2024CS0181,Kavya Das,kavya.das181@university.edu,Computer Science,2024
+STU2024CS0182,Varun Kumar,varun.kumar182@university.edu,Computer Science,2023
+STU2024CS0183,Sneha Singh,sneha.singh183@university.edu,Computer Science,2023
+STU2024CS0184,Amit Iyer,amit.iyer184@university.edu,Computer Science,2023
+STU2024CS0185,Varun Nair,varun.nair185@university.edu,Computer Science,2022
+STU2024CS0186,Riya Mehta,riya.mehta186@university.edu,Computer Science,2023
+STU2024CS0187,Deepika Iyer,deepika.iyer187@university.edu,Computer Science,2023
+STU2024CS0188,Rahul Singh,rahul.singh188@university.edu,Computer Science,2021
+STU2024CS0189,Ananya Mehta,ananya.mehta189@university.edu,Computer Science,2021
+STU2024CS0190,Varun Singh,varun.singh190@university.edu,Computer Science,2022
+STU2024CS0191,Bhavna Choudhury,bhavna.choudhury191@university.edu,Computer Science,2021
+STU2024CS0192,Meera Singh,meera.singh192@university.edu,Computer Science,2024
+STU2024CS0193,Pooja Nair,pooja.nair193@university.edu,Computer Science,2021
+STU2024CS0194,Harsh Choudhury,harsh.choudhury194@university.edu,Computer Science,2021
+STU2024CS0195,Divya Choudhury,divya.choudhury195@university.edu,Computer Science,2021
+STU2024CS0196,Nikhil Verma,nikhil.verma196@university.edu,Computer Science,2022
+STU2024CS0197,Meera Singh,meera.singh197@university.edu,Computer Science,2021
+STU2024CS0198,Priya Mishra,priya.mishra198@university.edu,Computer Science,2024
+STU2024CS0199,Manish Saxena,manish.saxena199@university.edu,Computer Science,2022
+STU2024CS0200,Divya Deshmukh,divya.deshmukh200@university.edu,Computer Science,2024
+STU2024CS0201,Meera Bhat,meera.bhat201@university.edu,Computer Science,2023
+STU2024CS0202,Aditi Saxena,aditi.saxena202@university.edu,Computer Science,2021
+STU2024CS0203,Neha Iyer,neha.iyer203@university.edu,Computer Science,2023
+STU2024CS0204,Rahul Rao,rahul.rao204@university.edu,Computer Science,2022
+STU2024CS0205,Rahul Sharma,rahul.sharma205@university.edu,Computer Science,2024
+STU2024CS0206,Aditya Choudhury,aditya.choudhury206@university.edu,Computer Science,2023
+STU2024CS0207,Karan Singh,karan.singh207@university.edu,Computer Science,2024
+STU2024CS0208,Vikram Mehta,vikram.mehta208@university.edu,Computer Science,2022
+STU2024CS0209,Varun Rao,varun.rao209@university.edu,Computer Science,2022
+STU2024CS0210,Deepika Reddy,deepika.reddy210@university.edu,Computer Science,2021
+STU2024CS0211,Manish Singh,manish.singh211@university.edu,Computer Science,2023
+STU2024CS0212,Ishaan Singh,ishaan.singh212@university.edu,Computer Science,2024
+STU2024CS0213,Kavya Mishra,kavya.mishra213@university.edu,Computer Science,2024
+STU2024CS0214,Aditya Verma,aditya.verma214@university.edu,Computer Science,2024
+STU2024CS0215,Aditya Mehta,aditya.mehta215@university.edu,Computer Science,2021
+STU2024CS0216,Nikhil Pandey,nikhil.pandey216@university.edu,Computer Science,2021
+STU2024CS0217,Nikhil Mehta,nikhil.mehta217@university.edu,Computer Science,2021
+STU2024CS0218,Rahul Choudhury,rahul.choudhury218@university.edu,Computer Science,2024
+STU2024CS0219,Rahul Pandey,rahul.pandey219@university.edu,Computer Science,2024
+STU2024CS0220,Riya Gupta,riya.gupta220@university.edu,Computer Science,2024
+STU2024CS0221,Pooja Kumar,pooja.kumar221@university.edu,Computer Science,2021
+STU2024CS0222,Pooja Bhat,pooja.bhat222@university.edu,Computer Science,2024
+STU2024CS0223,Divya Mishra,divya.mishra223@university.edu,Computer Science,2021
+STU2024CS0224,Pooja Mehta,pooja.mehta224@university.edu,Computer Science,2023
+STU2024CS0225,Bhavna Joshi,bhavna.joshi225@university.edu,Computer Science,2021
+STU2024CS0226,Varun Deshmukh,varun.deshmukh226@university.edu,Computer Science,2024
+STU2024CS0227,Kavya Das,kavya.das227@university.edu,Computer Science,2024
+STU2024CS0228,Bhavna Verma,bhavna.verma228@university.edu,Computer Science,2022
+STU2024CS0229,Ananya Singh,ananya.singh229@university.edu,Computer Science,2024
+STU2024CS0230,Riya Patel,riya.patel230@university.edu,Computer Science,2021
+STU2024CS0231,Aditya Rao,aditya.rao231@university.edu,Computer Science,2022
+STU2024CS0232,Aarav Mishra,aarav.mishra232@university.edu,Computer Science,2024
+STU2024CS0233,Deepika Patel,deepika.patel233@university.edu,Computer Science,2024
+STU2024CS0234,Tanvi Reddy,tanvi.reddy234@university.edu,Computer Science,2024
+STU2024CS0235,Karan Pillai,karan.pillai235@university.edu,Computer Science,2023
+STU2024CS0236,Riya Choudhury,riya.choudhury236@university.edu,Computer Science,2022
+STU2024CS0237,Ananya Joshi,ananya.joshi237@university.edu,Computer Science,2022
+STU2024CS0238,Kavya Reddy,kavya.reddy238@university.edu,Computer Science,2021
+STU2024CS0239,Manish Bhat,manish.bhat239@university.edu,Computer Science,2023
+STU2024CS0240,Kavya Mehta,kavya.mehta240@university.edu,Computer Science,2021
+STU2024CS0241,Karan Pandey,karan.pandey241@university.edu,Computer Science,2024
+STU2024CS0242,Ishaan Mishra,ishaan.mishra242@university.edu,Computer Science,2024
+STU2024CS0243,Varun Mishra,varun.mishra243@university.edu,Computer Science,2024
+STU2024CS0244,Pooja Iyer,pooja.iyer244@university.edu,Computer Science,2022
+STU2024CS0245,Vikram Bhat,vikram.bhat245@university.edu,Computer Science,2021
+STU2024CS0246,Riya Joshi,riya.joshi246@university.edu,Computer Science,2024
+STU2024CS0247,Manish Reddy,manish.reddy247@university.edu,Computer Science,2024
+STU2024CS0248,Ananya Pillai,ananya.pillai248@university.edu,Computer Science,2023
+STU2024CS0249,Harsh Deshmukh,harsh.deshmukh249@university.edu,Computer Science,2021
+STU2024CS0250,Ishaan Sharma,ishaan.sharma250@university.edu,Computer Science,2022
+STU2024CS0251,Tanvi Reddy,tanvi.reddy251@university.edu,Computer Science,2021
+STU2024CS0252,Sneha Kumar,sneha.kumar252@university.edu,Computer Science,2024
+STU2024CS0253,Harsh Kumar,harsh.kumar253@university.edu,Computer Science,2024
+STU2024CS0254,Tanvi Choudhury,tanvi.choudhury254@university.edu,Computer Science,2021
+STU2024CS0255,Vikram Singh,vikram.singh255@university.edu,Computer Science,2022
+STU2024CS0256,Siddharth Patel,siddharth.patel256@university.edu,Computer Science,2021
+STU2024CS0257,Shreya Singh,shreya.singh257@university.edu,Computer Science,2021
+STU2024CS0258,Manish Verma,manish.verma258@university.edu,Computer Science,2023
+STU2024CS0259,Siddharth Reddy,siddharth.reddy259@university.edu,Computer Science,2022
+STU2024CS0260,Meera Nair,meera.nair260@university.edu,Computer Science,2022
+STU2024CS0261,Aditya Joshi,aditya.joshi261@university.edu,Computer Science,2022
+STU2024CS0262,Meera Reddy,meera.reddy262@university.edu,Computer Science,2022
+STU2024CS0263,Sneha Deshmukh,sneha.deshmukh263@university.edu,Computer Science,2023
+STU2024CS0264,Gauri Deshmukh,gauri.deshmukh264@university.edu,Computer Science,2023
+STU2024CS0265,Rahul Gupta,rahul.gupta265@university.edu,Computer Science,2024
+STU2024CS0266,Meera Singh,meera.singh266@university.edu,Computer Science,2024
+STU2024CS0267,Ishaan Singh,ishaan.singh267@university.edu,Computer Science,2022
+STU2024CS0268,Harsh Choudhury,harsh.choudhury268@university.edu,Computer Science,2021
+STU2024CS0269,Meera Das,meera.das269@university.edu,Computer Science,2023
+STU2024CS0270,Karan Sharma,karan.sharma270@university.edu,Computer Science,2024
+STU2024CS0271,Meera Verma,meera.verma271@university.edu,Computer Science,2024
+STU2024CS0272,Gauri Singh,gauri.singh272@university.edu,Computer Science,2022
+STU2024CS0273,Arjun Rao,arjun.rao273@university.edu,Computer Science,2022
+STU2024CS0274,Nikhil Reddy,nikhil.reddy274@university.edu,Computer Science,2021
+STU2024CS0275,Tanvi Verma,tanvi.verma275@university.edu,Computer Science,2023
+STU2024CS0276,Aditi Pandey,aditi.pandey276@university.edu,Computer Science,2023
+STU2024CS0277,Rohan Singh,rohan.singh277@university.edu,Computer Science,2023
+STU2024CS0278,Rahul Iyer,rahul.iyer278@university.edu,Computer Science,2022
+STU2024CS0279,Gauri Das,gauri.das279@university.edu,Computer Science,2023
+STU2024CS0280,Sneha Choudhury,sneha.choudhury280@university.edu,Computer Science,2023
+STU2024CS0281,Pooja Patel,pooja.patel281@university.edu,Computer Science,2024
+STU2024CS0282,Ananya Rao,ananya.rao282@university.edu,Computer Science,2024
+STU2024CS0283,Manish Mishra,manish.mishra283@university.edu,Computer Science,2023
+STU2024CS0284,Divya Sharma,divya.sharma284@university.edu,Computer Science,2023
+STU2024CS0285,Ishaan Das,ishaan.das285@university.edu,Computer Science,2023
+STU2024CS0286,Deepika Das,deepika.das286@university.edu,Computer Science,2021
+STU2024CS0287,Riya Sharma,riya.sharma287@university.edu,Computer Science,2023
+STU2024CS0288,Vikram Gupta,vikram.gupta288@university.edu,Computer Science,2024
+STU2024CS0289,Karan Bhat,karan.bhat289@university.edu,Computer Science,2021
+STU2024CS0290,Aditi Singh,aditi.singh290@university.edu,Computer Science,2024
+STU2024CS0291,Vikram Mishra,vikram.mishra291@university.edu,Computer Science,2022
+STU2024CS0292,Arjun Mishra,arjun.mishra292@university.edu,Computer Science,2024
+STU2024CS0293,Amit Reddy,amit.reddy293@university.edu,Computer Science,2024
+STU2024CS0294,Deepika Choudhury,deepika.choudhury294@university.edu,Computer Science,2024
+STU2024CS0295,Sneha Verma,sneha.verma295@university.edu,Computer Science,2023
+STU2024CS0296,Ishaan Rao,ishaan.rao296@university.edu,Computer Science,2023
+STU2024CS0297,Nikhil Das,nikhil.das297@university.edu,Computer Science,2023
+STU2024CS0298,Sneha Iyer,sneha.iyer298@university.edu,Computer Science,2021
+STU2024CS0299,Deepika Deshmukh,deepika.deshmukh299@university.edu,Computer Science,2021
+STU2024CS0300,Tanvi Saxena,tanvi.saxena300@university.edu,Computer Science,2021
+STU2024CS0301,Pooja Rao,pooja.rao301@university.edu,Computer Science,2022
+STU2024CS0302,Neha Gupta,neha.gupta302@university.edu,Computer Science,2022
+STU2024CS0303,Deepika Rao,deepika.rao303@university.edu,Computer Science,2023
+STU2024CS0304,Manish Saxena,manish.saxena304@university.edu,Computer Science,2021
+STU2024CS0305,Ananya Reddy,ananya.reddy305@university.edu,Computer Science,2023
+STU2024CS0306,Priya Sharma,priya.sharma306@university.edu,Computer Science,2022
+STU2024CS0307,Manish Rao,manish.rao307@university.edu,Computer Science,2023
+STU2024CS0308,Sneha Verma,sneha.verma308@university.edu,Computer Science,2022
+STU2024CS0309,Kavya Patel,kavya.patel309@university.edu,Computer Science,2021
+STU2024CS0310,Bhavna Das,bhavna.das310@university.edu,Computer Science,2021
+STU2024CS0311,Vikram Saxena,vikram.saxena311@university.edu,Computer Science,2021
+STU2024CS0312,Suresh Pillai,suresh.pillai312@university.edu,Computer Science,2023
+STU2024CS0313,Aarav Verma,aarav.verma313@university.edu,Computer Science,2024
+STU2024CS0314,Siddharth Patel,siddharth.patel314@university.edu,Computer Science,2024
+STU2024CS0315,Ishaan Gupta,ishaan.gupta315@university.edu,Computer Science,2021
+STU2024CS0316,Ananya Gupta,ananya.gupta316@university.edu,Computer Science,2022
+STU2024CS0317,Tanvi Pandey,tanvi.pandey317@university.edu,Computer Science,2023
+STU2024CS0318,Aditya Pillai,aditya.pillai318@university.edu,Computer Science,2023
+STU2024CS0319,Aditya Bhat,aditya.bhat319@university.edu,Computer Science,2021
+STU2024CS0320,Priya Mishra,priya.mishra320@university.edu,Computer Science,2022
+STU2024CS0321,Gauri Rao,gauri.rao321@university.edu,Computer Science,2024
+STU2024CS0322,Ishaan Joshi,ishaan.joshi322@university.edu,Computer Science,2024
+STU2024CS0323,Pooja Bhat,pooja.bhat323@university.edu,Computer Science,2023
+STU2024CS0324,Arjun Reddy,arjun.reddy324@university.edu,Computer Science,2024
+STU2024CS0325,Deepika Gupta,deepika.gupta325@university.edu,Computer Science,2021
+STU2024CS0326,Amit Das,amit.das326@university.edu,Computer Science,2022
+STU2024CS0327,Meera Mishra,meera.mishra327@university.edu,Computer Science,2023
+STU2024CS0328,Siddharth Das,siddharth.das328@university.edu,Computer Science,2024
+STU2024CS0329,Amit Verma,amit.verma329@university.edu,Computer Science,2023
+STU2024CS0330,Arjun Patel,arjun.patel330@university.edu,Computer Science,2022
+STU2024CS0331,Riya Rao,riya.rao331@university.edu,Computer Science,2021
+STU2024CS0332,Varun Das,varun.das332@university.edu,Computer Science,2021
+STU2024CS0333,Meera Rao,meera.rao333@university.edu,Computer Science,2024
+STU2024CS0334,Bhavna Saxena,bhavna.saxena334@university.edu,Computer Science,2021
+STU2024CS0335,Nikhil Mehta,nikhil.mehta335@university.edu,Computer Science,2021
+STU2024CS0336,Shreya Singh,shreya.singh336@university.edu,Computer Science,2023
+STU2024CS0337,Rahul Reddy,rahul.reddy337@university.edu,Computer Science,2024
+STU2024CS0338,Amit Sharma,amit.sharma338@university.edu,Computer Science,2021
+STU2024CS0339,Neha Joshi,neha.joshi339@university.edu,Computer Science,2024
+STU2024CS0340,Rahul Das,rahul.das340@university.edu,Computer Science,2023
+STU2024CS0341,Bhavna Pandey,bhavna.pandey341@university.edu,Computer Science,2021
+STU2024CS0342,Ananya Nair,ananya.nair342@university.edu,Computer Science,2021
+STU2024CS0343,Sneha Deshmukh,sneha.deshmukh343@university.edu,Computer Science,2024
+STU2024CS0344,Ishaan Bhat,ishaan.bhat344@university.edu,Computer Science,2023
+STU2024CS0345,Kavya Patel,kavya.patel345@university.edu,Computer Science,2023
+STU2024CS0346,Karan Pandey,karan.pandey346@university.edu,Computer Science,2024
+STU2024CS0347,Karan Verma,karan.verma347@university.edu,Computer Science,2022
+STU2024CS0348,Aditya Verma,aditya.verma348@university.edu,Computer Science,2021
+STU2024CS0349,Neha Reddy,neha.reddy349@university.edu,Computer Science,2023
+STU2024CS0350,Priya Sharma,priya.sharma350@university.edu,Computer Science,2024
+STU2024CS0351,Rahul Reddy,rahul.reddy351@university.edu,Computer Science,2024
+STU2024CS0352,Vikram Pillai,vikram.pillai352@university.edu,Computer Science,2023
+STU2024CS0353,Harsh Verma,harsh.verma353@university.edu,Computer Science,2024
+STU2024CS0354,Suresh Gupta,suresh.gupta354@university.edu,Computer Science,2023
+STU2024CS0355,Meera Joshi,meera.joshi355@university.edu,Computer Science,2024
+STU2024CS0356,Divya Sharma,divya.sharma356@university.edu,Computer Science,2023
+STU2024CS0357,Aditya Deshmukh,aditya.deshmukh357@university.edu,Computer Science,2023
+STU2024CS0358,Harsh Patel,harsh.patel358@university.edu,Computer Science,2022
+STU2024CS0359,Divya Pillai,divya.pillai359@university.edu,Computer Science,2021
+STU2024CS0360,Karan Kumar,karan.kumar360@university.edu,Computer Science,2022
+STU2024CS0361,Rahul Gupta,rahul.gupta361@university.edu,Computer Science,2021
+STU2024CS0362,Neha Das,neha.das362@university.edu,Computer Science,2023
+STU2024CS0363,Deepika Reddy,deepika.reddy363@university.edu,Computer Science,2022
+STU2024CS0364,Sneha Iyer,sneha.iyer364@university.edu,Computer Science,2022
+STU2024CS0365,Bhavna Gupta,bhavna.gupta365@university.edu,Computer Science,2022
+STU2024CS0366,Tanvi Choudhury,tanvi.choudhury366@university.edu,Computer Science,2024
+STU2024CS0367,Bhavna Pandey,bhavna.pandey367@university.edu,Computer Science,2024
+STU2024CS0368,Gauri Pandey,gauri.pandey368@university.edu,Computer Science,2023
+STU2024CS0369,Tanvi Kumar,tanvi.kumar369@university.edu,Computer Science,2022
+STU2024CS0370,Riya Deshmukh,riya.deshmukh370@university.edu,Computer Science,2023
+STU2024CS0371,Meera Verma,meera.verma371@university.edu,Computer Science,2023
+STU2024CS0372,Karan Deshmukh,karan.deshmukh372@university.edu,Computer Science,2024
+STU2024CS0373,Arjun Singh,arjun.singh373@university.edu,Computer Science,2021
+STU2024CS0374,Harsh Gupta,harsh.gupta374@university.edu,Computer Science,2024
+STU2024CS0375,Varun Verma,varun.verma375@university.edu,Computer Science,2024
+STU2024CS0376,Meera Iyer,meera.iyer376@university.edu,Computer Science,2023
+STU2024CS0377,Kavya Reddy,kavya.reddy377@university.edu,Computer Science,2021
+STU2024CS0378,Manish Kumar,manish.kumar378@university.edu,Computer Science,2021
+STU2024CS0379,Rahul Verma,rahul.verma379@university.edu,Computer Science,2022
+STU2024CS0380,Ishaan Pillai,ishaan.pillai380@university.edu,Computer Science,2022
+STU2024CS0381,Suresh Singh,suresh.singh381@university.edu,Computer Science,2024
+STU2024CS0382,Pooja Saxena,pooja.saxena382@university.edu,Computer Science,2021
+STU2024CS0383,Tanvi Kumar,tanvi.kumar383@university.edu,Computer Science,2021
+STU2024CS0384,Varun Joshi,varun.joshi384@university.edu,Computer Science,2023
+STU2024CS0385,Harsh Saxena,harsh.saxena385@university.edu,Computer Science,2022
+STU2024CS0386,Meera Reddy,meera.reddy386@university.edu,Computer Science,2023
+STU2024CS0387,Tanvi Joshi,tanvi.joshi387@university.edu,Computer Science,2022
+STU2024CS0388,Rohan Singh,rohan.singh388@university.edu,Computer Science,2024
+STU2024CS0389,Pooja Reddy,pooja.reddy389@university.edu,Computer Science,2021
+STU2024CS0390,Siddharth Pillai,siddharth.pillai390@university.edu,Computer Science,2023
+STU2024CS0391,Karan Nair,karan.nair391@university.edu,Computer Science,2022
+STU2024CS0392,Bhavna Choudhury,bhavna.choudhury392@university.edu,Computer Science,2022
+STU2024CS0393,Ananya Reddy,ananya.reddy393@university.edu,Computer Science,2021
+STU2024CS0394,Manish Patel,manish.patel394@university.edu,Computer Science,2021
+STU2024CS0395,Gauri Saxena,gauri.saxena395@university.edu,Computer Science,2022
+STU2024CS0396,Ananya Nair,ananya.nair396@university.edu,Computer Science,2022
+STU2024CS0397,Bhavna Saxena,bhavna.saxena397@university.edu,Computer Science,2022
+STU2024CS0398,Aditi Bhat,aditi.bhat398@university.edu,Computer Science,2023
+STU2024CS0399,Vikram Deshmukh,vikram.deshmukh399@university.edu,Computer Science,2023
+STU2024CS0400,Manish Deshmukh,manish.deshmukh400@university.edu,Computer Science,2022
+STU2024CS0401,Karan Choudhury,karan.choudhury401@university.edu,Computer Science,2022
+STU2024CS0402,Meera Deshmukh,meera.deshmukh402@university.edu,Computer Science,2024
+STU2024CS0403,Bhavna Joshi,bhavna.joshi403@university.edu,Computer Science,2024
+STU2024CS0404,Deepika Iyer,deepika.iyer404@university.edu,Computer Science,2022
+STU2024CS0405,Aditi Choudhury,aditi.choudhury405@university.edu,Computer Science,2023
+STU2024CS0406,Priya Pillai,priya.pillai406@university.edu,Computer Science,2021
+STU2024CS0407,Bhavna Nair,bhavna.nair407@university.edu,Computer Science,2023
+STU2024CS0408,Kavya Reddy,kavya.reddy408@university.edu,Computer Science,2024
+STU2024CS0409,Suresh Rao,suresh.rao409@university.edu,Computer Science,2024
+STU2024CS0410,Suresh Sharma,suresh.sharma410@university.edu,Computer Science,2024
+STU2024CS0411,Kavya Das,kavya.das411@university.edu,Computer Science,2022
+STU2024CS0412,Rohan Das,rohan.das412@university.edu,Computer Science,2022
+STU2024CS0413,Suresh Patel,suresh.patel413@university.edu,Computer Science,2023
+STU2024CS0414,Ananya Verma,ananya.verma414@university.edu,Computer Science,2023
+STU2024CS0415,Riya Reddy,riya.reddy415@university.edu,Computer Science,2024
+STU2024CS0416,Aarav Gupta,aarav.gupta416@university.edu,Computer Science,2021
+STU2024CS0417,Deepika Reddy,deepika.reddy417@university.edu,Computer Science,2024
+STU2024CS0418,Karan Rao,karan.rao418@university.edu,Computer Science,2023
+STU2024CS0419,Vikram Bhat,vikram.bhat419@university.edu,Computer Science,2024
+STU2024CS0420,Deepika Choudhury,deepika.choudhury420@university.edu,Computer Science,2021
+STU2024CS0421,Meera Rao,meera.rao421@university.edu,Computer Science,2022
+STU2024EC0422,Aarav Saxena,aarav.saxena422@university.edu,Electronics & Comm,2023
+STU2024EC0423,Siddharth Nair,siddharth.nair423@university.edu,Electronics & Comm,2021
+STU2024EC0424,Arjun Gupta,arjun.gupta424@university.edu,Electronics & Comm,2021
+STU2024EC0425,Riya Verma,riya.verma425@university.edu,Electronics & Comm,2024
+STU2024EC0426,Sneha Sharma,sneha.sharma426@university.edu,Electronics & Comm,2023
+STU2024EC0427,Arjun Rao,arjun.rao427@university.edu,Electronics & Comm,2021
+STU2024EC0428,Amit Kumar,amit.kumar428@university.edu,Electronics & Comm,2022
+STU2024EC0429,Varun Kumar,varun.kumar429@university.edu,Electronics & Comm,2022
+STU2024EC0430,Nikhil Deshmukh,nikhil.deshmukh430@university.edu,Electronics & Comm,2024
+STU2024EC0431,Manish Reddy,manish.reddy431@university.edu,Electronics & Comm,2021
+STU2024EC0432,Ishaan Verma,ishaan.verma432@university.edu,Electronics & Comm,2023
+STU2024EC0433,Manish Iyer,manish.iyer433@university.edu,Electronics & Comm,2021
+STU2024EC0434,Karan Pillai,karan.pillai434@university.edu,Electronics & Comm,2024
+STU2024EC0435,Varun Choudhury,varun.choudhury435@university.edu,Electronics & Comm,2023
+STU2024EC0436,Tanvi Iyer,tanvi.iyer436@university.edu,Electronics & Comm,2023
+STU2024EC0437,Bhavna Verma,bhavna.verma437@university.edu,Electronics & Comm,2023
+STU2024EC0438,Manish Das,manish.das438@university.edu,Electronics & Comm,2024
+STU2024EC0439,Amit Deshmukh,amit.deshmukh439@university.edu,Electronics & Comm,2024
+STU2024EC0440,Rahul Choudhury,rahul.choudhury440@university.edu,Electronics & Comm,2024
+STU2024EC0441,Manish Pillai,manish.pillai441@university.edu,Electronics & Comm,2023
+STU2024EC0442,Amit Bhat,amit.bhat442@university.edu,Electronics & Comm,2021
+STU2024EC0443,Deepika Nair,deepika.nair443@university.edu,Electronics & Comm,2023
+STU2024EC0444,Rohan Kumar,rohan.kumar444@university.edu,Electronics & Comm,2023
+STU2024EC0445,Aditya Bhat,aditya.bhat445@university.edu,Electronics & Comm,2022
+STU2024EC0446,Arjun Deshmukh,arjun.deshmukh446@university.edu,Electronics & Comm,2021
+STU2024EC0447,Suresh Das,suresh.das447@university.edu,Electronics & Comm,2024
+STU2024EC0448,Manish Verma,manish.verma448@university.edu,Electronics & Comm,2021
+STU2024EC0449,Divya Das,divya.das449@university.edu,Electronics & Comm,2022
+STU2024EC0450,Ananya Saxena,ananya.saxena450@university.edu,Electronics & Comm,2024
+STU2024EC0451,Rohan Rao,rohan.rao451@university.edu,Electronics & Comm,2023
+STU2024EC0452,Meera Verma,meera.verma452@university.edu,Electronics & Comm,2022
+STU2024EC0453,Arjun Das,arjun.das453@university.edu,Electronics & Comm,2024
+STU2024EC0454,Meera Reddy,meera.reddy454@university.edu,Electronics & Comm,2023
+STU2024EC0455,Tanvi Mehta,tanvi.mehta455@university.edu,Electronics & Comm,2022
+STU2024EC0456,Aarav Nair,aarav.nair456@university.edu,Electronics & Comm,2024
+STU2024EC0457,Suresh Mishra,suresh.mishra457@university.edu,Electronics & Comm,2021
+STU2024EC0458,Sneha Deshmukh,sneha.deshmukh458@university.edu,Electronics & Comm,2022
+STU2024EC0459,Karan Choudhury,karan.choudhury459@university.edu,Electronics & Comm,2022
+STU2024EC0460,Harsh Gupta,harsh.gupta460@university.edu,Electronics & Comm,2024
+STU2024EC0461,Shreya Deshmukh,shreya.deshmukh461@university.edu,Electronics & Comm,2021
+STU2024EC0462,Harsh Kumar,harsh.kumar462@university.edu,Electronics & Comm,2023
+STU2024EC0463,Varun Mishra,varun.mishra463@university.edu,Electronics & Comm,2023
+STU2024EC0464,Harsh Nair,harsh.nair464@university.edu,Electronics & Comm,2022
+STU2024EC0465,Kavya Rao,kavya.rao465@university.edu,Electronics & Comm,2021
+STU2024EC0466,Manish Reddy,manish.reddy466@university.edu,Electronics & Comm,2022
+STU2024EC0467,Aarav Das,aarav.das467@university.edu,Electronics & Comm,2023
+STU2024EC0468,Varun Reddy,varun.reddy468@university.edu,Electronics & Comm,2021
+STU2024EC0469,Divya Choudhury,divya.choudhury469@university.edu,Electronics & Comm,2024
+STU2024EC0470,Deepika Pandey,deepika.pandey470@university.edu,Electronics & Comm,2021
+STU2024EC0471,Pooja Gupta,pooja.gupta471@university.edu,Electronics & Comm,2024
+STU2024EC0472,Kavya Das,kavya.das472@university.edu,Electronics & Comm,2022
+STU2024EC0473,Bhavna Mishra,bhavna.mishra473@university.edu,Electronics & Comm,2022
+STU2024EC0474,Ananya Bhat,ananya.bhat474@university.edu,Electronics & Comm,2021
+STU2024EC0475,Kavya Reddy,kavya.reddy475@university.edu,Electronics & Comm,2023
+STU2024EC0476,Pooja Rao,pooja.rao476@university.edu,Electronics & Comm,2023
+STU2024EC0477,Kavya Singh,kavya.singh477@university.edu,Electronics & Comm,2021
+STU2024EC0478,Tanvi Mishra,tanvi.mishra478@university.edu,Electronics & Comm,2023
+STU2024EC0479,Karan Saxena,karan.saxena479@university.edu,Electronics & Comm,2021
+STU2024EC0480,Rahul Pandey,rahul.pandey480@university.edu,Electronics & Comm,2022
+STU2024EC0481,Aditya Saxena,aditya.saxena481@university.edu,Electronics & Comm,2023
+STU2024EC0482,Meera Verma,meera.verma482@university.edu,Electronics & Comm,2021
+STU2024EC0483,Tanvi Pandey,tanvi.pandey483@university.edu,Electronics & Comm,2023
+STU2024EC0484,Bhavna Pandey,bhavna.pandey484@university.edu,Electronics & Comm,2024
+STU2024EC0485,Aarav Choudhury,aarav.choudhury485@university.edu,Electronics & Comm,2023
+STU2024EC0486,Karan Choudhury,karan.choudhury486@university.edu,Electronics & Comm,2022
+STU2024EC0487,Nikhil Joshi,nikhil.joshi487@university.edu,Electronics & Comm,2023
+STU2024EC0488,Shreya Verma,shreya.verma488@university.edu,Electronics & Comm,2022
+STU2024EC0489,Riya Deshmukh,riya.deshmukh489@university.edu,Electronics & Comm,2022
+STU2024EC0490,Ananya Kumar,ananya.kumar490@university.edu,Electronics & Comm,2023
+STU2024EC0491,Harsh Das,harsh.das491@university.edu,Electronics & Comm,2024
+STU2024EC0492,Arjun Pillai,arjun.pillai492@university.edu,Electronics & Comm,2021
+STU2024EC0493,Ishaan Patel,ishaan.patel493@university.edu,Electronics & Comm,2023
+STU2024EC0494,Ananya Patel,ananya.patel494@university.edu,Electronics & Comm,2021
+STU2024EC0495,Divya Saxena,divya.saxena495@university.edu,Electronics & Comm,2024
+STU2024EC0496,Harsh Nair,harsh.nair496@university.edu,Electronics & Comm,2023
+STU2024EC0497,Amit Kumar,amit.kumar497@university.edu,Electronics & Comm,2022
+STU2024EC0498,Riya Pillai,riya.pillai498@university.edu,Electronics & Comm,2024
+STU2024EC0499,Karan Choudhury,karan.choudhury499@university.edu,Electronics & Comm,2021
+STU2024EC0500,Divya Pillai,divya.pillai500@university.edu,Electronics & Comm,2024
+STU2024EC0501,Neha Pandey,neha.pandey501@university.edu,Electronics & Comm,2023
+STU2024EC0502,Karan Choudhury,karan.choudhury502@university.edu,Electronics & Comm,2024
+STU2024EC0503,Aarav Patel,aarav.patel503@university.edu,Electronics & Comm,2024
+STU2024EC0504,Sneha Das,sneha.das504@university.edu,Electronics & Comm,2024
+STU2024EC0505,Divya Verma,divya.verma505@university.edu,Electronics & Comm,2022
+STU2024EC0506,Karan Gupta,karan.gupta506@university.edu,Electronics & Comm,2024
+STU2024EC0507,Bhavna Mishra,bhavna.mishra507@university.edu,Electronics & Comm,2023
+STU2024EC0508,Aditya Saxena,aditya.saxena508@university.edu,Electronics & Comm,2021
+STU2024EC0509,Priya Joshi,priya.joshi509@university.edu,Electronics & Comm,2023
+STU2024EC0510,Pooja Mishra,pooja.mishra510@university.edu,Electronics & Comm,2023
+STU2024EC0511,Neha Saxena,neha.saxena511@university.edu,Electronics & Comm,2024
+STU2024EC0512,Aditi Verma,aditi.verma512@university.edu,Electronics & Comm,2022
+STU2024EC0513,Manish Choudhury,manish.choudhury513@university.edu,Electronics & Comm,2024
+STU2024EC0514,Gauri Pillai,gauri.pillai514@university.edu,Electronics & Comm,2022
+STU2024EC0515,Aditya Kumar,aditya.kumar515@university.edu,Electronics & Comm,2022
+STU2024EC0516,Aditya Singh,aditya.singh516@university.edu,Electronics & Comm,2023
+STU2024EC0517,Kavya Mishra,kavya.mishra517@university.edu,Electronics & Comm,2024
+STU2024EC0518,Karan Choudhury,karan.choudhury518@university.edu,Electronics & Comm,2021
+STU2024EC0519,Nikhil Patel,nikhil.patel519@university.edu,Electronics & Comm,2024
+STU2024EC0520,Manish Sharma,manish.sharma520@university.edu,Electronics & Comm,2024
+STU2024EC0521,Tanvi Pandey,tanvi.pandey521@university.edu,Electronics & Comm,2022
+STU2024EC0522,Meera Choudhury,meera.choudhury522@university.edu,Electronics & Comm,2022
+STU2024EC0523,Amit Saxena,amit.saxena523@university.edu,Electronics & Comm,2024
+STU2024EC0524,Nikhil Rao,nikhil.rao524@university.edu,Electronics & Comm,2021
+STU2024EC0525,Shreya Patel,shreya.patel525@university.edu,Electronics & Comm,2022
+STU2024EC0526,Pooja Bhat,pooja.bhat526@university.edu,Electronics & Comm,2022
+STU2024EC0527,Neha Bhat,neha.bhat527@university.edu,Electronics & Comm,2024
+STU2024EC0528,Amit Verma,amit.verma528@university.edu,Electronics & Comm,2022
+STU2024EC0529,Varun Kumar,varun.kumar529@university.edu,Electronics & Comm,2024
+STU2024EC0530,Pooja Nair,pooja.nair530@university.edu,Electronics & Comm,2024
+STU2024EC0531,Pooja Mishra,pooja.mishra531@university.edu,Electronics & Comm,2023
+STU2024EC0532,Harsh Mehta,harsh.mehta532@university.edu,Electronics & Comm,2024
+STU2024EC0533,Vikram Mehta,vikram.mehta533@university.edu,Electronics & Comm,2023
+STU2024EC0534,Karan Singh,karan.singh534@university.edu,Electronics & Comm,2022
+STU2024EC0535,Riya Kumar,riya.kumar535@university.edu,Electronics & Comm,2024
+STU2024EC0536,Suresh Mehta,suresh.mehta536@university.edu,Electronics & Comm,2023
+STU2024EC0537,Nikhil Mishra,nikhil.mishra537@university.edu,Electronics & Comm,2024
+STU2024EC0538,Divya Das,divya.das538@university.edu,Electronics & Comm,2022
+STU2024EC0539,Karan Gupta,karan.gupta539@university.edu,Electronics & Comm,2023
+STU2024EC0540,Tanvi Mehta,tanvi.mehta540@university.edu,Electronics & Comm,2024
+STU2024EC0541,Deepika Mishra,deepika.mishra541@university.edu,Electronics & Comm,2023
+STU2024EC0542,Shreya Mehta,shreya.mehta542@university.edu,Electronics & Comm,2022
+STU2024EC0543,Amit Pandey,amit.pandey543@university.edu,Electronics & Comm,2022
+STU2024EC0544,Nikhil Pillai,nikhil.pillai544@university.edu,Electronics & Comm,2022
+STU2024EC0545,Aditi Patel,aditi.patel545@university.edu,Electronics & Comm,2024
+STU2024EC0546,Riya Patel,riya.patel546@university.edu,Electronics & Comm,2022
+STU2024EC0547,Varun Nair,varun.nair547@university.edu,Electronics & Comm,2024
+STU2024EC0548,Gauri Choudhury,gauri.choudhury548@university.edu,Electronics & Comm,2024
+STU2024EC0549,Bhavna Singh,bhavna.singh549@university.edu,Electronics & Comm,2023
+STU2024EC0550,Aditi Gupta,aditi.gupta550@university.edu,Electronics & Comm,2022
+STU2024EC0551,Amit Verma,amit.verma551@university.edu,Electronics & Comm,2022
+STU2024EC0552,Deepika Nair,deepika.nair552@university.edu,Electronics & Comm,2021
+STU2024EC0553,Divya Choudhury,divya.choudhury553@university.edu,Electronics & Comm,2022
+STU2024EC0554,Harsh Singh,harsh.singh554@university.edu,Electronics & Comm,2021
+STU2024EC0555,Meera Saxena,meera.saxena555@university.edu,Electronics & Comm,2021
+STU2024EC0556,Pooja Singh,pooja.singh556@university.edu,Electronics & Comm,2024
+STU2024EC0557,Varun Pillai,varun.pillai557@university.edu,Electronics & Comm,2024
+STU2024EC0558,Ananya Pillai,ananya.pillai558@university.edu,Electronics & Comm,2024
+STU2024EC0559,Manish Patel,manish.patel559@university.edu,Electronics & Comm,2023
+STU2024EC0560,Ishaan Mehta,ishaan.mehta560@university.edu,Electronics & Comm,2022
+STU2024EC0561,Pooja Singh,pooja.singh561@university.edu,Electronics & Comm,2022
+STU2024EC0562,Harsh Joshi,harsh.joshi562@university.edu,Electronics & Comm,2024
+STU2024EC0563,Rohan Joshi,rohan.joshi563@university.edu,Electronics & Comm,2021
+STU2024EC0564,Ananya Choudhury,ananya.choudhury564@university.edu,Electronics & Comm,2023
+STU2024EC0565,Aarav Mehta,aarav.mehta565@university.edu,Electronics & Comm,2024
+STU2024EC0566,Bhavna Mehta,bhavna.mehta566@university.edu,Electronics & Comm,2023
+STU2024EC0567,Amit Pandey,amit.pandey567@university.edu,Electronics & Comm,2021
+STU2024EC0568,Arjun Rao,arjun.rao568@university.edu,Electronics & Comm,2021
+STU2024EC0569,Ishaan Singh,ishaan.singh569@university.edu,Electronics & Comm,2022
+STU2024EC0570,Kavya Singh,kavya.singh570@university.edu,Electronics & Comm,2021
+STU2024EC0571,Karan Das,karan.das571@university.edu,Electronics & Comm,2022
+STU2024EC0572,Ananya Choudhury,ananya.choudhury572@university.edu,Electronics & Comm,2022
+STU2024EC0573,Aditya Das,aditya.das573@university.edu,Electronics & Comm,2024
+STU2024EC0574,Suresh Choudhury,suresh.choudhury574@university.edu,Electronics & Comm,2022
+STU2024EC0575,Nikhil Saxena,nikhil.saxena575@university.edu,Electronics & Comm,2021
+STU2024EC0576,Kavya Das,kavya.das576@university.edu,Electronics & Comm,2021
+STU2024EC0577,Priya Verma,priya.verma577@university.edu,Electronics & Comm,2022
+STU2024EC0578,Ananya Nair,ananya.nair578@university.edu,Electronics & Comm,2023
+STU2024EC0579,Ishaan Patel,ishaan.patel579@university.edu,Electronics & Comm,2022
+STU2024EC0580,Riya Gupta,riya.gupta580@university.edu,Electronics & Comm,2024
+STU2024EC0581,Ishaan Reddy,ishaan.reddy581@university.edu,Electronics & Comm,2024
+STU2024EC0582,Aditi Mishra,aditi.mishra582@university.edu,Electronics & Comm,2024
+STU2024EC0583,Karan Sharma,karan.sharma583@university.edu,Electronics & Comm,2024
+STU2024EC0584,Aarav Iyer,aarav.iyer584@university.edu,Electronics & Comm,2021
+STU2024EC0585,Arjun Gupta,arjun.gupta585@university.edu,Electronics & Comm,2021
+STU2024EC0586,Rohan Choudhury,rohan.choudhury586@university.edu,Electronics & Comm,2021
+STU2024EC0587,Rahul Reddy,rahul.reddy587@university.edu,Electronics & Comm,2024
+STU2024EC0588,Gauri Joshi,gauri.joshi588@university.edu,Electronics & Comm,2024
+STU2024EC0589,Suresh Joshi,suresh.joshi589@university.edu,Electronics & Comm,2024
+STU2024EC0590,Nikhil Mishra,nikhil.mishra590@university.edu,Electronics & Comm,2022
+STU2024EC0591,Arjun Patel,arjun.patel591@university.edu,Electronics & Comm,2022
+STU2024EC0592,Divya Pillai,divya.pillai592@university.edu,Electronics & Comm,2022
+STU2024EC0593,Vikram Sharma,vikram.sharma593@university.edu,Electronics & Comm,2021
+STU2024EC0594,Ishaan Mishra,ishaan.mishra594@university.edu,Electronics & Comm,2024
+STU2024EC0595,Deepika Rao,deepika.rao595@university.edu,Electronics & Comm,2022
+STU2024EC0596,Ananya Mehta,ananya.mehta596@university.edu,Electronics & Comm,2022
+STU2024EC0597,Amit Patel,amit.patel597@university.edu,Electronics & Comm,2021
+STU2024EC0598,Siddharth Saxena,siddharth.saxena598@university.edu,Electronics & Comm,2021
+STU2024EC0599,Rohan Patel,rohan.patel599@university.edu,Electronics & Comm,2021
+STU2024EC0600,Nikhil Verma,nikhil.verma600@university.edu,Electronics & Comm,2022
+STU2024EC0601,Divya Deshmukh,divya.deshmukh601@university.edu,Electronics & Comm,2022
+STU2024EC0602,Bhavna Verma,bhavna.verma602@university.edu,Electronics & Comm,2022
+STU2024EC0603,Karan Rao,karan.rao603@university.edu,Electronics & Comm,2023
+STU2024EC0604,Bhavna Kumar,bhavna.kumar604@university.edu,Electronics & Comm,2022
+STU2024EC0605,Ananya Pillai,ananya.pillai605@university.edu,Electronics & Comm,2022
+STU2024EC0606,Sneha Verma,sneha.verma606@university.edu,Electronics & Comm,2022
+STU2024EC0607,Siddharth Mishra,siddharth.mishra607@university.edu,Electronics & Comm,2024
+STU2024EC0608,Arjun Joshi,arjun.joshi608@university.edu,Electronics & Comm,2023
+STU2024EC0609,Siddharth Reddy,siddharth.reddy609@university.edu,Electronics & Comm,2023
+STU2024EC0610,Bhavna Mishra,bhavna.mishra610@university.edu,Electronics & Comm,2024
+STU2024EC0611,Vikram Singh,vikram.singh611@university.edu,Electronics & Comm,2022
+STU2024EC0612,Suresh Verma,suresh.verma612@university.edu,Electronics & Comm,2024
+STU2024EC0613,Varun Pillai,varun.pillai613@university.edu,Electronics & Comm,2022
+STU2024EC0614,Sneha Iyer,sneha.iyer614@university.edu,Electronics & Comm,2023
+STU2024EC0615,Suresh Deshmukh,suresh.deshmukh615@university.edu,Electronics & Comm,2023
+STU2024EC0616,Amit Iyer,amit.iyer616@university.edu,Electronics & Comm,2021
+STU2024EC0617,Nikhil Saxena,nikhil.saxena617@university.edu,Electronics & Comm,2021
+STU2024EC0618,Neha Pandey,neha.pandey618@university.edu,Electronics & Comm,2022
+STU2024EC0619,Harsh Kumar,harsh.kumar619@university.edu,Electronics & Comm,2023
+STU2024EC0620,Aarav Iyer,aarav.iyer620@university.edu,Electronics & Comm,2022
+STU2024EC0621,Priya Choudhury,priya.choudhury621@university.edu,Electronics & Comm,2022
+STU2024EC0622,Shreya Iyer,shreya.iyer622@university.edu,Electronics & Comm,2024
+STU2024EC0623,Varun Kumar,varun.kumar623@university.edu,Electronics & Comm,2023
+STU2024EC0624,Varun Das,varun.das624@university.edu,Electronics & Comm,2023
+STU2024EC0625,Kavya Choudhury,kavya.choudhury625@university.edu,Electronics & Comm,2024
+STU2024EC0626,Amit Choudhury,amit.choudhury626@university.edu,Electronics & Comm,2023
+STU2024EC0627,Arjun Kumar,arjun.kumar627@university.edu,Electronics & Comm,2024
+STU2024EC0628,Harsh Rao,harsh.rao628@university.edu,Electronics & Comm,2022
+STU2024EC0629,Varun Pandey,varun.pandey629@university.edu,Electronics & Comm,2024
+STU2024EC0630,Neha Kumar,neha.kumar630@university.edu,Electronics & Comm,2022
+STU2024EC0631,Deepika Rao,deepika.rao631@university.edu,Electronics & Comm,2024
+STU2024EC0632,Nikhil Kumar,nikhil.kumar632@university.edu,Electronics & Comm,2023
+STU2024EC0633,Riya Choudhury,riya.choudhury633@university.edu,Electronics & Comm,2024
+STU2024EC0634,Manish Das,manish.das634@university.edu,Electronics & Comm,2022
+STU2024EC0635,Varun Choudhury,varun.choudhury635@university.edu,Electronics & Comm,2022
+STU2024EC0636,Varun Verma,varun.verma636@university.edu,Electronics & Comm,2021
+STU2024EC0637,Rohan Verma,rohan.verma637@university.edu,Electronics & Comm,2021
+STU2024EC0638,Deepika Rao,deepika.rao638@university.edu,Electronics & Comm,2021
+STU2024EC0639,Aarav Iyer,aarav.iyer639@university.edu,Electronics & Comm,2024
+STU2024EC0640,Aditya Saxena,aditya.saxena640@university.edu,Electronics & Comm,2024
+STU2024EC0641,Aarav Sharma,aarav.sharma641@university.edu,Electronics & Comm,2024
+STU2024EC0642,Kavya Mehta,kavya.mehta642@university.edu,Electronics & Comm,2023
+STU2024EC0643,Deepika Bhat,deepika.bhat643@university.edu,Electronics & Comm,2022
+STU2024EC0644,Priya Pillai,priya.pillai644@university.edu,Electronics & Comm,2022
+STU2024EC0645,Aditya Pillai,aditya.pillai645@university.edu,Electronics & Comm,2023
+STU2024EC0646,Sneha Joshi,sneha.joshi646@university.edu,Electronics & Comm,2021
+STU2024EC0647,Divya Deshmukh,divya.deshmukh647@university.edu,Electronics & Comm,2022
+STU2024EC0648,Vikram Singh,vikram.singh648@university.edu,Electronics & Comm,2021
+STU2024EC0649,Harsh Verma,harsh.verma649@university.edu,Electronics & Comm,2021
+STU2024EC0650,Divya Mishra,divya.mishra650@university.edu,Electronics & Comm,2024
+STU2024EC0651,Aarav Nair,aarav.nair651@university.edu,Electronics & Comm,2021
+STU2024EC0652,Siddharth Kumar,siddharth.kumar652@university.edu,Electronics & Comm,2021
+STU2024EC0653,Suresh Verma,suresh.verma653@university.edu,Electronics & Comm,2022
+STU2024EC0654,Harsh Pandey,harsh.pandey654@university.edu,Electronics & Comm,2024
+STU2024EC0655,Suresh Gupta,suresh.gupta655@university.edu,Electronics & Comm,2023
+STU2024EC0656,Meera Verma,meera.verma656@university.edu,Electronics & Comm,2022
+STU2024EC0657,Pooja Sharma,pooja.sharma657@university.edu,Electronics & Comm,2022
+STU2024EC0658,Bhavna Joshi,bhavna.joshi658@university.edu,Electronics & Comm,2021
+STU2024EC0659,Meera Rao,meera.rao659@university.edu,Electronics & Comm,2024
+STU2024EC0660,Varun Kumar,varun.kumar660@university.edu,Electronics & Comm,2024
+STU2024EC0661,Ananya Gupta,ananya.gupta661@university.edu,Electronics & Comm,2023
+STU2024EC0662,Siddharth Rao,siddharth.rao662@university.edu,Electronics & Comm,2021
+STU2024EC0663,Bhavna Saxena,bhavna.saxena663@university.edu,Electronics & Comm,2024
+STU2024EC0664,Pooja Sharma,pooja.sharma664@university.edu,Electronics & Comm,2023
+STU2024EC0665,Ishaan Choudhury,ishaan.choudhury665@university.edu,Electronics & Comm,2022
+STU2024EC0666,Divya Bhat,divya.bhat666@university.edu,Electronics & Comm,2022
+STU2024EC0667,Nikhil Joshi,nikhil.joshi667@university.edu,Electronics & Comm,2021
+STU2024EC0668,Karan Rao,karan.rao668@university.edu,Electronics & Comm,2021
+STU2024EC0669,Ananya Joshi,ananya.joshi669@university.edu,Electronics & Comm,2022
+STU2024EC0670,Pooja Das,pooja.das670@university.edu,Electronics & Comm,2021
+STU2024EC0671,Karan Deshmukh,karan.deshmukh671@university.edu,Electronics & Comm,2023
+STU2024EC0672,Priya Reddy,priya.reddy672@university.edu,Electronics & Comm,2021
+STU2024EC0673,Ishaan Mishra,ishaan.mishra673@university.edu,Electronics & Comm,2024
+STU2024EC0674,Rohan Das,rohan.das674@university.edu,Electronics & Comm,2021
+STU2024EC0675,Manish Kumar,manish.kumar675@university.edu,Electronics & Comm,2024
+STU2024EC0676,Siddharth Joshi,siddharth.joshi676@university.edu,Electronics & Comm,2021
+STU2024EC0677,Varun Rao,varun.rao677@university.edu,Electronics & Comm,2022
+STU2024EC0678,Rahul Reddy,rahul.reddy678@university.edu,Electronics & Comm,2023
+STU2024EC0679,Riya Reddy,riya.reddy679@university.edu,Electronics & Comm,2021
+STU2024EC0680,Sneha Bhat,sneha.bhat680@university.edu,Electronics & Comm,2023
+STU2024EC0681,Rohan Das,rohan.das681@university.edu,Electronics & Comm,2023
+STU2024EC0682,Amit Choudhury,amit.choudhury682@university.edu,Electronics & Comm,2022
+STU2024EC0683,Ananya Singh,ananya.singh683@university.edu,Electronics & Comm,2021
+STU2024ME0684,Pooja Saxena,pooja.saxena684@university.edu,Mechanical Eng,2024
+STU2024ME0685,Pooja Deshmukh,pooja.deshmukh685@university.edu,Mechanical Eng,2023
+STU2024ME0686,Deepika Saxena,deepika.saxena686@university.edu,Mechanical Eng,2022
+STU2024ME0687,Aditya Iyer,aditya.iyer687@university.edu,Mechanical Eng,2024
+STU2024ME0688,Divya Kumar,divya.kumar688@university.edu,Mechanical Eng,2023
+STU2024ME0689,Tanvi Choudhury,tanvi.choudhury689@university.edu,Mechanical Eng,2022
+STU2024ME0690,Sneha Joshi,sneha.joshi690@university.edu,Mechanical Eng,2023
+STU2024ME0691,Meera Iyer,meera.iyer691@university.edu,Mechanical Eng,2022
+STU2024ME0692,Varun Sharma,varun.sharma692@university.edu,Mechanical Eng,2024
+STU2024ME0693,Neha Deshmukh,neha.deshmukh693@university.edu,Mechanical Eng,2023
+STU2024ME0694,Rohan Bhat,rohan.bhat694@university.edu,Mechanical Eng,2024
+STU2024ME0695,Karan Rao,karan.rao695@university.edu,Mechanical Eng,2023
+STU2024ME0696,Shreya Bhat,shreya.bhat696@university.edu,Mechanical Eng,2024
+STU2024ME0697,Aditya Choudhury,aditya.choudhury697@university.edu,Mechanical Eng,2024
+STU2024ME0698,Suresh Bhat,suresh.bhat698@university.edu,Mechanical Eng,2021
+STU2024ME0699,Arjun Mishra,arjun.mishra699@university.edu,Mechanical Eng,2021
+STU2024ME0700,Vikram Das,vikram.das700@university.edu,Mechanical Eng,2022
+STU2024ME0701,Aditi Pandey,aditi.pandey701@university.edu,Mechanical Eng,2024
+STU2024ME0702,Pooja Bhat,pooja.bhat702@university.edu,Mechanical Eng,2021
+STU2024ME0703,Sneha Rao,sneha.rao703@university.edu,Mechanical Eng,2022
+STU2024ME0704,Divya Deshmukh,divya.deshmukh704@university.edu,Mechanical Eng,2022
+STU2024ME0705,Aarav Choudhury,aarav.choudhury705@university.edu,Mechanical Eng,2021
+STU2024ME0706,Suresh Gupta,suresh.gupta706@university.edu,Mechanical Eng,2021
+STU2024ME0707,Amit Reddy,amit.reddy707@university.edu,Mechanical Eng,2023
+STU2024ME0708,Ishaan Iyer,ishaan.iyer708@university.edu,Mechanical Eng,2024
+STU2024ME0709,Priya Deshmukh,priya.deshmukh709@university.edu,Mechanical Eng,2024
+STU2024ME0710,Karan Verma,karan.verma710@university.edu,Mechanical Eng,2021
+STU2024ME0711,Pooja Patel,pooja.patel711@university.edu,Mechanical Eng,2022
+STU2024ME0712,Amit Rao,amit.rao712@university.edu,Mechanical Eng,2022
+STU2024ME0713,Pooja Mishra,pooja.mishra713@university.edu,Mechanical Eng,2024
+STU2024ME0714,Vikram Joshi,vikram.joshi714@university.edu,Mechanical Eng,2022
+STU2024ME0715,Nikhil Bhat,nikhil.bhat715@university.edu,Mechanical Eng,2024
+STU2024ME0716,Aditya Iyer,aditya.iyer716@university.edu,Mechanical Eng,2024
+STU2024ME0717,Divya Sharma,divya.sharma717@university.edu,Mechanical Eng,2022
+STU2024ME0718,Bhavna Gupta,bhavna.gupta718@university.edu,Mechanical Eng,2021
+STU2024ME0719,Varun Nair,varun.nair719@university.edu,Mechanical Eng,2023
+STU2024ME0720,Ishaan Patel,ishaan.patel720@university.edu,Mechanical Eng,2023
+STU2024ME0721,Riya Pillai,riya.pillai721@university.edu,Mechanical Eng,2023
+STU2024ME0722,Aditya Joshi,aditya.joshi722@university.edu,Mechanical Eng,2021
+STU2024ME0723,Harsh Deshmukh,harsh.deshmukh723@university.edu,Mechanical Eng,2022
+STU2024ME0724,Shreya Singh,shreya.singh724@university.edu,Mechanical Eng,2021
+STU2024ME0725,Pooja Patel,pooja.patel725@university.edu,Mechanical Eng,2022
+STU2024ME0726,Rahul Das,rahul.das726@university.edu,Mechanical Eng,2022
+STU2024ME0727,Siddharth Saxena,siddharth.saxena727@university.edu,Mechanical Eng,2022
+STU2024ME0728,Siddharth Nair,siddharth.nair728@university.edu,Mechanical Eng,2024
+STU2024ME0729,Shreya Nair,shreya.nair729@university.edu,Mechanical Eng,2022
+STU2024ME0730,Ananya Nair,ananya.nair730@university.edu,Mechanical Eng,2023
+STU2024ME0731,Aditya Verma,aditya.verma731@university.edu,Mechanical Eng,2023
+STU2024ME0732,Riya Reddy,riya.reddy732@university.edu,Mechanical Eng,2022
+STU2024ME0733,Varun Pillai,varun.pillai733@university.edu,Mechanical Eng,2024
+STU2024ME0734,Riya Bhat,riya.bhat734@university.edu,Mechanical Eng,2024
+STU2024ME0735,Rohan Pandey,rohan.pandey735@university.edu,Mechanical Eng,2021
+STU2024ME0736,Vikram Singh,vikram.singh736@university.edu,Mechanical Eng,2021
+STU2024ME0737,Varun Singh,varun.singh737@university.edu,Mechanical Eng,2022
+STU2024ME0738,Meera Choudhury,meera.choudhury738@university.edu,Mechanical Eng,2021
+STU2024ME0739,Sneha Mishra,sneha.mishra739@university.edu,Mechanical Eng,2023
+STU2024ME0740,Bhavna Verma,bhavna.verma740@university.edu,Mechanical Eng,2024
+STU2024ME0741,Siddharth Patel,siddharth.patel741@university.edu,Mechanical Eng,2022
+STU2024ME0742,Aditi Deshmukh,aditi.deshmukh742@university.edu,Mechanical Eng,2023
+STU2024ME0743,Deepika Gupta,deepika.gupta743@university.edu,Mechanical Eng,2024
+STU2024ME0744,Priya Rao,priya.rao744@university.edu,Mechanical Eng,2022
+STU2024ME0745,Meera Das,meera.das745@university.edu,Mechanical Eng,2024
+STU2024ME0746,Ananya Iyer,ananya.iyer746@university.edu,Mechanical Eng,2022
+STU2024ME0747,Meera Das,meera.das747@university.edu,Mechanical Eng,2023
+STU2024ME0748,Rahul Kumar,rahul.kumar748@university.edu,Mechanical Eng,2023
+STU2024ME0749,Sneha Pillai,sneha.pillai749@university.edu,Mechanical Eng,2021
+STU2024ME0750,Bhavna Bhat,bhavna.bhat750@university.edu,Mechanical Eng,2021
+STU2024ME0751,Harsh Reddy,harsh.reddy751@university.edu,Mechanical Eng,2022
+STU2024ME0752,Shreya Kumar,shreya.kumar752@university.edu,Mechanical Eng,2022
+STU2024ME0753,Nikhil Joshi,nikhil.joshi753@university.edu,Mechanical Eng,2024
+STU2024ME0754,Tanvi Mehta,tanvi.mehta754@university.edu,Mechanical Eng,2024
+STU2024ME0755,Rohan Gupta,rohan.gupta755@university.edu,Mechanical Eng,2024
+STU2024ME0756,Sneha Das,sneha.das756@university.edu,Mechanical Eng,2024
+STU2024ME0757,Pooja Pandey,pooja.pandey757@university.edu,Mechanical Eng,2021
+STU2024ME0758,Harsh Gupta,harsh.gupta758@university.edu,Mechanical Eng,2024
+STU2024ME0759,Shreya Das,shreya.das759@university.edu,Mechanical Eng,2021
+STU2024ME0760,Divya Iyer,divya.iyer760@university.edu,Mechanical Eng,2024
+STU2024ME0761,Riya Mehta,riya.mehta761@university.edu,Mechanical Eng,2023
+STU2024ME0762,Pooja Mishra,pooja.mishra762@university.edu,Mechanical Eng,2022
+STU2024ME0763,Riya Kumar,riya.kumar763@university.edu,Mechanical Eng,2021
+STU2024ME0764,Tanvi Deshmukh,tanvi.deshmukh764@university.edu,Mechanical Eng,2021
+STU2024ME0765,Harsh Nair,harsh.nair765@university.edu,Mechanical Eng,2024
+STU2024ME0766,Siddharth Iyer,siddharth.iyer766@university.edu,Mechanical Eng,2022
+STU2024ME0767,Karan Nair,karan.nair767@university.edu,Mechanical Eng,2023
+STU2024ME0768,Arjun Mehta,arjun.mehta768@university.edu,Mechanical Eng,2021
+STU2024ME0769,Gauri Nair,gauri.nair769@university.edu,Mechanical Eng,2021
+STU2024ME0770,Karan Rao,karan.rao770@university.edu,Mechanical Eng,2024
+STU2024ME0771,Shreya Patel,shreya.patel771@university.edu,Mechanical Eng,2021
+STU2024ME0772,Rohan Reddy,rohan.reddy772@university.edu,Mechanical Eng,2022
+STU2024ME0773,Ishaan Sharma,ishaan.sharma773@university.edu,Mechanical Eng,2021
+STU2024ME0774,Deepika Patel,deepika.patel774@university.edu,Mechanical Eng,2024
+STU2024ME0775,Riya Gupta,riya.gupta775@university.edu,Mechanical Eng,2022
+STU2024ME0776,Amit Patel,amit.patel776@university.edu,Mechanical Eng,2021
+STU2024ME0777,Gauri Singh,gauri.singh777@university.edu,Mechanical Eng,2022
+STU2024ME0778,Deepika Reddy,deepika.reddy778@university.edu,Mechanical Eng,2022
+STU2024ME0779,Meera Sharma,meera.sharma779@university.edu,Mechanical Eng,2022
+STU2024ME0780,Amit Iyer,amit.iyer780@university.edu,Mechanical Eng,2022
+STU2024ME0781,Aditya Deshmukh,aditya.deshmukh781@university.edu,Mechanical Eng,2022
+STU2024ME0782,Priya Reddy,priya.reddy782@university.edu,Mechanical Eng,2021
+STU2024ME0783,Divya Das,divya.das783@university.edu,Mechanical Eng,2024
+STU2024ME0784,Ananya Rao,ananya.rao784@university.edu,Mechanical Eng,2023
+STU2024ME0785,Vikram Mishra,vikram.mishra785@university.edu,Mechanical Eng,2023
+STU2024ME0786,Shreya Sharma,shreya.sharma786@university.edu,Mechanical Eng,2023
+STU2024ME0787,Aditya Pillai,aditya.pillai787@university.edu,Mechanical Eng,2022
+STU2024ME0788,Karan Verma,karan.verma788@university.edu,Mechanical Eng,2022
+STU2024ME0789,Priya Rao,priya.rao789@university.edu,Mechanical Eng,2024
+STU2024ME0790,Rohan Pillai,rohan.pillai790@university.edu,Mechanical Eng,2021
+STU2024ME0791,Suresh Kumar,suresh.kumar791@university.edu,Mechanical Eng,2022
+STU2024ME0792,Deepika Pandey,deepika.pandey792@university.edu,Mechanical Eng,2024
+STU2024ME0793,Nikhil Nair,nikhil.nair793@university.edu,Mechanical Eng,2024
+STU2024ME0794,Bhavna Gupta,bhavna.gupta794@university.edu,Mechanical Eng,2021
+STU2024ME0795,Aarav Mehta,aarav.mehta795@university.edu,Mechanical Eng,2022
+STU2024ME0796,Aditi Joshi,aditi.joshi796@university.edu,Mechanical Eng,2023
+STU2024ME0797,Kavya Bhat,kavya.bhat797@university.edu,Mechanical Eng,2024
+STU2024ME0798,Rohan Mishra,rohan.mishra798@university.edu,Mechanical Eng,2022
+STU2024ME0799,Karan Gupta,karan.gupta799@university.edu,Mechanical Eng,2022
+STU2024ME0800,Ananya Mishra,ananya.mishra800@university.edu,Mechanical Eng,2023
+STU2024ME0801,Tanvi Gupta,tanvi.gupta801@university.edu,Mechanical Eng,2023
+STU2024ME0802,Amit Rao,amit.rao802@university.edu,Mechanical Eng,2021
+STU2024ME0803,Suresh Bhat,suresh.bhat803@university.edu,Mechanical Eng,2021
+STU2024ME0804,Aditya Verma,aditya.verma804@university.edu,Mechanical Eng,2023
+STU2024ME0805,Nikhil Nair,nikhil.nair805@university.edu,Mechanical Eng,2021
+STU2024ME0806,Ananya Sharma,ananya.sharma806@university.edu,Mechanical Eng,2022
+STU2024ME0807,Arjun Pillai,arjun.pillai807@university.edu,Mechanical Eng,2023
+STU2024ME0808,Ananya Mehta,ananya.mehta808@university.edu,Mechanical Eng,2021
+STU2024ME0809,Aarav Kumar,aarav.kumar809@university.edu,Mechanical Eng,2024
+STU2024ME0810,Rohan Mehta,rohan.mehta810@university.edu,Mechanical Eng,2021
+STU2024ME0811,Kavya Das,kavya.das811@university.edu,Mechanical Eng,2021
+STU2024ME0812,Meera Nair,meera.nair812@university.edu,Mechanical Eng,2023
+STU2024ME0813,Bhavna Patel,bhavna.patel813@university.edu,Mechanical Eng,2021
+STU2024ME0814,Kavya Sharma,kavya.sharma814@university.edu,Mechanical Eng,2021
+STU2024ME0815,Aarav Rao,aarav.rao815@university.edu,Mechanical Eng,2021
+STU2024ME0816,Divya Reddy,divya.reddy816@university.edu,Mechanical Eng,2022
+STU2024ME0817,Harsh Verma,harsh.verma817@university.edu,Mechanical Eng,2024
+STU2024ME0818,Vikram Bhat,vikram.bhat818@university.edu,Mechanical Eng,2023
+STU2024ME0819,Rohan Pandey,rohan.pandey819@university.edu,Mechanical Eng,2023
+STU2024ME0820,Nikhil Verma,nikhil.verma820@university.edu,Mechanical Eng,2022
+STU2024ME0821,Kavya Verma,kavya.verma821@university.edu,Mechanical Eng,2024
+STU2024ME0822,Ishaan Singh,ishaan.singh822@university.edu,Mechanical Eng,2023
+STU2024ME0823,Varun Deshmukh,varun.deshmukh823@university.edu,Mechanical Eng,2021
+STU2024ME0824,Karan Pandey,karan.pandey824@university.edu,Mechanical Eng,2023
+STU2024ME0825,Vikram Deshmukh,vikram.deshmukh825@university.edu,Mechanical Eng,2023
+STU2024ME0826,Riya Iyer,riya.iyer826@university.edu,Mechanical Eng,2022
+STU2024ME0827,Suresh Bhat,suresh.bhat827@university.edu,Mechanical Eng,2021
+STU2024ME0828,Arjun Sharma,arjun.sharma828@university.edu,Mechanical Eng,2023
+STU2024ME0829,Nikhil Joshi,nikhil.joshi829@university.edu,Mechanical Eng,2023
+STU2024ME0830,Kavya Rao,kavya.rao830@university.edu,Mechanical Eng,2024
+STU2024ME0831,Aditi Reddy,aditi.reddy831@university.edu,Mechanical Eng,2023
+STU2024ME0832,Suresh Rao,suresh.rao832@university.edu,Mechanical Eng,2024
+STU2024ME0833,Arjun Deshmukh,arjun.deshmukh833@university.edu,Mechanical Eng,2021
+STU2024ME0834,Kavya Reddy,kavya.reddy834@university.edu,Mechanical Eng,2024
+STU2024ME0835,Meera Verma,meera.verma835@university.edu,Mechanical Eng,2024
+STU2024ME0836,Ananya Rao,ananya.rao836@university.edu,Mechanical Eng,2023
+STU2024ME0837,Pooja Joshi,pooja.joshi837@university.edu,Mechanical Eng,2023
+STU2024ME0838,Sneha Rao,sneha.rao838@university.edu,Mechanical Eng,2021
+STU2024ME0839,Ananya Pandey,ananya.pandey839@university.edu,Mechanical Eng,2021
+STU2024ME0840,Rahul Deshmukh,rahul.deshmukh840@university.edu,Mechanical Eng,2024
+STU2024ME0841,Priya Mishra,priya.mishra841@university.edu,Mechanical Eng,2023
+STU2024ME0842,Neha Deshmukh,neha.deshmukh842@university.edu,Mechanical Eng,2023
+STU2024ME0843,Harsh Patel,harsh.patel843@university.edu,Mechanical Eng,2021
+STU2024ME0844,Nikhil Singh,nikhil.singh844@university.edu,Mechanical Eng,2021
+STU2024ME0845,Harsh Kumar,harsh.kumar845@university.edu,Mechanical Eng,2022
+STU2024ME0846,Vikram Das,vikram.das846@university.edu,Mechanical Eng,2024
+STU2024ME0847,Nikhil Singh,nikhil.singh847@university.edu,Mechanical Eng,2023
+STU2024ME0848,Rahul Sharma,rahul.sharma848@university.edu,Mechanical Eng,2024
+STU2024ME0849,Varun Mishra,varun.mishra849@university.edu,Mechanical Eng,2022
+STU2024ME0850,Priya Reddy,priya.reddy850@university.edu,Mechanical Eng,2021
+STU2024ME0851,Deepika Rao,deepika.rao851@university.edu,Mechanical Eng,2022
+STU2024ME0852,Divya Das,divya.das852@university.edu,Mechanical Eng,2021
+STU2024ME0853,Sneha Gupta,sneha.gupta853@university.edu,Mechanical Eng,2021
+STU2024ME0854,Neha Deshmukh,neha.deshmukh854@university.edu,Mechanical Eng,2022
+STU2024ME0855,Harsh Kumar,harsh.kumar855@university.edu,Mechanical Eng,2021
+STU2024ME0856,Ishaan Verma,ishaan.verma856@university.edu,Mechanical Eng,2022
+STU2024ME0857,Siddharth Joshi,siddharth.joshi857@university.edu,Mechanical Eng,2024
+STU2024ME0858,Nikhil Bhat,nikhil.bhat858@university.edu,Mechanical Eng,2022
+STU2024ME0859,Suresh Nair,suresh.nair859@university.edu,Mechanical Eng,2023
+STU2024ME0860,Gauri Reddy,gauri.reddy860@university.edu,Mechanical Eng,2021
+STU2024ME0861,Aditya Rao,aditya.rao861@university.edu,Mechanical Eng,2023
+STU2024ME0862,Gauri Mishra,gauri.mishra862@university.edu,Mechanical Eng,2024
+STU2024ME0863,Sneha Joshi,sneha.joshi863@university.edu,Mechanical Eng,2022
+STU2024ME0864,Tanvi Pillai,tanvi.pillai864@university.edu,Mechanical Eng,2022
+STU2024ME0865,Manish Mishra,manish.mishra865@university.edu,Mechanical Eng,2021
+STU2024ME0866,Manish Das,manish.das866@university.edu,Mechanical Eng,2024
+STU2024ME0867,Riya Das,riya.das867@university.edu,Mechanical Eng,2023
+STU2024ME0868,Rahul Sharma,rahul.sharma868@university.edu,Mechanical Eng,2023
+STU2024ME0869,Aarav Mehta,aarav.mehta869@university.edu,Mechanical Eng,2021
+STU2024ME0870,Riya Pillai,riya.pillai870@university.edu,Mechanical Eng,2023
+STU2024ME0871,Vikram Nair,vikram.nair871@university.edu,Mechanical Eng,2021
+STU2024ME0872,Vikram Mehta,vikram.mehta872@university.edu,Mechanical Eng,2021
+STU2024ME0873,Vikram Pandey,vikram.pandey873@university.edu,Mechanical Eng,2024
+STU2024ME0874,Deepika Nair,deepika.nair874@university.edu,Mechanical Eng,2022
+STU2024ME0875,Pooja Das,pooja.das875@university.edu,Mechanical Eng,2021
+STU2024ME0876,Arjun Pandey,arjun.pandey876@university.edu,Mechanical Eng,2022
+STU2024ME0877,Neha Choudhury,neha.choudhury877@university.edu,Mechanical Eng,2023
+STU2024ME0878,Aditi Gupta,aditi.gupta878@university.edu,Mechanical Eng,2021
+STU2024ME0879,Vikram Sharma,vikram.sharma879@university.edu,Mechanical Eng,2024
+STU2024ME0880,Suresh Saxena,suresh.saxena880@university.edu,Mechanical Eng,2022
+STU2024ME0881,Pooja Nair,pooja.nair881@university.edu,Mechanical Eng,2023
+STU2024ME0882,Ananya Pandey,ananya.pandey882@university.edu,Mechanical Eng,2022
+STU2024ME0883,Harsh Pillai,harsh.pillai883@university.edu,Mechanical Eng,2023
+STU2024ME0884,Arjun Joshi,arjun.joshi884@university.edu,Mechanical Eng,2021
+STU2024ME0885,Pooja Reddy,pooja.reddy885@university.edu,Mechanical Eng,2022
+STU2024ME0886,Siddharth Choudhury,siddharth.choudhury886@university.edu,Mechanical Eng,2023
+STU2024ME0887,Varun Saxena,varun.saxena887@university.edu,Mechanical Eng,2023
+STU2024ME0888,Meera Nair,meera.nair888@university.edu,Mechanical Eng,2024
+STU2024ME0889,Shreya Singh,shreya.singh889@university.edu,Mechanical Eng,2022
+STU2024ME0890,Aarav Pandey,aarav.pandey890@university.edu,Mechanical Eng,2024
+STU2024ME0891,Bhavna Pandey,bhavna.pandey891@university.edu,Mechanical Eng,2021
+STU2024ME0892,Pooja Saxena,pooja.saxena892@university.edu,Mechanical Eng,2022
+STU2024ME0893,Priya Choudhury,priya.choudhury893@university.edu,Mechanical Eng,2022
+STU2024CE0894,Rohan Rao,rohan.rao894@university.edu,Civil Eng,2023
+STU2024CE0895,Rahul Gupta,rahul.gupta895@university.edu,Civil Eng,2023
+STU2024CE0896,Sneha Iyer,sneha.iyer896@university.edu,Civil Eng,2022
+STU2024CE0897,Arjun Mehta,arjun.mehta897@university.edu,Civil Eng,2021
+STU2024CE0898,Aditi Joshi,aditi.joshi898@university.edu,Civil Eng,2024
+STU2024CE0899,Rahul Bhat,rahul.bhat899@university.edu,Civil Eng,2024
+STU2024CE0900,Arjun Mishra,arjun.mishra900@university.edu,Civil Eng,2024
+STU2024CE0901,Riya Pandey,riya.pandey901@university.edu,Civil Eng,2022
+STU2024CE0902,Rohan Verma,rohan.verma902@university.edu,Civil Eng,2023
+STU2024CE0903,Sneha Patel,sneha.patel903@university.edu,Civil Eng,2021
+STU2024CE0904,Gauri Joshi,gauri.joshi904@university.edu,Civil Eng,2022
+STU2024CE0905,Varun Gupta,varun.gupta905@university.edu,Civil Eng,2023
+STU2024CE0906,Aditya Choudhury,aditya.choudhury906@university.edu,Civil Eng,2021
+STU2024CE0907,Tanvi Nair,tanvi.nair907@university.edu,Civil Eng,2024
+STU2024CE0908,Priya Kumar,priya.kumar908@university.edu,Civil Eng,2022
+STU2024CE0909,Siddharth Mishra,siddharth.mishra909@university.edu,Civil Eng,2023
+STU2024CE0910,Karan Rao,karan.rao910@university.edu,Civil Eng,2021
+STU2024CE0911,Meera Mishra,meera.mishra911@university.edu,Civil Eng,2024
+STU2024CE0912,Arjun Sharma,arjun.sharma912@university.edu,Civil Eng,2024
+STU2024CE0913,Deepika Saxena,deepika.saxena913@university.edu,Civil Eng,2024
+STU2024CE0914,Aarav Iyer,aarav.iyer914@university.edu,Civil Eng,2022
+STU2024CE0915,Rohan Choudhury,rohan.choudhury915@university.edu,Civil Eng,2021
+STU2024CE0916,Divya Choudhury,divya.choudhury916@university.edu,Civil Eng,2024
+STU2024CE0917,Sneha Gupta,sneha.gupta917@university.edu,Civil Eng,2024
+STU2024CE0918,Gauri Joshi,gauri.joshi918@university.edu,Civil Eng,2023
+STU2024CE0919,Aditi Mehta,aditi.mehta919@university.edu,Civil Eng,2024
+STU2024CE0920,Vikram Mehta,vikram.mehta920@university.edu,Civil Eng,2021
+STU2024CE0921,Shreya Patel,shreya.patel921@university.edu,Civil Eng,2021
+STU2024CE0922,Manish Mishra,manish.mishra922@university.edu,Civil Eng,2024
+STU2024CE0923,Meera Rao,meera.rao923@university.edu,Civil Eng,2021
+STU2024CE0924,Deepika Pillai,deepika.pillai924@university.edu,Civil Eng,2024
+STU2024CE0925,Nikhil Choudhury,nikhil.choudhury925@university.edu,Civil Eng,2022
+STU2024CE0926,Rohan Joshi,rohan.joshi926@university.edu,Civil Eng,2021
+STU2024CE0927,Gauri Pillai,gauri.pillai927@university.edu,Civil Eng,2022
+STU2024CE0928,Bhavna Deshmukh,bhavna.deshmukh928@university.edu,Civil Eng,2022
+STU2024CE0929,Rahul Iyer,rahul.iyer929@university.edu,Civil Eng,2022
+STU2024CE0930,Siddharth Gupta,siddharth.gupta930@university.edu,Civil Eng,2024
+STU2024CE0931,Deepika Reddy,deepika.reddy931@university.edu,Civil Eng,2023
+STU2024CE0932,Amit Gupta,amit.gupta932@university.edu,Civil Eng,2021
+STU2024CE0933,Divya Mishra,divya.mishra933@university.edu,Civil Eng,2023
+STU2024CE0934,Kavya Deshmukh,kavya.deshmukh934@university.edu,Civil Eng,2021
+STU2024CE0935,Aditya Pandey,aditya.pandey935@university.edu,Civil Eng,2024
+STU2024CE0936,Ananya Reddy,ananya.reddy936@university.edu,Civil Eng,2021
+STU2024CE0937,Meera Patel,meera.patel937@university.edu,Civil Eng,2023
+STU2024CE0938,Gauri Das,gauri.das938@university.edu,Civil Eng,2024
+STU2024CE0939,Tanvi Choudhury,tanvi.choudhury939@university.edu,Civil Eng,2024
+STU2024CE0940,Sneha Joshi,sneha.joshi940@university.edu,Civil Eng,2022
+STU2024CE0941,Nikhil Joshi,nikhil.joshi941@university.edu,Civil Eng,2021
+STU2024CE0942,Gauri Kumar,gauri.kumar942@university.edu,Civil Eng,2022
+STU2024CE0943,Riya Mehta,riya.mehta943@university.edu,Civil Eng,2023
+STU2024CE0944,Deepika Singh,deepika.singh944@university.edu,Civil Eng,2023
+STU2024CE0945,Riya Patel,riya.patel945@university.edu,Civil Eng,2022
+STU2024CE0946,Amit Deshmukh,amit.deshmukh946@university.edu,Civil Eng,2023
+STU2024CE0947,Siddharth Saxena,siddharth.saxena947@university.edu,Civil Eng,2021
+STU2024CE0948,Neha Bhat,neha.bhat948@university.edu,Civil Eng,2024
+STU2024CE0949,Harsh Das,harsh.das949@university.edu,Civil Eng,2021
+STU2024CE0950,Rahul Gupta,rahul.gupta950@university.edu,Civil Eng,2023
+STU2024CE0951,Divya Reddy,divya.reddy951@university.edu,Civil Eng,2021
+STU2024CE0952,Gauri Iyer,gauri.iyer952@university.edu,Civil Eng,2021
+STU2024CE0953,Ishaan Verma,ishaan.verma953@university.edu,Civil Eng,2023
+STU2024CE0954,Sneha Das,sneha.das954@university.edu,Civil Eng,2024
+STU2024CE0955,Tanvi Patel,tanvi.patel955@university.edu,Civil Eng,2021
+STU2024CE0956,Riya Saxena,riya.saxena956@university.edu,Civil Eng,2024
+STU2024CE0957,Harsh Choudhury,harsh.choudhury957@university.edu,Civil Eng,2023
+STU2024CE0958,Deepika Mehta,deepika.mehta958@university.edu,Civil Eng,2021
+STU2024CE0959,Divya Verma,divya.verma959@university.edu,Civil Eng,2022
+STU2024CE0960,Bhavna Iyer,bhavna.iyer960@university.edu,Civil Eng,2022
+STU2024CE0961,Nikhil Iyer,nikhil.iyer961@university.edu,Civil Eng,2023
+STU2024CE0962,Kavya Sharma,kavya.sharma962@university.edu,Civil Eng,2021
+STU2024CE0963,Ananya Nair,ananya.nair963@university.edu,Civil Eng,2021
+STU2024CE0964,Aditya Singh,aditya.singh964@university.edu,Civil Eng,2023
+STU2024CE0965,Divya Das,divya.das965@university.edu,Civil Eng,2024
+STU2024CE0966,Ishaan Singh,ishaan.singh966@university.edu,Civil Eng,2024
+STU2024CE0967,Aarav Pillai,aarav.pillai967@university.edu,Civil Eng,2023
+STU2024CE0968,Aditya Saxena,aditya.saxena968@university.edu,Civil Eng,2023
+STU2024CE0969,Priya Choudhury,priya.choudhury969@university.edu,Civil Eng,2021
+STU2024CE0970,Sneha Kumar,sneha.kumar970@university.edu,Civil Eng,2023
+STU2024CE0971,Shreya Singh,shreya.singh971@university.edu,Civil Eng,2022
+STU2024CE0972,Bhavna Rao,bhavna.rao972@university.edu,Civil Eng,2021
+STU2024CE0973,Manish Saxena,manish.saxena973@university.edu,Civil Eng,2024
+STU2024CE0974,Nikhil Reddy,nikhil.reddy974@university.edu,Civil Eng,2021
+STU2024CE0975,Karan Mehta,karan.mehta975@university.edu,Civil Eng,2024
+STU2024CE0976,Amit Verma,amit.verma976@university.edu,Civil Eng,2022
+STU2024CE0977,Shreya Rao,shreya.rao977@university.edu,Civil Eng,2024
+STU2024CE0978,Nikhil Das,nikhil.das978@university.edu,Civil Eng,2023
+STU2024CE0979,Deepika Mishra,deepika.mishra979@university.edu,Civil Eng,2022
+STU2024CE0980,Riya Reddy,riya.reddy980@university.edu,Civil Eng,2023
+STU2024CE0981,Varun Nair,varun.nair981@university.edu,Civil Eng,2023
+STU2024CE0982,Vikram Das,vikram.das982@university.edu,Civil Eng,2022
+STU2024CE0983,Karan Bhat,karan.bhat983@university.edu,Civil Eng,2023
+STU2024CE0984,Meera Singh,meera.singh984@university.edu,Civil Eng,2024
+STU2024CE0985,Riya Verma,riya.verma985@university.edu,Civil Eng,2021
+STU2024CE0986,Neha Pillai,neha.pillai986@university.edu,Civil Eng,2021
+STU2024CE0987,Divya Pillai,divya.pillai987@university.edu,Civil Eng,2023
+STU2024CE0988,Harsh Reddy,harsh.reddy988@university.edu,Civil Eng,2022
+STU2024CE0989,Pooja Bhat,pooja.bhat989@university.edu,Civil Eng,2024
+STU2024CE0990,Harsh Nair,harsh.nair990@university.edu,Civil Eng,2021
+STU2024CE0991,Tanvi Nair,tanvi.nair991@university.edu,Civil Eng,2023
+STU2024CE0992,Aarav Deshmukh,aarav.deshmukh992@university.edu,Civil Eng,2023
+STU2024CE0993,Bhavna Nair,bhavna.nair993@university.edu,Civil Eng,2022
+STU2024CE0994,Bhavna Gupta,bhavna.gupta994@university.edu,Civil Eng,2022
+STU2024CE0995,Tanvi Bhat,tanvi.bhat995@university.edu,Civil Eng,2024
+STU2024CE0996,Riya Joshi,riya.joshi996@university.edu,Civil Eng,2021
+STU2024CE0997,Neha Das,neha.das997@university.edu,Civil Eng,2021
+STU2024CE0998,Bhavna Pillai,bhavna.pillai998@university.edu,Civil Eng,2022
+STU2024CE0999,Aarav Rao,aarav.rao999@university.edu,Civil Eng,2022
+STU2024CE1000,Arjun Singh,arjun.singh1000@university.edu,Civil Eng,2022
+STU2024CE1001,Kavya Pandey,kavya.pandey1001@university.edu,Civil Eng,2023
+STU2024CE1002,Deepika Verma,deepika.verma1002@university.edu,Civil Eng,2023
+STU2024CE1003,Ishaan Pillai,ishaan.pillai1003@university.edu,Civil Eng,2023
+STU2024CE1004,Nikhil Reddy,nikhil.reddy1004@university.edu,Civil Eng,2023
+STU2024CE1005,Riya Das,riya.das1005@university.edu,Civil Eng,2022
+STU2024CE1006,Suresh Joshi,suresh.joshi1006@university.edu,Civil Eng,2021
+STU2024CE1007,Amit Reddy,amit.reddy1007@university.edu,Civil Eng,2022
+STU2024CE1008,Meera Pillai,meera.pillai1008@university.edu,Civil Eng,2022
+STU2024CE1009,Shreya Verma,shreya.verma1009@university.edu,Civil Eng,2024
+STU2024CE1010,Sneha Mishra,sneha.mishra1010@university.edu,Civil Eng,2021
+STU2024CE1011,Aditi Patel,aditi.patel1011@university.edu,Civil Eng,2021
+STU2024CE1012,Priya Bhat,priya.bhat1012@university.edu,Civil Eng,2024
+STU2024CE1013,Varun Mehta,varun.mehta1013@university.edu,Civil Eng,2024
+STU2024CE1014,Neha Sharma,neha.sharma1014@university.edu,Civil Eng,2023
+STU2024CE1015,Priya Pillai,priya.pillai1015@university.edu,Civil Eng,2023
+STU2024CE1016,Shreya Reddy,shreya.reddy1016@university.edu,Civil Eng,2024
+STU2024CE1017,Priya Pillai,priya.pillai1017@university.edu,Civil Eng,2021
+STU2024CE1018,Manish Patel,manish.patel1018@university.edu,Civil Eng,2024
+STU2024CE1019,Neha Mehta,neha.mehta1019@university.edu,Civil Eng,2022
+STU2024CE1020,Siddharth Singh,siddharth.singh1020@university.edu,Civil Eng,2022
+STU2024CE1021,Riya Iyer,riya.iyer1021@university.edu,Civil Eng,2024
+STU2024CE1022,Aarav Sharma,aarav.sharma1022@university.edu,Civil Eng,2021
+STU2024CE1023,Deepika Pandey,deepika.pandey1023@university.edu,Civil Eng,2024
+STU2024CE1024,Rohan Pillai,rohan.pillai1024@university.edu,Civil Eng,2021
+STU2024CE1025,Priya Mehta,priya.mehta1025@university.edu,Civil Eng,2022
+STU2024CE1026,Karan Mehta,karan.mehta1026@university.edu,Civil Eng,2024
+STU2024CE1027,Deepika Nair,deepika.nair1027@university.edu,Civil Eng,2021
+STU2024CE1028,Arjun Kumar,arjun.kumar1028@university.edu,Civil Eng,2024
+STU2024CE1029,Priya Verma,priya.verma1029@university.edu,Civil Eng,2021
+STU2024CE1030,Nikhil Nair,nikhil.nair1030@university.edu,Civil Eng,2023
+STU2024CE1031,Ishaan Saxena,ishaan.saxena1031@university.edu,Civil Eng,2023
+STU2024CE1032,Rohan Das,rohan.das1032@university.edu,Civil Eng,2023
+STU2024CE1033,Divya Joshi,divya.joshi1033@university.edu,Civil Eng,2024
+STU2024CE1034,Divya Choudhury,divya.choudhury1034@university.edu,Civil Eng,2024
+STU2024CE1035,Manish Nair,manish.nair1035@university.edu,Civil Eng,2021
+STU2024CE1036,Amit Verma,amit.verma1036@university.edu,Civil Eng,2022
+STU2024CE1037,Suresh Pandey,suresh.pandey1037@university.edu,Civil Eng,2024
+STU2024CE1038,Nikhil Deshmukh,nikhil.deshmukh1038@university.edu,Civil Eng,2022
+STU2024CE1039,Bhavna Das,bhavna.das1039@university.edu,Civil Eng,2021
+STU2024CE1040,Gauri Reddy,gauri.reddy1040@university.edu,Civil Eng,2024
+STU2024CE1041,Priya Bhat,priya.bhat1041@university.edu,Civil Eng,2024
+STU2024CE1042,Sneha Kumar,sneha.kumar1042@university.edu,Civil Eng,2021
+STU2024CE1043,Nikhil Pillai,nikhil.pillai1043@university.edu,Civil Eng,2022
+STU2024CE1044,Nikhil Kumar,nikhil.kumar1044@university.edu,Civil Eng,2021
+STU2024CE1045,Amit Rao,amit.rao1045@university.edu,Civil Eng,2024
+STU2024CE1046,Nikhil Joshi,nikhil.joshi1046@university.edu,Civil Eng,2022
+STU2024CE1047,Varun Saxena,varun.saxena1047@university.edu,Civil Eng,2021
+STU2024CE1048,Suresh Nair,suresh.nair1048@university.edu,Civil Eng,2024
+STU2024CE1049,Harsh Nair,harsh.nair1049@university.edu,Civil Eng,2021
+STU2024CE1050,Pooja Rao,pooja.rao1050@university.edu,Civil Eng,2023

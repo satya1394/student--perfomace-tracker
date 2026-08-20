@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: student_tracker_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword2026
+      POSTGRES_DB: student_performance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./data/sample_data.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Full-Stack Web Application Service
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: student_tracker_app
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword2026@postgres:5432/student_performance_db
+      - SECRET_KEY=prod-production-dash-secret-key-2026
+      - FLASK_ENV=production
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8050
+    ports:
+      - "8050:8050"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../app/ml_models/models:/app/app/ml_models/models
+
+volumes:
+  pgdata:
+    driver: local
