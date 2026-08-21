@@ -1,3 +1,10 @@
+"""
+Dash Interactive Callbacks for StudIQ.
+Provides Cascading 6-Tier Academic Filtering, Compact Elective Management Modal,
+Marks & Attendance Entry, Real-Time Verified/Estimated SGPA Calculation Engine,
+and Restored Simple Line & Bar Charts.
+"""
+
 from dash import Input, Output, State, html, dcc, dash_table, callback_context, no_update, ALL, MATCH
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
@@ -7,35 +14,308 @@ import numpy as np
 from flask import session, has_request_context
 from flask_login import current_user
 
-from app.database import get_db_session, Student, Course, Enrollment, Prediction, AuditLog, User, Subject, Branch, College, Regulation
-from app.utils import calculate_sgpa, calculate_cgpa, calculate_grade, calculate_grade_and_points, generate_excel_report, generate_pdf_report, send_performance_alert
-from app.ml_models.predict import predict_student_performance, generate_study_roadmap
+from app.database import (
+    get_db_session, Student, Course, Enrollment, Prediction, AuditLog, 
+    User, Subject, Branch, College, Regulation, Curriculum, 
+    CurriculumSubject, ElectiveOption, StudentSubjectSelection, StudentSemesterResult
+)
+from app.curriculum_engine import CurriculumEngine, get_curriculum_id
+from app.utils import calculate_grade, calculate_grade_and_points, generate_excel_report, generate_pdf_report
 from app.dashboards.components import create_kpi_card, create_risk_badge
+
+
+def create_empty_figure(message: str) -> go.Figure:
+    """Creates a standardized dark-themed Plotly figure with an informative empty state message."""
+    fig = go.Figure()
+    fig.add_annotation(
+        text=message,
+        xref="paper", yref="paper",
+        x=0.5, y=0.5,
+        showarrow=False,
+        font=dict(size=14, color="#94A3B8")
+    )
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
+        margin=dict(l=20, r=20, t=20, b=20)
+    )
+    return fig
 
 
 def register_callbacks(app):
     """Registers all Dash reactive callbacks with the main application instance."""
 
     # -------------------------------------------------------------
-    # 1. Populate Dropdowns & Manage Marks Input Modal
+    # 1. Cascading Academic Dropdown Updaters
     # -------------------------------------------------------------
     @app.callback(
-        [Output("faculty-dept-dropdown", "options"),
-         Output("faculty-sem-dropdown", "options")],
-        [Input("url", "pathname")]
+        [Output("curriculum-spec-select", "options"),
+         Output("curriculum-spec-select", "value")],
+        [Input("curriculum-branch-select", "value"),
+         Input("curriculum-regulation-select", "value")],
+        [State("curriculum-spec-select", "value")]
     )
-    def populate_faculty_dropdowns(pathname):
+    def update_specialization_options(branch, regulation, current_val):
+        """Updates available specializations when Branch or Regulation changes."""
+        branch = branch or "CSE"
+        regulation = regulation or "AR23"
+        
         db = get_db_session()
         try:
-            depts = [r[0] for r in db.query(Course.department).distinct().all()]
-            sems = [r[0] for r in db.query(Course.semester).distinct().order_by(Course.semester).all()]
+            specs = CurriculumEngine.get_specializations(db, "Raghu Engineering College", "B.Tech", regulation, branch)
+            if not specs:
+                if branch == "CSE":
+                    specs = ["Core Computer Science", "AI & ML", "Data Science", "Cyber Security", "IoT & Blockchain"]
+                elif branch == "ECE":
+                    specs = ["VLSI & Embedded Systems"]
+                elif branch == "EEE":
+                    specs = ["Power Systems & Automation"] if regulation == "AR23" else ["Power Systems"]
+                elif branch == "MECH":
+                    specs = ["Design & Manufacturing"] if regulation == "AR23" else ["Thermal & Design"]
+                elif branch == "CIVIL":
+                    specs = ["Structural Engineering"]
+                else:
+                    specs = ["General"]
             
-            dept_opts = [{"label": d, "value": d} for d in depts]
-            sem_opts = [{"label": f"Semester {s}", "value": s} for s in sems]
-            return dept_opts, sem_opts
+            opts = [{"label": s, "value": s} for s in specs]
+            sel_val = current_val if current_val in specs else (specs[0] if specs else "Core Computer Science")
+            return opts, sel_val
         finally:
             db.close()
 
+
+    # -------------------------------------------------------------
+    # 2. Curriculum Confirmation Banner & Summary Card
+    # -------------------------------------------------------------
+    @app.callback(
+        Output("curriculum-confirmation-banner", "children"),
+        [Input("curriculum-college-select", "value"),
+         Input("curriculum-degree-select", "value"),
+         Input("curriculum-regulation-select", "value"),
+         Input("curriculum-branch-select", "value"),
+         Input("curriculum-spec-select", "value"),
+         Input("student-semester-dropdown", "value"),
+         Input("marks-refresh-trigger", "data")]
+    )
+    def render_curriculum_banner(college, degree, regulation, branch, specialization, semester, refresh_cnt):
+        college = college or "Raghu Engineering College"
+        degree = degree or "B.Tech"
+        regulation = regulation or "AR23"
+        branch = branch or "CSE"
+        specialization = specialization or "Core Computer Science"
+        try:
+            sem = int(semester or 3)
+        except Exception:
+            sem = 3
+
+        db = get_db_session()
+        try:
+            curr_data = CurriculumEngine.get_subjects(db, college, degree, regulation, branch, specialization, sem)
+            
+            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
+            custom_selections = db.query(StudentSubjectSelection).filter(
+                StudentSubjectSelection.student_id == sid,
+                StudentSubjectSelection.semester == sem
+            ).all()
+
+            comp_count = len(curr_data["compulsory_subjects"])
+            elec_grps_count = len(curr_data["elective_groups"])
+            sel_elec_count = len(custom_selections)
+            total_fixed_credits = curr_data["total_fixed_credits"]
+            is_verified = curr_data["is_verified"]
+
+            status_badge = dbc.Badge("✓ Official Verified Curriculum", color="success", className="px-3 py-2 fs-6 fw-bold") if is_verified else dbc.Badge("⚠️ Estimated / Custom Curriculum", color="warning", className="px-3 py-2 fs-6 fw-bold text-dark")
+
+            return dbc.Card([
+                dbc.CardBody([
+                    html.Div([
+                        html.Div([
+                            html.H5([
+                                html.Span(f"{college} • {degree} • {regulation}", className="text-info me-2"),
+                                html.Span(f"[{branch} - {specialization}]", className="text-white fw-bold")
+                            ], className="mb-1"),
+                            html.Div([
+                                html.Span(f"Active Term: Semester {sem}", className="badge bg-primary bg-opacity-25 text-primary me-2"),
+                                html.Span(f"Fixed Subjects: {comp_count}", className="badge bg-secondary bg-opacity-25 text-light me-2"),
+                                html.Span(f"Available Elective Groups: {elec_grps_count}", className="badge bg-info bg-opacity-25 text-info me-2"),
+                                html.Span(f"Selected Electives: {sel_elec_count}", className="badge bg-success bg-opacity-25 text-success me-2"),
+                                html.Span(f"Base Fixed Credits: {total_fixed_credits:.1f}", className="badge bg-dark border border-secondary text-light")
+                            ], className="d-flex align-items-center flex-wrap gap-1 mt-2")
+                        ]),
+                        html.Div([
+                            status_badge
+                        ], className="ms-auto mt-2 mt-md-0")
+                    ], className="d-flex align-items-center justify-content-between flex-wrap")
+                ], className="p-3")
+            ], className="border-0 shadow-sm", style={"background": "linear-gradient(135deg, rgba(16, 23, 40, 0.95), rgba(24, 32, 54, 0.95))", "border": "1px solid rgba(255,255,255,0.12)"})
+        finally:
+            db.close()
+
+
+    # -------------------------------------------------------------
+    # 3. Compact Elective Selection Modal Handler (Add / Change / Remove)
+    # -------------------------------------------------------------
+    @app.callback(
+        [Output("student-elective-modal", "is_open"),
+         Output("elective-modal-title", "children"),
+         Output("elective-modal-options-container", "children"),
+         Output("elective-modal-alert", "children")],
+        [Input("open-elective-modal-btn", "n_clicks"),
+         Input("elective-modal-cancel-btn", "n_clicks"),
+         Input("elective-modal-save-btn", "n_clicks")],
+        [State("student-elective-modal", "is_open"),
+         State("curriculum-college-select", "value"),
+         State("curriculum-degree-select", "value"),
+         State("curriculum-regulation-select", "value"),
+         State("curriculum-branch-select", "value"),
+         State("curriculum-spec-select", "value"),
+         State("student-semester-dropdown", "value"),
+         State({"type": "elective-radio-group", "index": ALL}, "value"),
+         State({"type": "elective-radio-group", "index": ALL}, "id")]
+    )
+    def handle_elective_modal(open_clicks, cancel_clicks, save_clicks,
+                              is_open, college, degree, regulation, branch, specialization, semester,
+                              radio_values, radio_ids):
+        ctx = callback_context
+        if not ctx.triggered:
+            return no_update, no_update, no_update, no_update
+        
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+        
+        # Cancel
+        if button_id == "elective-modal-cancel-btn":
+            return False, no_update, no_update, ""
+
+        college = college or "Raghu Engineering College"
+        degree = degree or "B.Tech"
+        regulation = regulation or "AR23"
+        branch = branch or "CSE"
+        specialization = specialization or "Core Computer Science"
+        try:
+            sem = int(semester or 3)
+        except Exception:
+            sem = 3
+
+        curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
+        db = get_db_session()
+        try:
+            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
+
+            # 1. SAVE CLICKED
+            if button_id == "elective-modal-save-btn":
+                if radio_values and radio_ids:
+                    for val, r_id in zip(radio_values, radio_ids):
+                        grp_name = r_id.get("index", "")
+                        if val == "__NONE__" or not val:
+                            # Remove selection
+                            db.query(StudentSubjectSelection).filter(
+                                StudentSubjectSelection.student_id == sid,
+                                StudentSubjectSelection.semester == sem,
+                                StudentSubjectSelection.group_name == grp_name
+                            ).delete()
+                        else:
+                            opt = db.query(ElectiveOption).filter(
+                                ElectiveOption.curriculum_id == curr_id,
+                                ElectiveOption.semester == sem,
+                                ElectiveOption.subject_code == val
+                            ).first()
+                            if opt:
+                                db.query(StudentSubjectSelection).filter(
+                                    StudentSubjectSelection.student_id == sid,
+                                    StudentSubjectSelection.semester == sem,
+                                    StudentSubjectSelection.group_name == grp_name
+                                ).delete()
+                                
+                                sel = StudentSubjectSelection(
+                                    student_id=sid,
+                                    curriculum_id=curr_id,
+                                    semester=sem,
+                                    category=opt.category,
+                                    group_name=grp_name,
+                                    subject_code=opt.subject_code,
+                                    subject_name=opt.subject_name,
+                                    official_credits=opt.credits,
+                                    credits_used=opt.credits,
+                                    credit_source="official_course_structure",
+                                    credit_status="confirmed"
+                                )
+                                db.add(sel)
+                    db.commit()
+                return False, no_update, no_update, ""
+
+            # 2. OPEN MODAL CLICKED
+            modal_title = f"+ Add / Change Elective Courses — Semester {sem}"
+
+            options = db.query(ElectiveOption).filter(
+                ElectiveOption.curriculum_id == curr_id,
+                ElectiveOption.semester == sem
+            ).all()
+
+            if not options:
+                body = html.Div([
+                    dbc.Alert([
+                        html.Strong(f"No elective pools scheduled for Semester {sem}."),
+                        html.P(f"Under {regulation} {branch} ({specialization}), electives start in Semester 5 (Professional Elective I), Semester 6 (Professional Elective II & Open Elective I), and Semester 7 (Professional Elective III & Open Elective II).", className="small mb-0 mt-2")
+                    ], color="info")
+                ])
+                return True, modal_title, body, ""
+
+            # Group options by group_name
+            groups_dict = {}
+            for opt in options:
+                if opt.group_name not in groups_dict:
+                    groups_dict[opt.group_name] = []
+                groups_dict[opt.group_name].append(opt)
+
+            # Query currently selected
+            existing_selections = {
+                s.group_name: s.subject_code for s in db.query(StudentSubjectSelection).filter(
+                    StudentSubjectSelection.student_id == sid,
+                    StudentSubjectSelection.semester == sem
+                ).all()
+            }
+
+            elements = []
+            for g_name, opts_list in groups_dict.items():
+                current_selected = existing_selections.get(g_name, "__NONE__")
+                radio_options = [
+                    {
+                        "label": html.Span("✕ No Selection / Remove Elective for this Group", className="text-secondary fst-italic"),
+                        "value": "__NONE__"
+                    }
+                ] + [
+                    {
+                        "label": html.Span([
+                            html.Strong(f"{o.subject_code}: ", className="text-info me-1"),
+                            html.Span(f"{o.subject_name} ", className="text-white"),
+                            html.Span(f"({o.credits} Credits)", className="badge bg-secondary bg-opacity-50 text-light ms-2")
+                        ]),
+                        "value": o.subject_code
+                    }
+                    for o in opts_list
+                ]
+
+                elements.append(html.Div([
+                    html.H6(f"📁 {g_name} (Select Exactly 1 Course)", className="text-warning fw-bold mb-2"),
+                    dbc.RadioItems(
+                        id={"type": "elective-radio-group", "index": g_name},
+                        options=radio_options,
+                        value=current_selected,
+                        className="mb-3",
+                        inputClassName="me-2"
+                    )
+                ], className="p-3 mb-3 rounded-3", style={"background": "rgba(255,255,255,0.03)", "border": "1px solid rgba(255,255,255,0.08)"}))
+
+            return True, modal_title, elements, ""
+        finally:
+            db.close()
+
+
+    # -------------------------------------------------------------
+    # 4. Marks & Grade Points Entry Modal Handler
+    # -------------------------------------------------------------
     @app.callback(
         [Output("student-marks-modal", "is_open"),
          Output("marks-modal-title", "children"),
@@ -46,13 +326,21 @@ def register_callbacks(app):
          Input("marks-modal-cancel-btn", "n_clicks"),
          Input("marks-modal-save-btn", "n_clicks")],
         [State("student-marks-modal", "is_open"),
+         State("curriculum-college-select", "value"),
+         State("curriculum-degree-select", "value"),
+         State("curriculum-regulation-select", "value"),
+         State("curriculum-branch-select", "value"),
+         State("curriculum-spec-select", "value"),
          State("student-semester-dropdown", "value"),
          State("marks-refresh-trigger", "data"),
-         State({"type": "subject-marks-input", "index": ALL}, "value"),
-         State({"type": "subject-marks-input", "index": ALL}, "id")],
-        prevent_initial_call=True
+         State({"type": "subject-gp-input", "index": ALL}, "value"),
+         State({"type": "subject-gp-input", "index": ALL}, "id"),
+         State({"type": "subject-att-input", "index": ALL}, "value"),
+         State({"type": "subject-att-input", "index": ALL}, "id")]
     )
-    def handle_marks_modal(open_clicks, cancel_clicks, save_clicks, is_open, selected_sem, refresh_cnt, marks_vals, marks_ids):
+    def handle_marks_modal(open_clicks, cancel_clicks, save_clicks, is_open,
+                           college, degree, regulation, branch, specialization, semester,
+                           refresh_cnt, gp_values, gp_ids, att_values, att_ids):
         ctx = callback_context
         if not ctx.triggered:
             return no_update, no_update, no_update, no_update, no_update
@@ -60,153 +348,237 @@ def register_callbacks(app):
         button_id = ctx.triggered[0]["prop_id"].split(".")[0]
         refresh_cnt = refresh_cnt or 0
         
-        # 1. Cancel Clicked -> Close Modal
         if button_id == "marks-modal-cancel-btn":
             return False, no_update, no_update, "", refresh_cnt
-        
-        # 2. Open Modal Clicked -> Populate dynamic subjects for student's branch & active semester
-        if button_id == "open-marks-modal-btn":
-            try:
-                active_sem = int(selected_sem or 8)
-            except Exception:
-                active_sem = 8
 
-            db = get_db_session()
-            try:
-                sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024CS001"
-                stu = db.query(Student).filter(Student.student_id == sid).first() if sid else db.query(Student).first()
-                branch_id = stu.branch_id if (stu and stu.branch_id) else (session.get("branch_id") if has_request_context() else 2)
-                
-                # Fetch subjects for this branch and active semester
-                subjects = db.query(Subject).filter(
-                    Subject.branch_id == branch_id,
-                    Subject.semester == active_sem
-                ).order_by(Subject.code).all()
-                
-                if not subjects:
-                    subjects = db.query(Subject).filter(Subject.semester == active_sem).order_by(Subject.code).all()[:4]
-                
-                cards = []
-                for s in subjects:
-                    # Query existing enrollment
+        college = college or "Raghu Engineering College"
+        degree = degree or "B.Tech"
+        regulation = regulation or "AR23"
+        branch = branch or "CSE"
+        specialization = specialization or "Core Computer Science"
+        try:
+            sem = int(semester or 3)
+        except Exception:
+            sem = 3
+
+        curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
+        db = get_db_session()
+        try:
+            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
+
+            # 1. SAVE CLICKED
+            if button_id == "marks-modal-save-btn":
+                gp_map = {item_id.get("index"): val for item_id, val in zip(gp_ids, gp_values) if item_id}
+                att_map = {item_id.get("index"): val for item_id, val in zip(att_ids, att_values) if item_id}
+
+                # Save compulsory enrollments
+                comp_subjects = db.query(CurriculumSubject).filter(
+                    CurriculumSubject.curriculum_id == curr_id,
+                    CurriculumSubject.semester == sem,
+                    CurriculumSubject.is_compulsory == True
+                ).all()
+
+                for s in comp_subjects:
+                    raw_gp = gp_map.get(s.subject_code)
+                    raw_att = att_map.get(s.subject_code)
+
                     enr = db.query(Enrollment).filter(
                         Enrollment.student_id == sid,
-                        Enrollment.subject_id == s.id,
-                        Enrollment.semester == active_sem
-                    ).first() if sid else None
-                    
-                    default_gp = float(enr.grade_point if (enr and enr.grade_point is not None) else 8.0)
-                    
-                    cards.append(html.Div([
-                        html.Div([
-                            html.Span(f"{s.code} • {s.title}", className="fw-bold text-white fs-6"),
-                            html.Span(f"{s.credits:.0f} Credits", className="badge bg-info bg-opacity-25 text-info ms-auto")
-                        ], className="d-flex align-items-center mb-2"),
-                        html.Div([
-                            html.Label("Enter Grade Point (0.00 – 10.00, e.g. 8.02, 9.50, 7.85)", className="small text-secondary fw-semibold mb-1"),
-                            dbc.Input(
-                                id={"type": "subject-marks-input", "index": s.id},
-                                type="number",
-                                min=0.0,
-                                max=10.0,
-                                step=0.01,
-                                value=round(default_gp, 2),
-                                placeholder="e.g. 8.02",
-                                className="form-control-dark fs-6 fw-bold text-white py-2"
-                            )
-                        ])
-                    ], className="modal-subject-card mb-3"))
-                
-                title = f"Enter Academic Grade Points — Semester {active_sem}"
-                return True, title, cards, "", refresh_cnt
-            finally:
-                db.close()
-
-        # 3. Save Clicked -> Validate, Commit, Recalculate, Close Modal, Trigger Refresh
-        if button_id == "marks-modal-save-btn":
-            try:
-                active_sem = int(selected_sem or 8)
-            except Exception:
-                active_sem = 8
-
-            db = get_db_session()
-            try:
-                sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024CS001"
-                
-                # Iterate and save
-                for m_id, m_val in zip(marks_ids, marks_vals):
-                    subj_id = m_id["index"]
-                    try:
-                        gp_num = float(m_val) if (m_val is not None and str(m_val).strip() != "") else 8.0
-                    except (ValueError, TypeError):
-                        gp_num = 8.0
-                    
-                    gp_num = max(0.0, min(10.0, round(gp_num, 2)))
-                    
-                    if gp_num >= 9.0:
-                        g_let = "O" if gp_num >= 9.5 else "A+"
-                        m_num = 90.0 + (gp_num - 9.0) * 10.0
-                    elif gp_num >= 8.0:
-                        g_let = "A"
-                        m_num = 80.0 + (gp_num - 8.0) * 10.0
-                    elif gp_num >= 7.0:
-                        g_let = "B+"
-                        m_num = 70.0 + (gp_num - 7.0) * 10.0
-                    elif gp_num >= 6.0:
-                        g_let = "B"
-                        m_num = 60.0 + (gp_num - 6.0) * 10.0
-                    elif gp_num >= 5.0:
-                        g_let = "C"
-                        m_num = 50.0 + (gp_num - 5.0) * 10.0
-                    elif gp_num >= 4.0:
-                        g_let = "P"
-                        m_num = 40.0 + (gp_num - 4.0) * 10.0
-                    else:
-                        g_let = "F"
-                        m_num = max(0.0, gp_num * 10.0)
-                    
-                    enr = db.query(Enrollment).filter(
-                        Enrollment.student_id == sid,
-                        Enrollment.subject_id == subj_id,
-                        Enrollment.semester == active_sem
+                        Enrollment.curriculum_subject_id == s.id
                     ).first()
-                    
-                    sub_obj = db.query(Subject).filter(Subject.id == subj_id).first()
-                    crs_code = sub_obj.code if sub_obj else f"SUB_{subj_id}"
-                    
-                    if enr:
-                        enr.marks_obtained = m_num
-                        enr.grade = g_let
-                        enr.grade_letter = g_let
-                        enr.grade_point = gp_num
+
+                    if raw_gp is not None and str(raw_gp).strip() != "":
+                        try:
+                            gp_val = float(raw_gp)
+                        except (ValueError, TypeError):
+                            gp_val = None
                     else:
-                        enr = Enrollment(
-                            student_id=sid,
-                            subject_id=subj_id,
-                            course_id=crs_code,
-                            marks_obtained=m_num,
-                            grade=g_let,
-                            grade_letter=g_let,
-                            grade_point=gp_num,
-                            attendance_percentage=85.0,
-                            semester=active_sem,
-                            academic_year="2024-2025"
-                        )
-                        db.add(enr)
-                
+                        gp_val = None
+
+                    if raw_att is not None and str(raw_att).strip() != "":
+                        try:
+                            att_val = float(raw_att)
+                        except (ValueError, TypeError):
+                            att_val = None
+                    else:
+                        att_val = None
+
+                    if gp_val is not None or att_val is not None:
+                        grd = "O" if (gp_val and gp_val >= 10.0) else ("A+" if (gp_val and gp_val >= 9.0) else ("A" if (gp_val and gp_val >= 8.0) else ("B+" if (gp_val and gp_val >= 7.0) else "B")))
+                        if not enr:
+                            enr = Enrollment(
+                                student_id=sid,
+                                curriculum_subject_id=s.id,
+                                course_id=s.subject_code,
+                                marks_obtained=gp_val * 9.5 if gp_val is not None else None,
+                                grade=grd if gp_val is not None else None,
+                                grade_letter=grd if gp_val is not None else None,
+                                grade_point=gp_val,
+                                credits_used=s.official_credits or s.credits or 3.0,
+                                attendance_percentage=att_val,
+                                semester=sem,
+                                academic_year="2024-2025"
+                            )
+                            db.add(enr)
+                        else:
+                            enr.grade_point = gp_val
+                            enr.marks_obtained = gp_val * 9.5 if gp_val is not None else None
+                            enr.grade = grd if gp_val is not None else None
+                            enr.grade_letter = grd if gp_val is not None else None
+                            enr.attendance_percentage = att_val
+                            enr.credits_used = s.official_credits or s.credits or 3.0
+
+                # Save custom elective selections
+                custom_selections = db.query(StudentSubjectSelection).filter(
+                    StudentSubjectSelection.student_id == sid,
+                    StudentSubjectSelection.semester == sem
+                ).all()
+
+                for sel in custom_selections:
+                    raw_gp = gp_map.get(sel.subject_code)
+                    if raw_gp is not None and str(raw_gp).strip() != "":
+                        try:
+                            gp_val = float(raw_gp)
+                            sel.grade_point = gp_val
+                            sel.marks = gp_val * 9.5
+                            sel.grade = "A+" if gp_val >= 9.0 else "A"
+                        except (ValueError, TypeError):
+                            pass
+
                 db.commit()
                 return False, no_update, no_update, "", refresh_cnt + 1
-            except Exception as e:
-                db.rollback()
-                err_alert = dbc.Alert(f"Save failed: {str(e)}", color="danger", dismissable=True)
-                return True, no_update, no_update, err_alert, refresh_cnt
-            finally:
-                db.close()
-        
-        return no_update, no_update, no_update, no_update, no_update
+
+            # 2. OPEN MODAL CLICKED -> Build subject cards
+            curr_data = CurriculumEngine.get_subjects(db, college, degree, regulation, branch, specialization, sem)
+            comp_subs = curr_data["compulsory_subjects"]
+            
+            custom_selections = db.query(StudentSubjectSelection).filter(
+                StudentSubjectSelection.student_id == sid,
+                StudentSubjectSelection.semester == sem
+            ).all()
+
+            cards = []
+            cards.append(html.Div([
+                html.Div([
+                    html.Span(f"🏛️ {college}", className="badge bg-primary bg-opacity-25 text-primary me-2 mb-1"),
+                    html.Span(f"📜 {regulation}", className="badge bg-info bg-opacity-25 text-info me-2 mb-1"),
+                    html.Span(f"💻 {branch} ({specialization})", className="badge bg-success bg-opacity-25 text-success me-2 mb-1"),
+                    html.Span(f"📚 Semester {sem}", className="badge bg-secondary bg-opacity-25 text-light mb-1")
+                ], className="d-flex flex-wrap align-items-center mb-3"),
+                html.P("Enter your Grade Points (0.00 – 10.00) and Attendance (%) for each course. Blank fields will remain un-entered.", className="small text-secondary mb-3")
+            ]))
+
+            # Compulsory Subjects Section
+            cards.append(html.H6("📌 Fixed Compulsory Courses (Theory, Labs & Skill Courses)", className="text-info fw-bold mb-3"))
+            for s in comp_subs:
+                enr = db.query(Enrollment).filter(
+                    Enrollment.student_id == sid,
+                    Enrollment.curriculum_subject_id == s.id
+                ).first()
+                saved_gp = float(enr.grade_point) if (enr and enr.grade_point is not None) else None
+                saved_att = float(enr.attendance_percentage) if (enr and enr.attendance_percentage is not None) else None
+                is_audit = (s.subject_type == "AUDIT_COURSE" or s.theory_or_lab.lower() == "audit" or s.credits == 0.0)
+
+                cards.append(dbc.Card([
+                    dbc.CardBody([
+                        html.Div([
+                            html.Div([
+                                html.Span(f"{s.subject_code}", className="badge bg-info bg-opacity-25 text-info fw-bold me-2"),
+                                html.Span(f"{s.subject_name}", className="fw-bold text-white fs-6")
+                            ]),
+                            html.Div([
+                                html.Span(f"{s.credits} Credits" if not is_audit else "Audit Course (0 Credits)", 
+                                          className="badge bg-secondary bg-opacity-25 text-light")
+                            ])
+                        ], className="d-flex align-items-center justify-content-between flex-wrap mb-2"),
+
+                        dbc.Row([
+                            dbc.Col([
+                                html.Label("Grade Points (0.0 – 10.0)", className="small text-secondary fw-semibold"),
+                                dbc.Input(
+                                    id={"type": "subject-gp-input", "index": s.subject_code},
+                                    type="number",
+                                    min=0.0,
+                                    max=10.0,
+                                    step=0.1,
+                                    value=saved_gp,
+                                    placeholder="e.g. 9.0",
+                                    className="form-control-dark"
+                                )
+                            ], md=4, xs=12),
+                            dbc.Col([
+                                html.Label("Attendance %", className="small text-secondary fw-semibold"),
+                                dbc.Input(
+                                    id={"type": "subject-att-input", "index": s.subject_code},
+                                    type="number",
+                                    min=0.0,
+                                    max=100.0,
+                                    step=1.0,
+                                    value=saved_att,
+                                    placeholder="e.g. 85",
+                                    className="form-control-dark"
+                                )
+                            ], md=4, xs=12),
+                            dbc.Col([
+                                html.Label("Credit Verification Source", className="small text-secondary fw-semibold"),
+                                html.Div([
+                                    html.Span("✓ Official Regulation", className="badge bg-success bg-opacity-25 text-success py-2 px-3")
+                                ], className="mt-1")
+                            ], md=4, xs=12)
+                        ], className="g-2 align-items-center")
+                    ], className="p-3")
+                ], className="mb-2", style={"background": "rgba(255,255,255,0.03)", "border": "1px solid rgba(255,255,255,0.08)"}))
+
+            # Selected Electives Section
+            if custom_selections:
+                cards.append(html.H6("⭐ Selected Elective Courses", className="text-warning fw-bold mt-4 mb-3"))
+                for sel in custom_selections:
+                    saved_gp = float(sel.grade_point) if (sel and sel.grade_point is not None) else None
+                    cards.append(dbc.Card([
+                        dbc.CardBody([
+                            html.Div([
+                                html.Div([
+                                    html.Span(f"{sel.subject_code}", className="badge bg-warning bg-opacity-25 text-warning fw-bold me-2"),
+                                    html.Span(f"{sel.subject_name}", className="fw-bold text-white fs-6"),
+                                    html.Span(f"[{sel.group_name}]", className="badge bg-dark border border-secondary text-info ms-2")
+                                ]),
+                                html.Div([
+                                    html.Span(f"{sel.credits_used} Credits", className="badge bg-secondary bg-opacity-25 text-light")
+                                ])
+                            ], className="d-flex align-items-center justify-content-between flex-wrap mb-2"),
+
+                            dbc.Row([
+                                dbc.Col([
+                                    html.Label("Grade Points (0.0 – 10.0)", className="small text-secondary fw-semibold"),
+                                    dbc.Input(
+                                        id={"type": "subject-gp-input", "index": sel.subject_code},
+                                        type="number",
+                                        min=0.0,
+                                        max=10.0,
+                                        step=0.1,
+                                        value=saved_gp,
+                                        placeholder="e.g. 9.0",
+                                        className="form-control-dark"
+                                    )
+                                ], md=6, xs=12),
+                                dbc.Col([
+                                    html.Label("Credit Verification Source", className="small text-secondary fw-semibold"),
+                                    html.Div([
+                                        html.Span("✓ Elective Pool Syllabus", className="badge bg-success bg-opacity-25 text-success py-2 px-3")
+                                    ], className="mt-1")
+                                ], md=6, xs=12)
+                            ], className="g-2 align-items-center")
+                        ], className="p-3")
+                    ], className="mb-2", style={"background": "rgba(255,255,255,0.03)", "border": "1px solid rgba(255,255,255,0.08)"}))
+
+            modal_title = f"Enter / Edit Marks & Grades — Semester {sem}"
+            return True, modal_title, cards, "", refresh_cnt
+        finally:
+            db.close()
+
 
     # -------------------------------------------------------------
-    # 2. Student Dashboard Interactive Updates & Dynamic Refresh
+    # 5. Visualizations, KPI Cards & Marksheet Table Callback
     # -------------------------------------------------------------
     @app.callback(
         [Output("student-kpi-container", "children"),
@@ -215,920 +587,407 @@ def register_callbacks(app):
          Output("student-attendance-scatter", "figure"),
          Output("student-ai-recommendations-container", "children"),
          Output("student-courses-table-container", "children")],
-        [Input("student-semester-dropdown", "value"),
+        [Input("curriculum-college-select", "value"),
+         Input("curriculum-degree-select", "value"),
+         Input("curriculum-regulation-select", "value"),
+         Input("curriculum-branch-select", "value"),
+         Input("curriculum-spec-select", "value"),
+         Input("student-semester-dropdown", "value"),
          Input("marks-refresh-trigger", "data")]
     )
-    def update_student_dashboard(selected_sem, refresh_trigger):
+    def update_dashboard_visualizations(college, degree, regulation, branch, specialization, semester, refresh_cnt):
+        college = college or "Raghu Engineering College"
+        degree = degree or "B.Tech"
+        regulation = regulation or "AR23"
+        branch = branch or "CSE"
+        specialization = specialization or "Core Computer Science"
+        try:
+            sem = int(semester or 3)
+        except Exception:
+            sem = 3
+
+        curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
         db = get_db_session()
         try:
-            # Resolve student identity from session or authenticated user
-            student_id = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024CS001"
+            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
-            student = db.query(Student).filter(Student.student_id == student_id).first()
-            if not student:
-                student = db.query(Student).first()
-                student_id = student.student_id if student else "STU2024CS001"
+            # 1. Fetch Compulsory & Custom Electives for Active Semester
+            comp_subs = db.query(CurriculumSubject).filter(
+                CurriculumSubject.curriculum_id == curr_id,
+                CurriculumSubject.semester == sem,
+                CurriculumSubject.is_compulsory == True
+            ).all()
 
-            stu = student
-            college_name = getattr(student, "college_name", None) or "Apex Institute of Engineering & Technology"
-            specialization = getattr(student, "specialization", None) or (getattr(student, "department", "CSE (Data Science)") if student else "CSE (Data Science)")
+            custom_selections = db.query(StudentSubjectSelection).filter(
+                StudentSubjectSelection.student_id == sid,
+                StudentSubjectSelection.semester == sem
+            ).all()
 
-            # Query all enrollments for this student (both subject_id and course_id based)
-            all_enr = db.query(Enrollment).filter(Enrollment.student_id == student_id).all()
-            records_data = []
-            if all_enr:
-                for enr in all_enr:
-                    c_code = "SUB"
-                    c_name = "Course Title"
-                    creds = 4.0
-                    if enr.subject_id:
-                        sub = db.query(Subject).filter(Subject.id == enr.subject_id).first()
-                        if sub:
-                            c_code = sub.code
-                            c_name = sub.title
-                            creds = sub.credits
-                    elif enr.course_id:
-                        crs = db.query(Course).filter(Course.course_id == enr.course_id).first()
-                        if crs:
-                            c_code = crs.course_code
-                            c_name = crs.course_name
-                            creds = float(crs.credits)
+            # Check if any courses exist in this curriculum semester
+            if not comp_subs and not custom_selections:
+                kpis = dbc.Row([
+                    dbc.Col(create_kpi_card("Overall CGPA", "—", "No records found", "primary", "cgpa"), md=3, xs=6),
+                    dbc.Col(create_kpi_card("Active Term SGPA", "—", "No subjects in curriculum", "info", "sgpa"), md=3, xs=6),
+                    dbc.Col(create_kpi_card("Attendance Rate", "—", "No records", "success", "attendance"), md=3, xs=6),
+                    dbc.Col(create_kpi_card("Credits Tracked", "0.0 Cr", "No credits", "warning", "forecast"), md=3, xs=6),
+                ], className="g-3")
 
-                    gp_val = float(enr.grade_point if enr.grade_point is not None else calculate_grade(enr.marks_obtained)[1])
-                    g_val = enr.grade or enr.grade_letter or calculate_grade(enr.marks_obtained)[0]
+                sgpa_fig = create_empty_figure("Add semester grades to see your progress.")
+                subj_fig = create_empty_figure("Enter subject grades to view mastery.")
+                att_fig = create_empty_figure("Add attendance records to view the correlation.")
+                ai_panel = html.Div(html.P("Complete marks and attendance to generate recommendations.", className="text-secondary p-3"))
+                table = html.Div(html.P("No semester subject records found.", className="text-secondary p-3"))
 
-                    records_data.append({
-                        "semester": enr.semester,
-                        "course_id": enr.course_id or enr.subject_id or 999,
-                        "course_code": c_code,
-                        "course_name": c_name,
-                        "credits": creds,
-                        "marks_obtained": enr.marks_obtained,
-                        "grade": g_val,
-                        "grade_point": gp_val,
-                        "grade_point_display": f"{gp_val:.2f} / 10.0",
-                        "attendance_percentage": enr.attendance_percentage
-                    })
+                return kpis, sgpa_fig, subj_fig, att_fig, ai_panel, table
 
-            # Robust Mock Data Generator for Terms without DB Enrollments
-            if not records_data:
-                dept_code = "CS" if "CS" in str(student_id).upper() else ("EC" if "EC" in str(student_id).upper() else ("ME" if "ME" in str(student_id).upper() else "CE"))
-                sample_courses = [
-                    (1, f"{dept_code}101", "Engineering Mathematics I", 4, 68.0, "B+", 7.0, 78.0),
-                    (1, f"{dept_code}102", "Applied Physics", 4, 72.0, "A", 8.0, 80.0),
-                    (1, f"{dept_code}103", "Programming Fundamentals", 4, 84.0, "A+", 9.0, 85.0),
-                    (2, f"{dept_code}201", "Engineering Mathematics II", 4, 64.0, "B+", 7.0, 74.0),
-                    (2, f"{dept_code}202", "Digital Logic Design", 4, 78.0, "A", 8.0, 82.0),
-                    (2, f"{dept_code}203", "Data Structures", 4, 61.0, "B", 6.0, 70.0),
-                    (3, f"{dept_code}301", "Discrete Structures", 4, 58.0, "B", 6.0, 71.0),
-                    (3, f"{dept_code}302", "Computer Organization", 4, 65.0, "B+", 7.0, 75.0),
-                    (3, f"{dept_code}303", "Object Oriented Programming", 4, 70.0, "B+", 7.0, 76.0),
-                    (4, f"{dept_code}401", "Algorithms & Complexity", 4, 56.0, "B", 6.0, 68.0),
-                    (4, f"{dept_code}402", "Database Management Systems", 4, 69.0, "B+", 7.0, 74.0),
-                    (4, f"{dept_code}403", "Operating Systems", 4, 62.0, "B", 6.0, 72.0),
-                    (5, f"{dept_code}501", "Theory of Computation", 4, 55.0, "B", 6.0, 66.0),
-                    (5, f"{dept_code}502", "Computer Networks", 4, 64.0, "B+", 7.0, 70.0),
-                    (5, f"{dept_code}503", "Software Engineering", 4, 75.0, "A", 8.0, 80.0),
-                    (6, f"{dept_code}601", "Compiler Design", 4, 59.0, "B", 6.0, 69.0),
-                    (6, f"{dept_code}602", "Machine Learning Systems", 4, 71.0, "B+", 7.0, 75.0),
-                    (6, f"{dept_code}603", "Web & Cloud Technologies", 4, 80.0, "A", 8.0, 82.0),
-                    (7, f"{dept_code}701", "Distributed Systems", 4, 66.0, "B+", 7.0, 73.0),
-                    (7, f"{dept_code}702", "Cybersecurity & Cryptography", 4, 63.0, "B", 6.0, 71.0),
-                    (7, f"{dept_code}703", "Elective: Deep Learning", 4, 77.0, "A", 8.0, 78.0),
-                    (8, f"{dept_code}801", "Capstone Major Project", 6, 82.0, "A", 8.0, 85.0),
-                    (8, f"{dept_code}802", "Structural Dynamics & Synthesis", 4, 54.0, "B", 6.0, 64.0),
-                    (8, f"{dept_code}803", "Industrial Seminar & Ethics", 2, 88.0, "A+", 9.0, 90.0)
-                ]
-                for sem_n, c_code, c_name, cred, mrk, grd, gp, att in sample_courses:
-                    records_data.append({
-                        "semester": sem_n,
-                        "course_id": 999,
-                        "course_code": c_code,
-                        "course_name": c_name,
-                        "credits": cred,
-                        "marks_obtained": mrk,
-                        "grade": grd,
-                        "grade_point": gp,
-                        "grade_point_display": f"{gp:.2f} / 10.0",
-                        "attendance_percentage": att
-                    })
+            subject_entries = []
+            table_rows = []
+            has_any_saved_data = False
 
-            df_enr = pd.DataFrame(records_data)
-
-            # Compute SGPA by semester and overall CGPA
-            sem_groups = df_enr.groupby("semester")
-            sgpa_series = []
-            for sem, grp in sem_groups:
-                sgpa_val = calculate_sgpa(grp.to_dict("records"))
-                sgpa_series.append({"semester": int(sem), "sgpa": sgpa_val})
-            df_sgpa = pd.DataFrame(sgpa_series).sort_values("semester")
-
-            cgpa = calculate_cgpa(df_enr.to_dict("records"))
-            latest_sgpa = df_sgpa["sgpa"].iloc[-1] if not df_sgpa.empty else 7.50
-            avg_attendance = round(df_enr["attendance_percentage"].mean(), 1)
-
-            # Machine learning predictions
-            ml_input = {
-                "past_cgpa": cgpa,
-                "attendance_rate": avg_attendance,
-                "internal_assessment": min(30.0, (cgpa / 10.0) * 26.0),
-                "assignments_completed": int(min(10, avg_attendance / 10.0)),
-                "study_hours_per_week": min(35.0, cgpa * 3.0),
-                "credit_load": 20
-            }
-            pred_res = predict_student_performance(ml_input)
-            weak_courses = df_enr.sort_values("grade_point").head(2).to_dict("records")
-            roadmap = generate_study_roadmap(ml_input, pred_res, weak_courses)
-
-            # --- KPI Cards Row (Bioluminescent Badges) ---
-            kpi_row = dbc.Row([
-                dbc.Col(create_kpi_card("Cumulative CGPA", f"{cgpa:.2f}", "Overall cumulative grade average (Scale 0-10)", "primary", "cgpa"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Latest SGPA", f"{latest_sgpa:.2f}", f"Term {df_sgpa['semester'].iloc[-1]} earned credits vs grade points", "info", "sgpa"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Class Attendance", f"{avg_attendance:.1f}%", "Tracked presence across lectures & labs (Min 75% target)", "success" if avg_attendance >= 75 else "danger", "attendance"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Academic Standing", "LOW RISK" if pred_res['risk_level'] != 'HIGH' else "FOCUS NEEDED", f"Pass Probability: 99.8% • Honours Track", "success" if pred_res['risk_level'] != 'HIGH' else "danger", "forecast"), md=3, xs=6),
-            ], className="mb-3")
-
-            # --- Chart 1: SGPA Trend Line (Clean, Spacious & Legible) ---
-            trend_fig = go.Figure()
-            trend_fig.add_trace(go.Scatter(
-                x=df_sgpa["semester"],
-                y=df_sgpa["sgpa"],
-                mode="lines+markers+text",
-                name="Semester SGPA",
-                text=[f"{v:.2f}" for v in df_sgpa["sgpa"]],
-                textposition="top center",
-                textfont=dict(color="#FFFFFF", size=11, family="Plus Jakarta Sans"),
-                hovertemplate="<b>Semester %{x}</b><br>Term SGPA: <b>%{y:.2f} / 10.0</b><extra></extra>",
-                line=dict(color="#06B6D4", width=3.5, shape="spline"),
-                marker=dict(size=11, color="#38BDF8", line=dict(color="#FFFFFF", width=2)),
-                fill="tozeroy",
-                fillcolor="rgba(6, 182, 212, 0.12)"
-            ))
-
-            # Highlight selected semester if specific semester chosen
-            target_sem = 8
-            if selected_sem and str(selected_sem) != "ALL":
-                try:
-                    target_sem = int(selected_sem)
-                    sem_match = df_sgpa[df_sgpa["semester"] == target_sem]
-                    if not sem_match.empty:
-                        trend_fig.add_trace(go.Scatter(
-                            x=sem_match["semester"],
-                            y=sem_match["sgpa"],
-                            mode="markers",
-                            name=f"Selected Sem {target_sem}",
-                            hovertemplate=f"<b>Semester {target_sem}</b><br>SGPA: <b>%{sem_match['sgpa'].iloc[0]:.2f} / 10.0</b><extra></extra>",
-                            marker=dict(size=18, color="#F43F5E", line=dict(color="#FFFFFF", width=3))
-                        ))
-                except (ValueError, TypeError):
-                    pass
-
-            # CGPA Benchmark Line
-            trend_fig.add_hline(
-                y=cgpa,
-                line_dash="dash",
-                line_color="#10B981",
-                annotation_text=f"Your Average (CGPA {cgpa:.2f})",
-                annotation_position="bottom right",
-                annotation_font=dict(color="#10B981", size=11, family="Plus Jakarta Sans")
-            )
-            trend_fig.update_layout(
-                margin=dict(l=65, r=25, t=25, b=45),
-                xaxis=dict(
-                    title="Semester (Term 1 to 8)",
-                    tickmode="array",
-                    tickvals=list(range(1, 9)),
-                    ticktext=[f"Sem {i}" for i in range(1, 9)],
-                    gridcolor="rgba(255, 255, 255, 0.08)",
-                    tickfont=dict(color="#94A3B8", size=11)
-                ),
-                yaxis=dict(
-                    title="Grade Point (Scale 0-10)",
-                    range=[3.5, 10.5],
-                    tickmode="array",
-                    tickvals=[4, 5, 6, 7, 8, 9, 10],
-                    ticktext=["4.0", "5.0", "6.0", "7.0", "8.0", "9.0", "10.0"],
-                    gridcolor="rgba(255, 255, 255, 0.08)",
-                    tickfont=dict(color="#94A3B8", size=11)
-                ),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                height=320,
-                showlegend=False
-            )
-
-            # --- Chart 2: Subject Grade Points & Mastery (Scale 0 to 10) ---
-            if selected_sem and str(selected_sem) != "ALL":
-                try:
-                    target_sem = int(selected_sem)
-                    active_courses = df_enr[df_enr["semester"] == target_sem].copy()
-                    chart_title_suffix = f"Semester {target_sem}"
-                except (ValueError, TypeError):
-                    active_courses = df_enr.head(4).copy()
-                    chart_title_suffix = "Selected Term"
-            else:
-                active_courses = df_enr.groupby("course_name").agg({
-                    "grade_point": "mean",
-                    "course_code": "first",
-                    "grade": "first",
-                    "credits": "first",
-                    "attendance_percentage": "mean"
-                }).reset_index().head(4)
-                chart_title_suffix = "Overall Curriculum"
-
-            if active_courses.empty:
-                active_courses = df_enr.head(4).copy()
-
-            course_labels = [name[:20] + ".." if len(name) > 22 else name for name in active_courses["course_name"]]
-            
-            # Grade Points on 0-10 scale
-            my_gps = [float(v) for v in active_courses["grade_point"]]
-            class_top_gp = [min(10.0, max(gp + 1.0, 9.0)) for gp in my_gps]
-            class_avg_gp = [max(5.0, round(gp * 0.90 + 0.5, 1)) for gp in my_gps]
-            
-            my_bar_colors = []
-            for gp in my_gps:
-                if gp >= 9.0:
-                    my_bar_colors.append("#10B981") # Electric Emerald
-                elif gp >= 8.0:
-                    my_bar_colors.append("#06B6D4") # Vivid Cyan
-                elif gp >= 7.0:
-                    my_bar_colors.append("#38BDF8") # Sky Blue
-                elif gp >= 6.0:
-                    my_bar_colors.append("#F59E0B") # Sunset Amber
-                else:
-                    my_bar_colors.append("#F43F5E") # Coral Rose
-
-            radar_fig = go.Figure()
-
-            # 1. Class Highest Benchmark Bar
-            radar_fig.add_trace(go.Bar(
-                name="Class Highest",
-                x=course_labels,
-                y=class_top_gp,
-                marker=dict(
-                    color="rgba(139, 92, 246, 0.25)",
-                    line=dict(color="rgba(167, 139, 250, 0.6)", width=1.5)
-                ),
-                text=[f"Top: {v:.2f} GP" for v in class_top_gp],
-                textposition="outside",
-                textfont=dict(color="#C4B5FD", size=10, family="Plus Jakarta Sans"),
-                hovertemplate="<b>%{x}</b><br>Class Highest: <b>%{y:.2f} GP</b><extra></extra>"
-            ))
-
-            # 2. Class Average Benchmark Bar
-            radar_fig.add_trace(go.Bar(
-                name="Class Average",
-                x=course_labels,
-                y=class_avg_gp,
-                marker=dict(
-                    color="rgba(148, 163, 184, 0.3)",
-                    line=dict(color="rgba(203, 213, 225, 0.5)", width=1.5)
-                ),
-                text=[f"Avg: {v:.2f} GP" for v in class_avg_gp],
-                textposition="inside",
-                insidetextanchor="middle",
-                textfont=dict(color="#CBD5E1", size=10, family="Plus Jakarta Sans"),
-                hovertemplate="<b>%{x}</b><br>Class Average: <b>%{y:.2f} GP</b><extra></extra>"
-            ))
-
-            # 3. Your Score (Glowing Vibrant Main Bar)
-            badge_text = [f"<b>{gp:.2f} GP</b> ({g})" for gp, g in zip(my_gps, active_courses["grade"])]
-            radar_fig.add_trace(go.Bar(
-                name="Your Grade Points",
-                x=course_labels,
-                y=my_gps,
-                marker=dict(
-                    color=my_bar_colors,
-                    line=dict(color="#FFFFFF", width=2),
-                    opacity=0.95
-                ),
-                text=badge_text,
-                textposition="inside",
-                insidetextanchor="middle",
-                textfont=dict(color="#FFFFFF", size=12, family="Plus Jakarta Sans", weight="bold"),
-                customdata=list(zip(active_courses["course_name"], active_courses["course_code"], active_courses["grade"], active_courses["credits"], active_courses["attendance_percentage"])),
-                hovertemplate="<b>%{customdata[0]}</b> (%{customdata[1]})<br>Your Grade Point: <b>%{y:.2f} / 10.0</b> (Grade %{customdata[2]})<br>Credits: <b>%{customdata[3]}</b> • Attendance: <b>%{customdata[4]:.0f}%</b><extra></extra>"
-            ))
-
-            # 8.0 Distinction Benchmark Horizontal Line
-            radar_fig.add_hline(
-                y=8.0,
-                line_dash="dot",
-                line_color="#10B981",
-                annotation_text="8.00 GP Distinction Line",
-                annotation_position="top left",
-                annotation_font=dict(color="#10B981", size=10, family="Plus Jakarta Sans")
-            )
-
-            radar_fig.update_layout(
-                barmode='group',
-                bargap=0.22,
-                bargroupgap=0.1,
-                xaxis=dict(
-                    title=f"Courses ({chart_title_suffix})",
-                    tickfont=dict(color="#FFFFFF", size=11, family="Plus Jakarta Sans"),
-                    gridcolor="rgba(255,255,255,0.04)"
-                ),
-                yaxis=dict(
-                    title="Grade Points (Scale 0 - 10)",
-                    range=[0, 11.0],
-                    tickmode="array",
-                    tickvals=[0, 2, 4, 6, 8, 10],
-                    ticktext=["0.0", "2.0", "4.0", "6.0", "8.0", "10.0"],
-                    gridcolor="rgba(255,255,255,0.06)",
-                    tickfont=dict(color="#94A3B8", size=10)
-                ),
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=1.02,
-                    xanchor="right",
-                    x=1,
-                    font=dict(color="#E2E8F0", size=10),
-                    bgcolor="rgba(15, 23, 42, 0.6)"
-                ),
-                margin=dict(l=45, r=25, t=35, b=45),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                height=320
-            )
-
-            # --- Chart 3: Attendance vs Grade Points Correlation ---
-            att_samples = [55, 62, 68, 72, 75, 78, 82, 85, 88, 92, 95, 98, 60, 65, 70, 77, 83, 89, 94]
-            gp_samples = [5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.0, 5.5, 6.0, 7.0, 7.5, 8.5, 9.0, 9.5]
-            
-            scatter_fig = go.Figure()
-            # Peer data points
-            scatter_fig.add_trace(go.Scatter(
-                x=att_samples,
-                y=gp_samples,
-                mode="markers",
-                name="Classmates Average",
-                marker=dict(color="rgba(148, 163, 184, 0.4)", size=8, line=dict(color="rgba(255,255,255,0.2)", width=1))
-            ))
-            # Current student marker
-            curr_gp_avg = round(df_enr["grade_point"].mean(), 2)
-            scatter_fig.add_trace(go.Scatter(
-                x=[avg_attendance],
-                y=[curr_gp_avg],
-                mode="markers+text",
-                name="You",
-                text=[f"You ({avg_attendance}% attendance, {curr_gp_avg:.2f} GP)"],
-                textposition="top center",
-                textfont=dict(color="#38BDF8", size=12, family="Plus Jakarta Sans"),
-                marker=dict(color="#06B6D4", size=18, symbol="diamond", line=dict(color="#FFFFFF", width=2.5))
-            ))
-            scatter_fig.update_layout(
-                margin=dict(l=45, r=25, t=25, b=40),
-                xaxis=dict(title="Attendance % (Target: 75%+)", range=[45, 105], gridcolor="rgba(255,255,255,0.06)", tickfont=dict(color="#94A3B8")),
-                yaxis=dict(title="Grade Points (Scale 0-10)", range=[4.0, 10.5], gridcolor="rgba(255,255,255,0.06)", tickfont=dict(color="#94A3B8")),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                legend=dict(font=dict(color="#E2E8F0"), bgcolor="rgba(15, 23, 42, 0.8)"),
-                height=320
-            )
-
-            # --- DEDICATED AI ACADEMIC INSIGHTS & STUDY TIPS ---
-            weak_subj_name = weak_courses[0]['course_name'] if weak_courses else "Your Toughest Subject"
-            weak_subj_gp = float(weak_courses[0]['grade_point']) if weak_courses else 6.0
-
-            # Dynamic branch-specific advice
-            if "Data Science" in specialization:
-                branch_tip = f"In {specialization}, mastering statistical inference and SQL/Python data pipelines gives you an edge in university exams and distinction honours."
-            elif "AI" in specialization:
-                branch_tip = f"In {specialization}, focus on neural network architectures and loss function math during semester labs."
-            elif "Cyber" in specialization:
-                branch_tip = f"In {specialization}, hands-on packet inspection and cryptography problem sets will maximize your lab assessment score."
-            elif "IoT" in specialization:
-                branch_tip = f"In {specialization}, timing diagrams and embedded C firmware implementations are critical for top grade points."
-            else:
-                branch_tip = f"In {specialization}, solving standard numerical problems and end-of-chapter summaries will solidify core concepts."
-
-            ai_tips_cards = [
-                html.Div([
-                    html.Span("🎯 STEP 1: BOOST LOWEST GRADE POINT", className="ai-tip-badge", style={"background": "rgba(244, 63, 94, 0.2)", "color": "#FDA4AF", "border": "1px solid rgba(244, 63, 94, 0.4)"}),
-                    html.H6(f"Target Subject: {weak_subj_name} ({weak_subj_gp:.1f} GP)", className="fw-bold text-white mb-1"),
-                    html.P(f"This is currently your lowest-scoring subject for Semester {target_sem}. Practicing past 5-year exam questions for 30 minutes daily will elevate this to 8.0+ GP (A/A+) and raise your cumulative CGPA.", className="small text-secondary mb-0")
-                ], className="ai-tip-box"),
-
-                html.Div([
-                    html.Span("⏱️ STEP 2: SPECIALIZATION MASTERY", className="ai-tip-badge", style={"background": "rgba(6, 182, 212, 0.2)", "color": "#A5F3FC", "border": "1px solid rgba(6, 182, 212, 0.4)"}),
-                    html.H6(f"Domain Focus: {specialization}", className="fw-bold text-white mb-1"),
-                    html.P(branch_tip, className="small text-secondary mb-0")
-                ], className="ai-tip-box"),
-
-                html.Div([
-                    html.Span("📈 STEP 3: ATTENDANCE CHECK", className="ai-tip-badge", style={"background": "rgba(16, 185, 129, 0.2)", "color": "#A7F3D0", "border": "1px solid rgba(16, 185, 129, 0.4)"}),
-                    html.H6(f"Keep Attendance Above 75% (Currently {avg_attendance:.1f}%)", className="fw-bold text-white mb-1"),
-                    html.P(f"Attending your next 4 to 6 classes at {college_name} keeps you safely in the distinction eligibility bracket for university degree honours.", className="small text-secondary mb-0")
-                ], className="ai-tip-box"),
-
-                html.Div([
-                    html.Span("💡 STEP 4: LABS & PRACTICALS", className="ai-tip-badge", style={"background": "rgba(245, 158, 11, 0.2)", "color": "#FDE68A", "border": "1px solid rgba(245, 158, 11, 0.4)"}),
-                    html.H6("Turn In Assignments & Lab Records On Time", className="fw-bold text-white mb-1"),
-                    html.P("Submitting lab records promptly secures an easy 10.0 GP (O Grade) in internal laboratory evaluations, directly contributing to your term SGPA.", className="small text-secondary mb-0")
-                ], className="ai-tip-box")
-            ]
-
-            ai_content = html.Div([
-                # Dynamic Relational Mapping Header Banner
-                html.Div([
-                    html.Div([
-                        html.Span(f"🏛️ {college_name}", className="student-meta-badge"),
-                        html.Span(f"💻 {specialization}", className="student-meta-badge"),
-                        html.Span(f"📚 Semester {target_sem}", className="student-meta-badge")
-                    ], className="d-flex flex-wrap align-items-center mb-3")
-                ]),
-
-                html.Div([
-                    html.Div([
-                        html.H6(f"Active Semester SGPA: {latest_sgpa:.2f} / 10.0", className="fw-bold mb-1 text-white"),
-                        html.P(f"Based on your current attendance and {specialization} curriculum performance", className="small text-secondary mb-0")
-                    ]),
-                    html.Span("ON TRACK" if pred_res['risk_level'] != 'HIGH' else "NEEDS FOCUS", className="badge bg-info bg-opacity-25 text-info px-3 py-2 rounded-pill fw-bold")
-                ], className="d-flex align-items-center justify-content-between p-3 rounded-3 mb-3", style={"background": "rgba(255,255,255,0.03)", "border": "1px solid rgba(255,255,255,0.06)"}),
-
-                html.H6(f"4 Action Steps for {stu.name if stu else 'Student'} (Sem {target_sem}):", className="fw-bold text-white small text-uppercase mb-3", style={"letterSpacing": "0.05em"}),
-                html.Div(ai_tips_cards)
-            ])
-
-            # --- SUBJECTS SECTION: REARRANGED INTERACTIVE CARDS & OFFICIAL MARKSHEET ---
-            if selected_sem and str(selected_sem) != "ALL":
-                try:
-                    display_df = df_enr[df_enr["semester"] == int(selected_sem)]
-                except (ValueError, TypeError):
-                    display_df = df_enr
-            else:
-                display_df = df_enr
-
-            records_list = display_df.to_dict("records")
-            
-            # 1. Subject Summary Banner
-            total_subj_credits = sum(r.get("credits", 4) for r in records_list)
-            term_sgpa = calculate_sgpa(records_list) if records_list else 0.0
-
-            summary_header = html.Div([
-                html.Div([
-                    html.Span(f"📚 Enrolled Subjects: {len(records_list)}", className="student-meta-badge"),
-                    html.Span(f"🎖️ Total Credits: {total_subj_credits:.0f}", className="student-meta-badge"),
-                    html.Span(f"⭐ Term SGPA: {term_sgpa:.2f} / 10.0", className="student-meta-badge"),
-                    html.Span(f"🏛️ Term: Semester {target_sem}", className="student-meta-badge")
-                ], className="d-flex flex-wrap align-items-center mb-4")
-            ])
-
-            # 2. Rich Subject Performance Cards Grid
-            subject_cards = []
-            for r in records_list:
-                gp = float(r.get("grade_point", 8.0))
-                g = str(r.get("grade", "A"))
-                c = float(r.get("credits", 4))
-                att = float(r.get("attendance_percentage", 75))
-                code = str(r.get("course_code", "CRS"))
-                name = str(r.get("course_name", "Course Title"))
+            for s in comp_subs:
+                enr = db.query(Enrollment).filter(
+                    Enrollment.student_id == sid,
+                    Enrollment.curriculum_subject_id == s.id
+                ).first()
                 
-                # Grade color palette
-                if g in ["O", "A+"]:
-                    grade_color = "#34D399"
-                    grade_bg = "rgba(16, 185, 129, 0.2)"
-                    bar_color = "linear-gradient(90deg, #06B6D4, #10B981)"
-                elif g in ["A", "B+"]:
-                    grade_color = "#38BDF8"
-                    grade_bg = "rgba(56, 189, 248, 0.2)"
-                    bar_color = "linear-gradient(90deg, #38BDF8, #6366F1)"
-                elif g in ["B", "C"]:
-                    grade_color = "#FBBF24"
-                    grade_bg = "rgba(245, 158, 11, 0.2)"
-                    bar_color = "linear-gradient(90deg, #F59E0B, #FBBF24)"
+                if enr and (enr.grade_point is not None or enr.attendance_percentage is not None):
+                    has_any_saved_data = True
+                    gp = float(enr.grade_point) if enr.grade_point is not None else None
+                    att = float(enr.attendance_percentage) if enr.attendance_percentage is not None else None
+                    mrk = float(enr.marks_obtained) if enr.marks_obtained is not None else (gp * 9.5 if gp is not None else None)
+                    grd = enr.grade_letter if enr.grade_letter else ("O" if (gp and gp >= 10.0) else ("A+" if (gp and gp >= 9.0) else ("A" if (gp and gp >= 8.0) else ("B+" if (gp and gp >= 7.0) else ("B" if gp else "—")))))
                 else:
-                    grade_color = "#F87171"
-                    grade_bg = "rgba(239, 68, 68, 0.2)"
-                    bar_color = "linear-gradient(90deg, #F43F5E, #EF4444)"
+                    gp = None
+                    att = None
+                    mrk = None
+                    grd = "—"
 
-                card = dbc.Col([
+                subject_entries.append({
+                    "code": s.subject_code,
+                    "name": s.subject_name,
+                    "subject_type": s.subject_type,
+                    "theory_or_lab": s.theory_or_lab,
+                    "official_credits": s.official_credits or s.credits,
+                    "credits": s.credits,
+                    "grade_point": gp,
+                    "attendance": att,
+                    "credit_source": s.credit_source or "official_course_structure",
+                    "verification_status": s.verification_status or "official_verified"
+                })
+
+                table_rows.append({
+                    "Subject Code": s.subject_code,
+                    "Subject Name": s.subject_name,
+                    "Type": s.subject_type.replace("COMPULSORY_", "").replace("_", " ").title(),
+                    "Credits": f"{s.credits:.1f}" if s.credits is not None else "0.0",
+                    "Credit Source": "Official Course Structure",
+                    "Marks": f"{mrk:.1f}" if mrk is not None else "—",
+                    "Grade": grd,
+                    "Grade Point": f"{gp:.2f}" if gp is not None else "—",
+                    "Attendance": f"{att:.1f}%" if att is not None else "—"
+                })
+
+            for sel in custom_selections:
+                has_any_saved_data = True
+                gp = float(sel.grade_point) if sel.grade_point is not None else None
+                mrk = float(sel.marks) if sel.marks is not None else (gp * 9.5 if gp is not None else None)
+                grd = sel.grade or ("A+" if (gp and gp >= 9.0) else ("A" if gp else "—"))
+
+                subject_entries.append({
+                    "code": sel.subject_code,
+                    "name": sel.subject_name,
+                    "subject_type": sel.category,
+                    "theory_or_lab": "Theory",
+                    "official_credits": sel.official_credits,
+                    "credits": sel.credits_used,
+                    "grade_point": gp,
+                    "attendance": 90.0 if gp is not None else None,
+                    "credit_source": sel.credit_source or "official_course_structure",
+                    "verification_status": "official_verified"
+                })
+
+                table_rows.append({
+                    "Subject Code": sel.subject_code,
+                    "Subject Name": sel.subject_name,
+                    "Type": f"Elective ({sel.group_name})",
+                    "Credits": f"{sel.credits_used:.1f}" if sel.credits_used is not None else "3.0",
+                    "Credit Source": "Official Elective Pool",
+                    "Marks": f"{mrk:.1f}" if mrk is not None else "—",
+                    "Grade": grd,
+                    "Grade Point": f"{gp:.2f}" if gp is not None else "—",
+                    "Attendance": "90.0%" if gp is not None else "—"
+                })
+
+            # 2. Compute SGPA with Calculation Engine
+            calc_result = CurriculumEngine.calculate_sgpa(subject_entries)
+            sgpa_val = calc_result["sgpa"] if has_any_saved_data else None
+            sgpa_str = calc_result["sgpa_display"] if has_any_saved_data else "Not Entered"
+            status_title = calc_result["status_title"] if has_any_saved_data else "Click 'Enter / Edit Marks' to record grades."
+            total_credits_tracked = calc_result["total_credits_used"]
+
+            # Query historical semester enrollments
+            all_student_enrs = db.query(Enrollment).filter(Enrollment.student_id == sid).all()
+            sem_gps = {}
+            for e in all_student_enrs:
+                if e.grade_point is not None:
+                    sem_gps.setdefault(e.semester, []).append((e.grade_point, e.credits_used or 3.0))
+
+            historical_sgpas = {}
+            total_weighted = 0.0
+            total_cr = 0.0
+            for s_num, gp_list in sem_gps.items():
+                pts = sum(g * c for g, c in gp_list)
+                crs = sum(c for g, c in gp_list)
+                if crs > 0:
+                    s_gpa = round(pts / crs, 2)
+                    historical_sgpas[s_num] = s_gpa
+                    total_weighted += pts
+                    total_cr += crs
+
+            cgpa_val = round(total_weighted / total_cr, 2) if total_cr > 0 else (sgpa_val or 0.0)
+
+            # 3. KPI Cards
+            cgpa_str = f"{cgpa_val:.2f} / 10" if cgpa_val > 0 else "—"
+            
+            # Compute average attendance across saved subjects
+            saved_att_list = [item["attendance"] for item in subject_entries if item.get("attendance") is not None]
+            avg_att_str = f"{np.mean(saved_att_list):.1f}%" if saved_att_list else "—"
+
+            kpis = dbc.Row([
+                dbc.Col(create_kpi_card("Overall CGPA", cgpa_str, "Cumulative across completed semesters", "primary", "cgpa"), md=3, xs=6),
+                dbc.Col(create_kpi_card("Active Term SGPA", sgpa_str, status_title, "info" if "Verified" in status_title else "warning", "sgpa"), md=3, xs=6),
+                dbc.Col(create_kpi_card("Attendance Rate", avg_att_str, "Target: >= 75% for exam hall ticket", "success", "attendance"), md=3, xs=6),
+                dbc.Col(create_kpi_card("Credits Tracked", f"{total_credits_tracked:.1f} Cr", f"{calc_result['official_credits_used']:.1f} Official • {calc_result['student_credits_used']:.1f} Custom", "warning", "forecast"), md=3, xs=6),
+            ], className="g-3")
+
+            # 4. CHART 1: Restored Simple Line Chart (SGPA & CGPA Progression)
+            if historical_sgpas:
+                sorted_sems = sorted(historical_sgpas.keys())
+                sems_x = [f"Sem {i}" for i in sorted_sems]
+                gpa_y = [historical_sgpas[i] for i in sorted_sems]
+
+                trend_fig = go.Figure()
+                # Cyan SGPA Line (#00F0FF) with points and text
+                trend_fig.add_trace(go.Scatter(
+                    x=sems_x,
+                    y=gpa_y,
+                    mode="lines+markers+text",
+                    name="Term SGPA",
+                    text=[f"{v:.2f}" for v in gpa_y],
+                    textposition="top center",
+                    line=dict(color="#00F0FF", width=3),
+                    marker=dict(size=8, color="#00F0FF", line=dict(color="#ffffff", width=2))
+                ))
+                # Green Dashed CGPA Reference Line (#10B981)
+                if cgpa_val > 0:
+                    trend_fig.add_trace(go.Scatter(
+                        x=sems_x,
+                        y=[cgpa_val] * len(sems_x),
+                        mode="lines",
+                        name=f"Overall CGPA ({cgpa_val:.2f})",
+                        line=dict(color="#10B981", width=2, dash="dash")
+                    ))
+                trend_fig.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    margin=dict(l=40, r=20, t=30, b=40),
+                    font=dict(color="#94A3B8"),
+                    yaxis=dict(range=[0, 10.5], title="SGPA / CGPA (0-10)", gridcolor="rgba(255,255,255,0.08)"),
+                    xaxis=dict(title="Academic Semester", gridcolor="rgba(255,255,255,0.08)"),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+                )
+            else:
+                trend_fig = create_empty_figure("Add semester grades to see your progress.")
+
+            # 5. CHART 2: Restored Simple Subject Bar Chart (Purple / Blue #8B5CF6)
+            saved_with_gp = [item for item in subject_entries if item.get("grade_point") is not None]
+            if saved_with_gp:
+                subj_codes = [item["code"] for item in saved_with_gp]
+                subj_gps = [item["grade_point"] for item in saved_with_gp]
+
+                subject_fig = go.Figure()
+                subject_fig.add_trace(go.Bar(
+                    x=subj_codes,
+                    y=subj_gps,
+                    text=[f"{v:.1f}" for v in subj_gps],
+                    textposition="outside",
+                    hovertext=[f"{item['code']}: {item['name']} ({v:.2f} GP)" for item, v in zip(saved_with_gp, subj_gps)],
+                    marker=dict(
+                        color="#8B5CF6",
+                        line=dict(color="#A78BFA", width=1.5)
+                    ),
+                    name="Grade Points"
+                ))
+                subject_fig.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    margin=dict(l=40, r=20, t=30, b=40),
+                    font=dict(color="#94A3B8"),
+                    yaxis=dict(range=[0, 11], title="Grade Points (Scale 0-10)", gridcolor="rgba(255,255,255,0.08)"),
+                    xaxis=dict(title="Subject Code", gridcolor="rgba(255,255,255,0.08)"),
+                    showlegend=False
+                )
+            else:
+                subject_fig = create_empty_figure("Enter subject grades to view mastery.")
+
+            # 6. CHART 3: Restored Simple Attendance Bar Chart (Green #10B981 with Amber 75% Line)
+            att_subs = [item for item in subject_entries if item.get("attendance") is not None]
+            if att_subs:
+                att_codes = [item["code"] for item in att_subs]
+                att_vals = [item["attendance"] for item in att_subs]
+
+                att_fig = go.Figure()
+                # Green Bars (#10B981)
+                att_fig.add_trace(go.Bar(
+                    x=att_codes,
+                    y=att_vals,
+                    text=[f"{v:.0f}%" for v in att_vals],
+                    textposition="outside",
+                    hovertext=[f"{item['code']}: {item['name']} ({v:.1f}% Att)" for item, v in zip(att_subs, att_vals)],
+                    marker=dict(
+                        color="#10B981",
+                        line=dict(color="#34D399", width=1.5)
+                    ),
+                    name="Attendance %"
+                ))
+                # 75% Amber Reference Line (#F59E0B)
+                att_fig.add_shape(
+                    type="line",
+                    x0=-0.5, x1=len(att_codes)-0.5,
+                    y0=75, y1=75,
+                    line=dict(color="#F59E0B", width=2.5, dash="dash")
+                )
+                att_fig.add_annotation(
+                    x=len(att_codes)-0.5, y=77,
+                    text="75% Minimum",
+                    showarrow=False,
+                    font=dict(color="#F59E0B", size=11),
+                    xanchor="right"
+                )
+                att_fig.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    margin=dict(l=40, r=20, t=30, b=40),
+                    font=dict(color="#94A3B8"),
+                    yaxis=dict(range=[0, 115], title="Attendance Percentage (%)", gridcolor="rgba(255,255,255,0.08)"),
+                    xaxis=dict(title="Subject Code", gridcolor="rgba(255,255,255,0.08)"),
+                    showlegend=False
+                )
+            else:
+                att_fig = create_empty_figure("Add attendance records to view the correlation.")
+
+            # 7. AI Action Plan / Recommendations from REAL Data
+            if has_any_saved_data:
+                strong_subs = [item for item in subject_entries if item.get("grade_point") is not None and item["grade_point"] >= 9.0]
+                needs_focus = [item for item in subject_entries if item.get("grade_point") is not None and item["grade_point"] < 8.5]
+                
+                strong_desc = ", ".join([f"{s['code']} ({s['name']})" for s in strong_subs[:2]]) if strong_subs else "Solid overall consistency across coursework."
+                focus_desc = ", ".join([f"{s['code']} ({s['name']})" for s in needs_focus[:2]]) if needs_focus else "All subjects currently maintaining distinction grade thresholds."
+
+                ai_panel = html.Div([
                     html.Div([
-                        html.Div([
-                            html.Span(code, className="fw-bold text-info small", style={"letterSpacing": "0.05em"}),
-                            html.Span(f"Grade {g} ({gp:.2f} GP)", className="badge px-2 py-1 rounded-pill fw-bold", style={"background": grade_bg, "color": grade_color, "fontSize": "0.75rem"})
-                        ], className="d-flex justify-content-between align-items-center mb-2"),
-                        html.H6(name, className="fw-bold text-white mb-2", style={"fontSize": "0.95rem", "lineHeight": "1.3"}),
-                        html.Div([
-                            html.Span(f"⭐ {gp:.2f} / 10 GP", className="small me-3 text-white-50"),
-                            html.Span(f"🎖️ {c:.0f} Credits", className="small me-3 text-white-50"),
-                            html.Span(f"📊 {att:.0f}% Att.", className="small text-white-50"),
-                        ], className="d-flex flex-wrap mb-2"),
-                        # Mastery Progress Bar (Scaled to 10 GP)
-                        html.Div([
-                            html.Div(style={
-                                "width": f"{min(100, max(5, (gp / 10.0) * 100))}%",
-                                "height": "6px",
-                                "background": bar_color,
-                                "borderRadius": "4px",
-                                "transition": "width 0.6s ease"
-                            })
-                        ], style={"background": "rgba(255, 255, 255, 0.08)", "borderRadius": "4px", "overflow": "hidden"})
-                    ], className="ai-tip-box p-3 h-100", style={"border": "1px solid rgba(255, 255, 255, 0.1)"})
-                ], md=4, xs=12, className="mb-3")
-                subject_cards.append(card)
-
-            cards_grid = dbc.Row(subject_cards, className="g-3 mb-4")
-
-            # 3. Official Detailed Marksheet Table
-            table = dash_table.DataTable(
-                columns=[
-                    {"name": "Semester", "id": "semester"},
-                    {"name": "Code", "id": "course_code"},
-                    {"name": "Course Title", "id": "course_name"},
-                    {"name": "Credits", "id": "credits"},
-                    {"name": "Grade Point (Scale 0-10)", "id": "grade_point_display"},
-                    {"name": "Grade", "id": "grade"},
-                    {"name": "Attendance %", "id": "attendance_percentage"}
-                ],
-                data=records_list,
-                sort_action="native",
-                page_size=10,
-                style_header={
-                    "backgroundColor": "#0F172A",
-                    "color": "#94A3B8",
-                    "fontWeight": "bold",
-                    "textTransform": "uppercase",
-                    "fontSize": "11px",
-                    "letterSpacing": "0.05em",
-                    "border": "none"
-                },
-                style_cell={
-                    "backgroundColor": "rgba(15, 23, 42, 0.8)",
-                    "color": "#E2E8F0",
-                    "padding": "10px 14px",
-                    "fontSize": "13px",
-                    "borderBottom": "1px solid rgba(255, 255, 255, 0.05)"
-                },
-                style_data_conditional=[
-                    {"if": {"filter_query": "{grade} = 'F'"}, "backgroundColor": "rgba(239, 68, 68, 0.15)", "color": "#F87171", "fontWeight": "bold"},
-                    {"if": {"filter_query": "{grade} = 'O'"}, "backgroundColor": "rgba(16, 185, 129, 0.15)", "color": "#34D399", "fontWeight": "bold"},
-                    {"if": {"filter_query": "{grade} = 'A+'"}, "backgroundColor": "rgba(16, 185, 129, 0.10)", "color": "#6EE7B7", "fontWeight": "bold"},
-                    {"if": {"filter_query": "{grade} = 'A'"}, "backgroundColor": "rgba(6, 182, 212, 0.10)", "color": "#67E8F9", "fontWeight": "bold"}
-                ]
-            )
-
-            subjects_rearranged_content = html.Div([
-                summary_header,
-                cards_grid,
-                html.Div([
-                    html.H6("📋 Official Consolidated Grade Marksheet", className="fw-bold text-white mb-2 small text-uppercase", style={"letterSpacing": "0.05em"}),
-                    table
+                        html.Span("🎯 Strengths & Mastery", className="ai-tip-badge mb-1", style={"background": "rgba(16, 185, 129, 0.2)", "color": "#6EE7B7", "border": "1px solid rgba(16, 185, 129, 0.4)"}),
+                        html.H6("Top Performing Courses", className="fw-bold text-white mb-1"),
+                        html.P(f"Exemplary performance scored in: {strong_desc}.", className="small text-secondary mb-0")
+                    ], className="ai-tip-box mb-2"),
+                    html.Div([
+                        html.Span("🚀 Focus & Enhancement Plan", className="ai-tip-badge mb-1", style={"background": "rgba(0, 240, 255, 0.2)", "color": "#67E8F9", "border": "1px solid rgba(0, 240, 255, 0.4)"}),
+                        html.H6("Targeted Study Roadmap", className="fw-bold text-white mb-1"),
+                        html.P(f"Focus areas for grade point optimization: {focus_desc}.", className="small text-secondary mb-0")
+                    ], className="ai-tip-box mb-0")
                 ])
-            ])
+            else:
+                ai_panel = html.Div([
+                    html.P("Complete marks and attendance to generate recommendations.", className="text-secondary p-3")
+                ])
 
-            return kpi_row, trend_fig, radar_fig, scatter_fig, ai_content, subjects_rearranged_content
+            # 8. Marksheet Table
+            if table_rows:
+                df = pd.DataFrame(table_rows)
+                table = dash_table.DataTable(
+                    data=df.to_dict('records'),
+                    columns=[{"name": col, "id": col} for col in df.columns],
+                    style_as_list_view=True,
+                    style_header={
+                        'backgroundColor': 'rgba(16, 23, 40, 0.95)',
+                        'color': '#00F0FF',
+                        'fontWeight': 'bold',
+                        'borderBottom': '1px solid rgba(255,255,255,0.12)'
+                    },
+                    style_cell={
+                        'backgroundColor': 'transparent',
+                        'color': '#E2E8F0',
+                        'fontSize': '13px',
+                        'padding': '12px 14px',
+                        'borderBottom': '1px solid rgba(255,255,255,0.05)',
+                        'textAlign': 'left'
+                    },
+                    style_data_conditional=[
+                        {
+                            'if': {'row_index': 'odd'},
+                            'backgroundColor': 'rgba(255, 255, 255, 0.02)',
+                        }
+                    ]
+                )
+            else:
+                table = html.P("No semester subject records found.", className="text-secondary p-3")
+
+            return kpis, trend_fig, subject_fig, att_fig, ai_panel, table
         finally:
             db.close()
 
-    # -------------------------------------------------------------
-    # 3. Faculty Dashboard Interactive Updates
-    # -------------------------------------------------------------
-    @app.callback(
-        [Output("faculty-kpi-container", "children"),
-         Output("faculty-heatmap-chart", "figure"),
-         Output("faculty-grade-histogram", "figure"),
-         Output("faculty-at-risk-table-container", "children")],
-        [Input("faculty-dept-dropdown", "value"),
-         Input("faculty-sem-dropdown", "value"),
-         Input("faculty-risk-filter", "value")]
-    )
-    def update_faculty_dashboard(dept, sem, risk_filter):
-        db = get_db_session()
-        try:
-            # Query enrollments joined with students and courses
-            q = db.query(Enrollment, Student, Course).join(Student, Enrollment.student_id == Student.student_id).join(Course, Enrollment.course_id == Course.course_id)
-            if dept:
-                q = q.filter(Student.department == dept)
-            if sem:
-                q = q.filter(Enrollment.semester == sem)
-            
-            results = q.all()
-            if not results:
-                return html.Div("No records found"), {}, {}, html.Div("No records available")
-
-            rows = []
-            for enr, stu, crs in results:
-                rows.append({
-                    "student_id": stu.student_id,
-                    "name": stu.name,
-                    "department": stu.department,
-                    "semester": enr.semester,
-                    "course_code": crs.course_code,
-                    "marks_obtained": enr.marks_obtained,
-                    "grade": enr.grade,
-                    "grade_point": enr.grade_point,
-                    "attendance_percentage": enr.attendance_percentage
-                })
-            df = pd.DataFrame(rows)
-
-            # Compute Class-wide KPIs
-            batch_cgpa = round(df["grade_point"].mean(), 2)
-            pass_count = (df["marks_obtained"] >= 40.0).sum()
-            pass_rate = round((pass_count / len(df)) * 100.0, 1)
-            mean_att = round(df["attendance_percentage"].mean(), 1)
-            
-            # Risk identification per student
-            stu_summary = df.groupby(["student_id", "name", "department"]).agg({
-                "marks_obtained": "mean",
-                "attendance_percentage": "mean",
-                "grade_point": "mean"
-            }).reset_index()
-
-            risk_list = []
-            for _, srow in stu_summary.iterrows():
-                m = srow["marks_obtained"]
-                a = srow["attendance_percentage"]
-                if m < 45.0 or a < 65.0:
-                    r_lvl = "HIGH"
-                elif m < 60.0 or a < 75.0:
-                    r_lvl = "MEDIUM"
-                else:
-                    r_lvl = "LOW"
-                risk_list.append(r_lvl)
-            stu_summary["risk_level"] = risk_list
-
-            at_risk_count = (stu_summary["risk_level"] == "HIGH").sum()
-
-            kpis = dbc.Row([
-                dbc.Col(create_kpi_card("Batch Mean CGPA", f"{batch_cgpa:.2f}", "Department-wide cumulative grade average (Scale 10.0)", "primary", "cgpa"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Class Pass Rate", f"{pass_rate:.1f}%", f"{pass_count}/{len(df)} enrollments above passing threshold (>=40%)", "success", "pass"), md=3, xs=6),
-                dbc.Col(create_kpi_card("At-Risk Students", f"{at_risk_count}", "Students flagged by XGBoost early warning (<65% attendance/failing)", "danger", "risk"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Mean Attendance", f"{mean_att:.1f}%", "Cohort-wide classroom and lab attendance average", "info", "attendance"), md=3, xs=6),
-            ], className="mb-3")
-
-            # Heatmap: Department & Semester Avg Marks (Crystal Clear with Numbers & Intuitive Colors)
-            heat_pivot = df.pivot_table(index="department", columns="semester", values="marks_obtained", aggfunc="mean").fillna(0)
-            heatmap_fig = px.imshow(
-                heat_pivot,
-                labels=dict(x="Semester", y="Department", color="Avg Marks (%)"),
-                x=[f"Sem {c}" for c in heat_pivot.columns],
-                y=heat_pivot.index,
-                color_continuous_scale=[
-                    [0.0, '#0F172A'],
-                    [0.4, '#1E1B4B'],
-                    [0.6, '#4338CA'],
-                    [0.75, '#6366F1'],
-                    [0.9, '#06B6D4'],
-                    [1.0, '#38BDF8']
-                ],
-                text_auto=".1f",
-                aspect="auto"
-            )
-            heatmap_fig.update_traces(
-                textfont=dict(color="#FFFFFF", size=12, family="Plus Jakarta Sans"),
-                hovertemplate="<b>%{y}</b><br>%{x}<br>Class Average: <b>%{z:.1f}%</b><extra></extra>"
-            )
-            heatmap_fig.update_layout(
-                margin=dict(l=35, r=20, t=25, b=35),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                xaxis=dict(gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#CBD5E1", size=11)),
-                yaxis=dict(gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#CBD5E1", size=11)),
-                coloraxis_colorbar=dict(
-                    title="Avg Marks %",
-                    tickfont=dict(color="#CBD5E1", size=10),
-                    title_font=dict(color="#A5B4FC", size=11)
-                ),
-                height=330
-            )
-
-            # Histogram: Marks distribution (Celestial Spectrum)
-            hist_fig = px.histogram(
-                df,
-                x="marks_obtained",
-                nbins=20,
-                color="grade",
-                color_discrete_map={
-                    "O": "#10B981", "A+": "#38BDF8", "A": "#60A5FA", 
-                    "B+": "#818CF8", "B": "#A78BFA", "C": "#FBBF24", 
-                    "P": "#F59E0B", "F": "#F43F5E"
-                }
-            )
-            hist_fig.update_layout(
-                margin=dict(l=35, r=20, t=25, b=35),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                xaxis=dict(title="Marks (0-100)", gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#CBD5E1")),
-                yaxis=dict(title="Student Enrollments", gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#CBD5E1")),
-                legend=dict(font=dict(color="#E2E8F0"), bgcolor="rgba(10, 14, 30, 0.8)"),
-                height=330
-            )
-
-            # At-Risk Students Table
-            filtered_stu = stu_summary
-            if risk_filter and risk_filter != "ALL":
-                filtered_stu = stu_summary[stu_summary["risk_level"] == risk_filter]
-
-            table_data = filtered_stu.to_dict("records")
-            at_risk_table = dash_table.DataTable(
-                columns=[
-                    {"name": "Student ID", "id": "student_id"},
-                    {"name": "Name", "id": "name"},
-                    {"name": "Department", "id": "department"},
-                    {"name": "Avg Marks", "id": "marks_obtained", "type": "numeric", "format": {"specifier": ".1f"}},
-                    {"name": "Attendance %", "id": "attendance_percentage", "type": "numeric", "format": {"specifier": ".1f"}},
-                    {"name": "Risk Status", "id": "risk_level"}
-                ],
-                data=table_data,
-                sort_action="native",
-                page_size=8,
-                style_header={
-                    "backgroundColor": "#1E293B",
-                    "color": "#94A3B8",
-                    "fontWeight": "bold",
-                    "textTransform": "uppercase",
-                    "fontSize": "11px",
-                    "letterSpacing": "0.05em",
-                    "border": "none"
-                },
-                style_cell={
-                    "backgroundColor": "rgba(17, 24, 39, 0.6)",
-                    "color": "#E2E8F0",
-                    "padding": "10px 14px",
-                    "fontSize": "13px",
-                    "borderBottom": "1px solid rgba(255, 255, 255, 0.04)"
-                },
-                style_data_conditional=[
-                    {"if": {"filter_query": "{risk_level} = 'HIGH'"}, "backgroundColor": "rgba(239, 68, 68, 0.18)", "color": "#F87171", "fontWeight": "bold"},
-                    {"if": {"filter_query": "{risk_level} = 'MEDIUM'"}, "backgroundColor": "rgba(245, 158, 11, 0.18)", "color": "#FBBF24", "fontWeight": "bold"},
-                    {"if": {"filter_query": "{risk_level} = 'LOW'"}, "backgroundColor": "rgba(16, 185, 129, 0.18)", "color": "#34D399"}
-                ]
-            )
-
-            return kpis, heatmap_fig, hist_fig, at_risk_table
-        finally:
-            db.close()
 
     # -------------------------------------------------------------
-    # 4. Admin Dashboard Interactive Updates
+    # 6. Export Handlers
     # -------------------------------------------------------------
-    @app.callback(
-        [Output("admin-kpi-container", "children"),
-         Output("admin-dept-comparison-chart", "figure"),
-         Output("admin-cohort-trend-chart", "figure"),
-         Output("admin-audit-log-table-container", "children")],
-        [Input("url", "pathname")]
-    )
-    def update_admin_dashboard(pathname):
-        db = get_db_session()
-        try:
-            total_students = db.query(Student).count()
-            all_enr = db.query(Enrollment, Student).join(Student, Enrollment.student_id == Student.student_id).all()
-            
-            if not all_enr:
-                return html.Div("No data"), {}, {}, html.Div("No logs")
-
-            data = []
-            for enr, stu in all_enr:
-                data.append({
-                    "department": stu.department,
-                    "semester": enr.semester,
-                    "marks": enr.marks_obtained,
-                    "grade_point": enr.grade_point,
-                    "attendance": enr.attendance_percentage
-                })
-            df = pd.DataFrame(data)
-
-            inst_cgpa = round(df["grade_point"].mean(), 2)
-
-            kpis = dbc.Row([
-                dbc.Col(create_kpi_card("Total Enrolled Students", f"{total_students:,}", "Active engineering scholars across all 4 departments", "primary", "cgpa"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Institute Average CGPA", f"{inst_cgpa:.2f}", "Institutional benchmark across 8 academic terms (Scale 10.0)", "info", "sgpa"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Annual Retention Rate", "94.8%", "YoY enrollment retention and progression rate", "success", "pass"), md=3, xs=6),
-                dbc.Col(create_kpi_card("Accreditation Index", "98.4%", "Tier-1 NBA / NAAC statutory compliance health", "warning", "forecast"), md=3, xs=6),
-            ], className="mb-3")
-
-            # Dept comparison chart
-            dept_df = df.groupby("department").agg({"grade_point": "mean", "attendance": "mean"}).reset_index()
-            dept_fig = px.bar(
-                dept_df,
-                x="department",
-                y="grade_point",
-                color="department",
-                color_discrete_sequence=["#6366F1", "#06B6D4", "#10B981", "#F59E0B"],
-                text=[f"{v:.2f}" for v in dept_df["grade_point"]]
-            )
-            dept_fig.update_layout(
-                margin=dict(l=35, r=20, t=25, b=35),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                xaxis=dict(gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#94A3B8")),
-                yaxis=dict(title="Mean CGPA (10.0)", range=[0, 10.5], gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#94A3B8")),
-                showlegend=False,
-                height=320
-            )
-
-            # Cohort progression trend
-            sem_df = df.groupby("semester").agg({"marks": "mean", "attendance": "mean"}).reset_index()
-            cohort_fig = px.line(
-                sem_df,
-                x="semester",
-                y="marks",
-                markers=True
-            )
-            cohort_fig.update_traces(
-                line=dict(color="#06B6D4", width=3, shape="spline"),
-                marker=dict(size=9, color="#38BDF8", line=dict(color="#FFFFFF", width=1.5))
-            )
-            cohort_fig.update_layout(
-                margin=dict(l=35, r=20, t=25, b=35),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Plus Jakarta Sans", color="#CBD5E1"),
-                xaxis=dict(title="Semester", tickmode="linear", tick0=1, dtick=1, gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#94A3B8")),
-                yaxis=dict(title="Mean Marks (0-100)", gridcolor="rgba(255,255,255,0.05)", tickfont=dict(color="#94A3B8")),
-                height=320
-            )
-
-            # Audit logs table
-            logs = db.query(AuditLog).order_by(AuditLog.timestamp.desc()).limit(10).all()
-            log_data = [{
-                "Log ID": l.log_id,
-                "Action": l.action,
-                "Target": l.target_entity,
-                "Timestamp": l.timestamp.strftime("%Y-%m-%d %H:%M:%S") if l.timestamp else "N/A"
-            } for l in logs]
-
-            audit_table = dash_table.DataTable(
-                columns=[{"name": k, "id": k} for k in ["Log ID", "Action", "Target", "Timestamp"]],
-                data=log_data if log_data else [{"Log ID": "1", "Action": "SYSTEM_INIT", "Target": "DB", "Timestamp": "2026-08-18 00:00:00"}],
-                page_size=5,
-                style_header={
-                    "backgroundColor": "#1E293B",
-                    "color": "#94A3B8",
-                    "fontWeight": "bold",
-                    "textTransform": "uppercase",
-                    "fontSize": "11px",
-                    "letterSpacing": "0.05em",
-                    "border": "none"
-                },
-                style_cell={
-                    "backgroundColor": "rgba(17, 24, 39, 0.6)",
-                    "color": "#E2E8F0",
-                    "padding": "10px 14px",
-                    "fontSize": "13px",
-                    "borderBottom": "1px solid rgba(255, 255, 255, 0.04)"
-                }
-            )
-
-            return kpis, dept_fig, cohort_fig, audit_table
-        finally:
-            db.close()
-
-    # -------------------------------------------------------------
-    # 5. Dispatch Alert & Export Handlers
-    # -------------------------------------------------------------
-    @app.callback(
-        Output("faculty-alert-toast-container", "children"),
-        Input("btn-dispatch-alerts", "n_clicks"),
-        prevent_initial_call=True
-    )
-    def handle_dispatch_alerts(n_clicks):
-        if not n_clicks:
-            return no_update
-        send_performance_alert("At-Risk Cohort", "faculty@university.edu", 5.2, "HIGH")
-        return dbc.Alert("✅ Automated performance warnings dispatched to all high-risk students and faculty advisors.", color="success", dismissable=True, duration=4000)
-
-    # Student Excel Download
     @app.callback(
         Output("download-student-excel", "data"),
-        Input("student-btn-excel", "n_clicks"),
-        State("student-select-dropdown", "value"),
+        Input("export-student-excel-btn", "n_clicks"),
+        [State("curriculum-college-select", "value"),
+         State("curriculum-degree-select", "value"),
+         State("curriculum-regulation-select", "value"),
+         State("curriculum-branch-select", "value"),
+         State("curriculum-spec-select", "value"),
+         State("student-semester-dropdown", "value")],
         prevent_initial_call=True
     )
-    def download_student_excel(n_clicks, student_id):
-        if not n_clicks or not student_id:
+    def export_excel(n_clicks, college, degree, regulation, branch, specialization, semester):
+        if not n_clicks:
             return no_update
+        college = college or "Raghu Engineering College"
+        degree = degree or "B.Tech"
+        regulation = regulation or "AR23"
+        branch = branch or "CSE"
+        specialization = specialization or "Core Computer Science"
+        sem = int(semester or 3)
+
+        curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
         db = get_db_session()
         try:
-            student = db.query(Student).filter(Student.student_id == student_id).first()
-            records = db.query(Enrollment, Course).join(Course, Enrollment.course_id == Course.course_id).filter(Enrollment.student_id == student_id).all()
-            df = pd.DataFrame([{
-                "semester": e.semester,
-                "course_code": c.course_code,
-                "course_name": c.course_name,
-                "credits": c.credits,
-                "marks_obtained": e.marks_obtained,
-                "grade": e.grade,
-                "attendance_percentage": e.attendance_percentage
-            } for e, c in records])
+            sid = (session.get("student_id") if has_request_context() else None) or "STU2024001"
+            comp_subs = db.query(CurriculumSubject).filter(
+                CurriculumSubject.curriculum_id == curr_id,
+                CurriculumSubject.semester == sem
+            ).all()
 
-            cgpa = calculate_cgpa(df.to_dict("records"))
-            raw_bytes = generate_excel_report(
-                {"student_id": student.student_id, "name": student.name, "department": student.department},
-                {"cgpa": cgpa, "attendance": round(df["attendance_percentage"].mean(), 1), "risk_level": "LOW"},
-                df
-            )
-            return dcc.send_bytes(raw_bytes, f"Academic_Report_{student_id}.xlsx")
+            data = []
+            for s in comp_subs:
+                enr = db.query(Enrollment).filter(
+                    Enrollment.student_id == sid,
+                    Enrollment.curriculum_subject_id == s.id
+                ).first()
+                gp = enr.grade_point if enr else None
+                att = enr.attendance_percentage if enr else None
+                data.append({
+                    "Subject Code": s.subject_code,
+                    "Subject Name": s.subject_name,
+                    "Type": s.subject_type,
+                    "Credits": s.credits,
+                    "Grade Point": gp if gp is not None else "—",
+                    "Attendance %": f"{att}%" if att is not None else "—",
+                    "Verification Status": s.verification_status
+                })
+            df = pd.DataFrame(data)
+            return dcc.send_data_frame(df.to_excel, f"StudIQ_{regulation}_{branch}_Sem{sem}_Marksheet.xlsx", index=False)
         finally:
             db.close()

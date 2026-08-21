@@ -416,26 +416,30 @@ app = Dash(
     __name__,
     server=server,
     url_base_pathname="/",
+    assets_folder=str(BASE_DIR / "assets"),
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
     suppress_callback_exceptions=True,
-    title="StudIQ | Intelligent Academic Performance Platform"
+    title="StudIQ | Student Academic Intelligence"
 )
 
 app.index_string = '''
 <!DOCTYPE html>
-<html>
+<html lang="en" data-bs-theme="dark">
     <head>
         {%metas%}
         <title>{%title%}</title>
         {%favicon%}
         {%css%}
+        <link rel="stylesheet" href="/assets/styles.css?v=5.0">
+        <link rel="stylesheet" href="/assets/animations.css?v=5.0">
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     </head>
-    <body>
+    <body style="background-color: #070A13 !important; color: #FFFFFF !important;">
         {%app_entry%}
         <footer>
             {%config%}
             {%scripts%}
+            <script src="/assets/animations.js?v=5.0"></script>
             {%renderer%}
         </footer>
     </body>
@@ -446,7 +450,7 @@ app.index_string = '''
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
     html.Div(id="navbar-container"),
-    html.Div(id="page-content")
+    html.Div(id="page-content", children=build_hero_page_layout())
 ])
 
 

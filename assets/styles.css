@@ -1,33 +1,34 @@
 /* ==========================================================================
-   StudIQ - Modern SaaS Aesthetic (BetterStack.com Inspired)
-   Zero-White Universal Matte Dark Architecture
+   StudIQ - Universal Premium Dark Theme (BetterStack & Agenciy Inspired)
+   Palette: Background #070A13 | Cards #101728 | Cyan #22D3EE | Purple #8B5CF6 | Muted #94A3B8
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root, [data-bs-theme="dark"], body {
-  --bs-bg: #0A0E1A;              /* Deep Navy Background */
-  --bs-body-bg: #0A0E1A !important;
+  --bs-bg: #070A13;
+  --bs-body-bg: #070A13 !important;
   --bs-body-color: #FFFFFF !important;
-  --bs-card-bg: #111827 !important;
+  --bs-card-bg: #101728 !important;
   --bs-card-color: #FFFFFF !important;
-  --bs-card-border-color: rgba(255, 255, 255, 0.1) !important;
-  --bs-tertiary-bg: #111827 !important;
-  --bs-secondary-bg: #111827 !important;
-  --bs-dark-bg-subtle: #111827 !important;
+  --bs-card-border-color: rgba(255, 255, 255, 0.12) !important;
+  --bs-tertiary-bg: #101728 !important;
+  --bs-secondary-bg: #101728 !important;
+  --bs-dark-bg-subtle: #101728 !important;
   
-  --bs-card-hover: #1F2937;      /* Hover State Slate */
-  --bs-primary: #00F0FF;         /* Neon Cyan */
-  --bs-secondary: #A855F7;       /* Vibrant Purple */
-  --bs-text: #FFFFFF;            /* Pure White */
-  --bs-text-muted: #9CA3AF;      /* Muted Gray */
-  --bs-border: rgba(255, 255, 255, 0.1);
-  --bs-border-glow: rgba(0, 240, 255, 0.4);
-  --bs-glow: 0 0 24px rgba(0, 240, 255, 0.35);
-  --bs-glow-purple: 0 0 24px rgba(168, 85, 247, 0.35);
+  --bs-card-hover: #162036;
+  --bs-primary: #22D3EE;
+  --bs-secondary: #8B5CF6;
+  --bs-blue: #3B82F6;
+  --bs-text: #FFFFFF;
+  --bs-text-muted: #94A3B8;
+  --bs-border: rgba(255, 255, 255, 0.12);
+  --bs-border-glow: rgba(34, 211, 238, 0.45);
+  --bs-glow: 0 0 24px rgba(34, 211, 238, 0.35);
+  --bs-glow-purple: 0 0 24px rgba(139, 92, 246, 0.35);
   
   --radius-dock: 9999px;
-  --radius-card: 16px;
+  --radius-card: 18px;
   --radius-kpi: 20px;
 }
 
@@ -36,35 +37,23 @@
 }
 
 /* ==========================================================================
-   1. Background & Container (Deep Navy with Subtle Smooth Animation)
+   1. Universal Dark Background & Page Base
    ========================================================================== */
 
 body, html {
   font-family: 'Plus Jakarta Sans', sans-serif !important;
-  background-color: #0A0E1A !important;
-  background: linear-gradient(-45deg, #0A0E1A, #111827, #1E293B, #0A0E1A) !important;
-  background-size: 400% 400% !important;
-  animation: gradientShift 15s ease infinite !important;
+  background-color: #070A13 !important;
+  background: #070A13 !important;
   color: #FFFFFF !important;
   min-height: 100vh;
   margin: 0;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
-}
-
-.animated-gradient {
-  background: linear-gradient(-45deg, #0A0E1A, #111827, #1E293B, #0A0E1A) !important;
-  background-size: 400% 400% !important;
-  animation: gradientShift 15s ease infinite !important;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  overflow-x: hidden;
 }
 
 /* ==========================================================================
-   2. Zero-White Overrides for ALL Cards, Bodies, & Headers
+   2. Zero-White Overrides for ALL Bootstrap Elements & Cards
    ========================================================================== */
 
 .card,
@@ -78,11 +67,14 @@ div.card-header,
 div.card-footer,
 .premium-card,
 .feature-card,
-.dashboard-filter-card {
-  background-color: #111827 !important;
-  background: #111827 !important;
+.dashboard-filter-card,
+.editorial-card,
+.process-card,
+.stat-item-card {
+  background-color: #101728 !important;
+  background: #101728 !important;
   color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: var(--radius-card) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
@@ -96,10 +88,13 @@ div.card-body {
 .card:hover,
 .premium-card:hover,
 .feature-card:hover,
-.dashboard-filter-card:hover {
-  border-color: rgba(0, 240, 255, 0.4) !important;
+.dashboard-filter-card:hover,
+.editorial-card:hover,
+.process-card:hover,
+.stat-item-card:hover {
+  border-color: rgba(34, 211, 238, 0.45) !important;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), var(--bs-glow) !important;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .card-header {
@@ -118,54 +113,33 @@ div.card-body {
 
 .text-secondary,
 .card .text-secondary {
-  color: #9CA3AF !important;
+  color: #94A3B8 !important;
 }
 
 /* ==========================================================================
-   3. Plotly Chart Containers (Pure Dark Glass Background)
-   ========================================================================== */
-
-.js-plotly-plot,
-.plot-container,
-.main-svg,
-.svg-container {
-  background-color: transparent !important;
-  background: transparent !important;
-}
-
-.js-plotly-plot .plotly .main-svg:first-child {
-  background: transparent !important;
-}
-
-.js-plotly-plot .plotly .bg {
-  fill: transparent !important;
-}
-
-/* ==========================================================================
-   4. Floating Navbar Dock (BetterStack Style)
+   3. Floating Navbar Dock
    ========================================================================== */
 
 .celestial-navbar-container {
-  padding: 16px 24px 0 24px;
+  padding: 14px 24px 0 24px;
   position: sticky;
   top: 0;
-  z-index: 100 !important;
-  margin-bottom: 1.8rem;
+  z-index: 1000 !important;
 }
 
 .celestial-dock {
-  background: rgba(17, 24, 39, 0.92) !important;
+  background: rgba(16, 23, 40, 0.85) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: var(--radius-dock) !important;
   padding: 10px 24px !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.15) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 211, 238, 0.15) !important;
   transition: all 0.3s ease !important;
 }
 
 .celestial-dock:hover {
-  border-color: rgba(0, 240, 255, 0.3) !important;
+  border-color: rgba(34, 211, 238, 0.4) !important;
 }
 
 .celestial-brand {
@@ -179,527 +153,338 @@ div.card-body {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00F0FF 0%, #A855F7 100%) !important;
-  display: flex;
+  background: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
-  box-shadow: 0 0 18px rgba(0, 240, 255, 0.6) !important;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.6);
   margin-right: 12px;
 }
 
 .celestial-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #FFFFFF 20%, #00F0FF 60%, #A855F7 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
+  background: linear-gradient(135deg, #FFFFFF 20%, #A5F3FC 60%, #C4B5FD 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
 }
 
 .celestial-nav-link {
-  color: #9CA3AF !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  padding: 6px 16px !important;
-  border-radius: var(--radius-dock) !important;
-  transition: all 0.2s ease !important;
-  margin: 0 3px !important;
-}
-
-.celestial-nav-link:hover, .celestial-nav-link.active {
-  color: #FFFFFF !important;
-  background: rgba(0, 240, 255, 0.15) !important;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
-}
-
-.celestial-role-badge {
-  padding: 5px 14px;
+  color: #94A3B8 !important;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 8px 14px;
   border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.celestial-nav-link:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ==========================================================================
-   5. Filter Bar & Section Cards
+   4. Hero Section & Typography
    ========================================================================== */
 
-.dashboard-filter-card {
-  position: relative !important;
-  z-index: 10 !important;
-  background: rgba(17, 24, 39, 0.9) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: var(--radius-card) !important;
-  padding: 1.4rem 1.6rem !important;
-  margin-bottom: 2.2rem !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.1) !important;
-}
-
-.dashboard-section {
-  position: relative !important;
-  z-index: 1 !important;
-  margin-bottom: 2.2rem !important;
-}
-
-/* ==========================================================================
-   6. BetterStack KPI Cards
-   ========================================================================== */
-
-.kpi-card,
-.kpi-bio-card {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.75)) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: var(--radius-kpi) !important;
-  padding: 24px 28px !important;
-  position: relative;
-  overflow: hidden;
-  min-height: 140px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.kpi-card:hover,
-.kpi-bio-card:hover {
-  transform: translateY(-4px) !important;
-  border-color: #00F0FF !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), var(--bs-glow) !important;
-}
-
-.kpi-bio-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #00F0FF, #A855F7) !important;
-}
-
-.kpi-value,
-.kpi-bio-val {
-  font-size: 38px !important;
-  font-weight: 800 !important;
-  font-family: 'Space Grotesk', sans-serif !important;
-  background: linear-gradient(135deg, #00F0FF 0%, #A855F7 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  margin-bottom: 6px !important;
-  line-height: 1.1 !important;
-}
-
-.kpi-label,
-.kpi-bio-label {
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  color: #9CA3AF !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  margin-bottom: 0.35rem !important;
-}
-
-.kpi-bio-desc {
-  font-size: 0.75rem !important;
-  color: #9CA3AF !important;
-  line-height: 1.35 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  padding-top: 6px !important;
-  margin-top: 6px !important;
-}
-
-.kpi-vector-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+.hero-fullscreen-wrapper {
+  min-height: 86vh;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: rgba(0, 240, 255, 0.1) !important;
-  border: 1px solid rgba(0, 240, 255, 0.3) !important;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.25) !important;
+  position: relative;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Hero Ambient Lighting Blooms */
+.hero-glow-cyan {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.16) 0%, rgba(34, 211, 238, 0) 70%);
+  top: -100px;
+  left: 10%;
+  filter: blur(90px);
+  pointer-events: none;
+  animation: ambientGlow 14s ease-in-out infinite;
+  z-index: 0;
+}
+
+.hero-glow-purple {
+  position: absolute;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.14) 0%, rgba(139, 92, 246, 0) 70%);
+  top: 100px;
+  right: 10%;
+  filter: blur(100px);
+  pointer-events: none;
+  animation: ambientGlowPurple 16s ease-in-out infinite;
+  z-index: 0;
 }
 
 /* ==========================================================================
-   7. Buttons Redesign (BetterStack Gradient & Neon Outlines)
+   5. Buttons & Glowing Actions
    ========================================================================== */
 
-.btn-gradient,
-.btn-celestial,
-#open-marks-modal-btn {
-  background: linear-gradient(135deg, #00F0FF, #A855F7) !important;
+.btn-gradient {
+  background: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%) !important;
+  color: #FFFFFF !important;
   border: none !important;
-  color: #FFFFFF !important;
-  padding: 10px 24px !important;
-  border-radius: 12px !important;
+  border-radius: var(--radius-dock) !important;
   font-weight: 700 !important;
-  font-size: 0.9rem !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3) !important;
-  text-decoration: none !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.btn-gradient:hover,
-.btn-celestial:hover,
-#open-marks-modal-btn:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.55), 0 0 20px rgba(168, 85, 247, 0.4) !important;
-  color: #FFFFFF !important;
-}
-
-.btn-neon,
-.btn-celestial-outline,
-#student-export-excel-btn,
-#student-export-pdf-btn,
-#admin-export-excel-btn,
-#admin-export-pdf-btn,
-#faculty-export-excel-btn,
-#faculty-export-pdf-btn {
-  background: transparent !important;
-  border: 1.5px solid #00F0FF !important;
-  color: #00F0FF !important;
-  padding: 9px 20px !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15) !important;
-  text-decoration: none !important;
-  display: inline-flex !important;
-  align-items: center !important;
-}
-
-.btn-neon:hover,
-.btn-celestial-outline:hover,
-#student-export-excel-btn:hover,
-#student-export-pdf-btn:hover,
-#admin-export-excel-btn:hover,
-#admin-export-pdf-btn:hover,
-#faculty-export-excel-btn:hover,
-#faculty-export-pdf-btn:hover {
-  background: #00F0FF !important;
-  color: #0A0E1A !important;
-  border-color: #00F0FF !important;
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* ==========================================================================
-   8. AI Study Tips & Subject Cards
-   ========================================================================== */
-
-.ai-tip-box {
-  background: rgba(17, 24, 39, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  padding: 16px !important;
-  margin-bottom: 12px !important;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 18px rgba(34, 211, 238, 0.4) !important;
   transition: all 0.25s ease !important;
 }
 
-.ai-tip-box:hover {
-  background: rgba(31, 41, 55, 0.95) !important;
-  border-color: #00F0FF !important;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
-  transform: translateX(4px);
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 211, 238, 0.65), 0 0 20px rgba(139, 92, 246, 0.4) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-neon {
+  background: rgba(34, 211, 238, 0.08) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(34, 211, 238, 0.45) !important;
+  border-radius: var(--radius-dock) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.2) !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-neon:hover {
+  background: rgba(34, 211, 238, 0.22) !important;
+  border-color: #22D3EE !important;
+  box-shadow: 0 0 25px rgba(34, 211, 238, 0.5) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+}
+
+.btn-celestial-outline {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #E2E8F0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: var(--radius-dock) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-celestial-outline:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   6. Dashboard Preview Card & Physics Float
+   ========================================================================== */
+
+.preview-floating-container {
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.preview-glass-card {
+  background: linear-gradient(160deg, #101728 0%, #070A13 100%) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(34, 211, 238, 0.35) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(34, 211, 238, 0.2) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview-chart-svg {
+  width: 100%;
+  height: 125px;
+  overflow: visible;
+}
+
+/* ==========================================================================
+   7. Moving Feature Ticker (Infinite Marquee)
+   ========================================================================== */
+
+.ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: #0A0F1D;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin: 2.5rem 0 3.5rem 0;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 26s linear infinite;
+  will-change: transform;
+}
+
+.ticker-wrap:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 24px;
+  white-space: nowrap;
+}
+
+.ticker-item .ticker-dot {
+  color: #22D3EE;
+  margin: 0 16px;
+  font-size: 1.2rem;
+  text-shadow: 0 0 12px #22D3EE;
+}
+
+/* ==========================================================================
+   8. Editorial Numbered Feature Cards & Process Steps
+   ========================================================================== */
+
+.editorial-card {
+  background: #101728 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 30px 26px !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.editorial-num {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #22D3EE;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.85rem;
+  display: block;
+}
+
+.editorial-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.65rem;
+  line-height: 1.3;
+}
+
+.editorial-desc {
+  font-size: 0.9rem;
+  color: #94A3B8;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.process-card {
+  background: #101728 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 18px !important;
+  padding: 26px 20px !important;
+  transition: all 0.3s ease;
+}
+
+.process-pill {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22D3EE, #8B5CF6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  color: #070A13;
+  font-size: 1.1rem;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+  margin-bottom: 1.2rem;
+}
+
+.stat-item-card {
+  background: #101728 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 18px !important;
+  padding: 26px !important;
+  text-align: center;
+}
+
+.stat-big-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #22D3EE 0%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ai-tip-box {
+  background: #101728 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 14px;
+  padding: 16px 20px;
 }
 
 .ai-tip-badge {
   font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 700;
   padding: 3px 10px;
   border-radius: 9999px;
+  margin-bottom: 8px;
   display: inline-block;
-  margin-bottom: 6px;
-  background: rgba(0, 240, 255, 0.2) !important;
-  color: #00F0FF !important;
-}
-
-.student-meta-badge {
-  background: rgba(17, 24, 39, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 10px !important;
-  padding: 8px 14px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-right: 8px !important;
-  margin-bottom: 8px !important;
-  font-size: 0.8rem !important;
-  color: #9CA3AF !important;
-}
-
-.student-meta-badge strong {
-  color: #FFFFFF !important;
-  margin-left: 6px !important;
-}
-
-/* Helper Callout Box */
-.desc-callout {
-  background: rgba(17, 24, 39, 0.9) !important;
-  border-left: 3px solid #00F0FF !important;
-  border-radius: 0 8px 8px 0 !important;
-  padding: 10px 14px !important;
-  margin-top: 12px !important;
-  font-size: 0.825rem !important;
-  color: #9CA3AF !important;
-  line-height: 1.5 !important;
-}
-
-.desc-callout strong {
-  color: #FFFFFF !important;
 }
 
 /* ==========================================================================
-   9. Form Inputs, Textarea, and Dropdowns
+   9. Form Controls & Modals
    ========================================================================== */
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-select,
-.form-control,
-.form-control-dark {
-  background-color: rgba(17, 24, 39, 0.95) !important;
-  background: rgba(17, 24, 39, 0.95) !important;
+.form-control, .form-select, input.form-control, select.form-select {
+  background-color: #101728 !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #FFFFFF !important;
   border-radius: 10px !important;
-  padding: 10px 14px !important;
-  color: #FFFFFF !important;
-  font-size: 0.9rem !important;
-  transition: all 0.25s ease !important;
 }
 
-input:focus,
-select:focus,
-.form-control:focus,
-.form-control-dark:focus {
-  outline: none !important;
-  border-color: #00F0FF !important;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
-  background-color: #111827 !important;
+.form-control:focus, .form-select:focus {
+  background-color: #162036 !important;
+  border-color: #22D3EE !important;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25) !important;
   color: #FFFFFF !important;
 }
 
-/* Dash Dropdowns */
-.dash-dropdown .Select-control,
-.Select-control {
-  background-color: rgba(17, 24, 39, 0.95) !important;
-  background: rgba(17, 24, 39, 0.95) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: 10px !important;
+.modal-content, .modal-header, .modal-body, .modal-footer {
+  background-color: #101728 !important;
   color: #FFFFFF !important;
-  min-height: 44px !important;
-  height: 44px !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-.dash-dropdown .Select-control:hover,
-.dash-dropdown .Select-control.is-focused,
-.dash-dropdown .Select-control.is-open {
-  border-color: #00F0FF !important;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.3) !important;
-}
-
-.dash-dropdown .Select-placeholder,
-.dash-dropdown .Select-value,
-.dash-dropdown .Select-value-label,
-.Select-placeholder,
-.Select-value,
-.Select-value-label {
-  color: #FFFFFF !important;
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  line-height: 42px !important;
-  padding-left: 14px !important;
-}
-
-.dash-dropdown .Select-menu-outer,
-.Select-menu-outer {
-  background-color: #111827 !important;
-  background: #111827 !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(0, 240, 255, 0.35) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.2) !important;
-  z-index: 99999999 !important;
-  margin-top: 6px !important;
-}
-
-.dash-dropdown .Select-menu,
-.Select-menu {
-  background-color: #111827 !important;
-  background: #111827 !important;
-}
-
-.dash-dropdown .Select-option,
-.Select-option {
-  background-color: #111827 !important;
-  background: #111827 !important;
-  color: #F8FAFC !important;
-  padding: 12px 18px !important;
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-
-.dash-dropdown .Select-option:hover,
-.dash-dropdown .Select-option.is-focused,
-.Select-option:hover,
-.Select-option.is-focused {
-  background-color: #1F2937 !important;
-  background: #1F2937 !important;
-  color: #00F0FF !important;
-  padding-left: 22px !important;
-}
-
-.dash-dropdown .Select-option.is-selected,
-.Select-option.is-selected {
-  background: linear-gradient(90deg, #00F0FF, #A855F7) !important;
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
-}
-
-/* ==========================================================================
-   10. Modal Dialog & Stacking (BetterStack Dark Slate + Neon Glow)
-   ========================================================================== */
-
-.modal-backdrop {
-  z-index: 100000 !important;
-  background-color: rgba(10, 14, 26, 0.88) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-}
-
-.modal {
-  z-index: 100005 !important;
-}
-
-.modal-dialog {
-  z-index: 100010 !important;
-  margin-top: 4.5rem !important;
-}
-
-.modal-content,
-.modal-dark-glass .modal-content {
-  background-color: #111827 !important;
-  background: linear-gradient(160deg, #111827 0%, #0A0E1A 100%) !important;
-  backdrop-filter: blur(28px) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
-  border: 1px solid rgba(0, 240, 255, 0.35) !important;
-  border-radius: 20px !important;
-  padding: 24px !important;
-  color: #FFFFFF !important;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 40px rgba(0, 240, 255, 0.25) !important;
-}
-
-.modal-header,
-.modal-footer {
-  background: transparent !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-.modal-subject-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  padding: 14px 16px !important;
-  margin-bottom: 12px !important;
-  transition: all 0.2s ease !important;
-}
-
-.modal-subject-card:hover {
-  border-color: #00F0FF !important;
-  background: rgba(0, 240, 255, 0.05) !important;
-}
-
-/* ==========================================================================
-   11. Marksheet Data Table Styling
-   ========================================================================== */
-
-.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner th {
-  background-color: #111827 !important;
-  color: #9CA3AF !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner td {
-  background-color: rgba(17, 24, 39, 0.9) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
-  padding: 12px 16px !important;
-}
-
-.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner tr:hover td {
-  background-color: rgba(0, 240, 255, 0.08) !important;
-}
-
-/* ==========================================================================
-   12. Typography & Animation Helpers
-   ========================================================================== */
-
-.gradient-text {
-  background: linear-gradient(135deg, #00F0FF, #A855F7) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  font-weight: 800 !important;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-on-load {
-  animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* ==========================================================================
-   13. Completely Suppress Dash DevTools UI Overlay
-   ========================================================================== */
-
-._dash-devtools,
-#_dash-devtools-root,
-.dash-debug-menu,
-.dash-debug-menu__outer,
-._dash-undo-redo,
-.dash-fe-error__title {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  width: 0 !important;
-  height: 0 !important;
-  position: absolute !important;
-  left: -9999px !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }

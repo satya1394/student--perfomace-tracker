@@ -9,3 +9,5 @@ venv/
 *.pkl 
 *.db-shm 
 *.db-wal 
+rec_parsed_structures.json
+rec_tables_summary.txt

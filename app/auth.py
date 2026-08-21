@@ -7,7 +7,11 @@ from functools import wraps
 from flask import redirect, url_for, flash, session, has_request_context
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.database import get_db_session, User, Student, AuditLog, College, Regulation, Branch
+from app.database import (
+    get_db_session, User, Student, AuditLog, College, Regulation, 
+    Branch, CurriculumSubject, Enrollment
+)
+from app.curriculum_engine import get_curriculum_id
 
 login_manager = LoginManager()
 login_manager.login_view = "/login"
@@ -74,7 +78,6 @@ def authenticate_user(username, password):
             )
             if has_request_context():
                 login_user(auth_user)
-                # Bind student academic context to session
                 if user.student_id:
                     stu = db.query(Student).filter(Student.student_id == user.student_id).first()
                     if stu:
@@ -82,10 +85,21 @@ def authenticate_user(username, password):
                         session['college_id'] = stu.college_id
                         session['regulation_id'] = stu.regulation_id
                         session['branch_id'] = stu.branch_id
-                        session['active_semester'] = stu.current_semester or 8
+                        session['college_name'] = stu.college_name or "Raghu Engineering College"
+                        session['degree'] = stu.degree or "B.Tech"
+                        session['regulation_name'] = stu.regulation_name or "AR23"
+                        session['branch_name'] = stu.branch_name or "CSE"
+                        session['specialization'] = stu.specialization or "Core Computer Science"
+                        session['active_semester'] = stu.current_semester or 3
                         session['student_name'] = stu.name
                         session['student_dept'] = stu.department
-                        session['specialization'] = stu.specialization
+                        session['curriculum_id'] = stu.curriculum_id or get_curriculum_id(
+                            stu.college_name or "Raghu Engineering College",
+                            stu.degree or "B.Tech",
+                            stu.regulation_name or "AR23",
+                            stu.branch_name or "CSE",
+                            stu.specialization or "Core Computer Science"
+                        )
             
             # Record audit log
             log = AuditLog(
@@ -104,23 +118,29 @@ def authenticate_user(username, password):
 
 
 def register_student_user(full_name, roll_number, username, email, department, semester, password, confirm_password,
-                          college_id=None, regulation_id=None, branch_id=None, college_name=None, specialization=None):
+                          college_name="Raghu Engineering College", degree="B.Tech", regulation_name="AR23",
+                          branch_name="CSE", specialization="Core Computer Science", college_id=None, regulation_id=None, branch_id=None):
     """
     Registers a new student user with strict validation and academic session binding:
     1. Validate required fields and password length (>=8 chars).
     2. Validate username contains roll number.
-    3. Save college_id, regulation_id, branch_id to Student table.
+    3. Save exact 6 fields to Student table.
     4. Store academic identifiers into Flask session.
     """
     full_name = str(full_name).strip()
     roll_number = str(roll_number).strip().upper()
     username = str(username).strip()
     email = str(email).strip().lower()
+    college_name = str(college_name).strip() or "Raghu Engineering College"
+    degree = str(degree).strip() or "B.Tech"
+    regulation_name = str(regulation_name).strip() or "AR23"
+    branch_name = str(branch_name).strip() or "CSE"
+    specialization = str(specialization).strip() or "Core Computer Science"
     
     try:
         semester = int(semester)
     except (ValueError, TypeError):
-        semester = 1
+        semester = 3
 
     if not full_name or not roll_number or not username or not email or not password:
         return None, "All fields are required."
@@ -131,69 +151,33 @@ def register_student_user(full_name, roll_number, username, email, department, s
     if password != confirm_password:
         return None, "Passwords do not match."
 
-    # Validate that username contains their roll number
     if roll_number.lower() not in username.lower():
         return None, f"Username must contain your Roll Number '{roll_number}' (e.g. {username}_{roll_number})."
 
     db = get_db_session()
     try:
-        # Check if username or email already exists
         existing_user = db.query(User).filter((User.username == username) | (User.email == email)).first()
         if existing_user:
             return None, "Username or email is already registered. Please sign in."
 
-        # Resolve College, Regulation, and Branch
-        college_obj = None
-        if college_id:
-            try:
-                college_obj = db.query(College).filter(College.id == int(college_id)).first()
-            except Exception:
-                pass
-        if not college_obj and college_name:
-            college_obj = db.query(College).filter(College.name.like(f"%{college_name}%")).first()
-        if not college_obj:
-            college_obj = db.query(College).first()
+        curr_id = get_curriculum_id(college_name, degree, regulation_name, branch_name, specialization)
 
-        regulation_obj = None
-        if regulation_id:
-            try:
-                regulation_obj = db.query(Regulation).filter(Regulation.id == int(regulation_id)).first()
-            except Exception:
-                pass
-        if not regulation_obj:
-            regulation_obj = db.query(Regulation).first()
-
-        branch_obj = None
-        if branch_id:
-            try:
-                branch_obj = db.query(Branch).filter(Branch.id == int(branch_id)).first()
-            except Exception:
-                pass
-        if not branch_obj and specialization:
-            branch_obj = db.query(Branch).filter(Branch.specialization.like(f"%{specialization}%")).first()
-        if not branch_obj:
-            branch_obj = db.query(Branch).first()
-
-        resolved_college_id = college_obj.id if college_obj else None
-        resolved_college_name = college_obj.name if college_obj else (college_name or "Apex Institute of Engineering & Technology")
-        resolved_regulation_id = regulation_obj.id if regulation_obj else None
-        resolved_branch_id = branch_obj.id if branch_obj else None
-        resolved_specialization = branch_obj.specialization if branch_obj else (specialization or "CSE (Data Science)")
-        resolved_dept = branch_obj.name if branch_obj else (department or "Computer Science")
-
-        # Create or fetch Student profile
         existing_student = db.query(Student).filter(Student.student_id == roll_number).first()
         if not existing_student:
             student_obj = Student(
                 student_id=roll_number,
                 name=full_name,
                 email=email,
-                department=resolved_dept,
-                college_id=resolved_college_id,
-                regulation_id=resolved_regulation_id,
-                branch_id=resolved_branch_id,
-                college_name=resolved_college_name,
-                specialization=resolved_specialization,
+                department=f"{branch_name} ({specialization})",
+                college_id=college_id,
+                regulation_id=regulation_id,
+                branch_id=branch_id,
+                curriculum_id=curr_id,
+                college_name=college_name,
+                degree=degree,
+                regulation_name=regulation_name,
+                branch_name=branch_name,
+                specialization=specialization,
                 current_semester=semester,
                 enrollment_year=2024
             )
@@ -203,15 +187,15 @@ def register_student_user(full_name, roll_number, username, email, department, s
             student_obj = existing_student
             student_obj.name = full_name
             student_obj.email = email
-            student_obj.college_id = resolved_college_id
-            student_obj.regulation_id = resolved_regulation_id
-            student_obj.branch_id = resolved_branch_id
-            student_obj.college_name = resolved_college_name
-            student_obj.specialization = resolved_specialization
+            student_obj.curriculum_id = curr_id
+            student_obj.college_name = college_name
+            student_obj.degree = degree
+            student_obj.regulation_name = regulation_name
+            student_obj.branch_name = branch_name
+            student_obj.specialization = specialization
             student_obj.current_semester = semester
             db.flush()
 
-        # Create User Auth entity
         pwd_hash = generate_password_hash(password, method="pbkdf2:sha256")
         user = User(
             username=username,
@@ -233,15 +217,16 @@ def register_student_user(full_name, roll_number, username, email, department, s
         )
         if has_request_context():
             login_user(auth_user)
-            # Store in Flask session
             session['student_id'] = student_obj.student_id
-            session['college_id'] = student_obj.college_id
-            session['regulation_id'] = student_obj.regulation_id
-            session['branch_id'] = student_obj.branch_id
+            session['college_name'] = student_obj.college_name
+            session['degree'] = student_obj.degree
+            session['regulation_name'] = student_obj.regulation_name
+            session['branch_name'] = student_obj.branch_name
+            session['specialization'] = student_obj.specialization
             session['active_semester'] = student_obj.current_semester
             session['student_name'] = student_obj.name
             session['student_dept'] = student_obj.department
-            session['specialization'] = student_obj.specialization
+            session['curriculum_id'] = student_obj.curriculum_id
 
         return user, None
     except Exception as e:
@@ -276,13 +261,13 @@ def create_user(username, email, password, role="STUDENT", student_id=None):
 
 
 def login_demo_user():
-    """Authenticates the demonstration student account and initializes demo session flags."""
+    """Authenticates the demonstration student account (Rahul Kumar - AR23 CSE Sem 3)."""
     db = get_db_session()
     try:
-        user = db.query(User).filter(User.username == "demo_user").first()
+        user = db.query(User).filter(User.username.in_(["demo_user", "rahulkumar", "student_demo"])).first()
         if not user:
             seed_default_users()
-            user = db.query(User).filter(User.username == "demo_user").first()
+            user = db.query(User).filter(User.username.in_(["demo_user", "rahulkumar", "student_demo"])).first()
         
         if user:
             auth_user = AuthenticatedUser(
@@ -297,13 +282,15 @@ def login_demo_user():
                 stu = db.query(Student).filter(Student.student_id == user.student_id).first()
                 if stu:
                     session['student_id'] = stu.student_id
-                    session['college_id'] = stu.college_id
-                    session['regulation_id'] = stu.regulation_id
-                    session['branch_id'] = stu.branch_id
+                    session['college_name'] = stu.college_name or "Raghu Engineering College"
+                    session['degree'] = stu.degree or "B.Tech"
+                    session['regulation_name'] = stu.regulation_name or "AR23"
+                    session['branch_name'] = stu.branch_name or "CSE"
+                    session['specialization'] = stu.specialization or "Core Computer Science"
                     session['active_semester'] = stu.current_semester or 3
                     session['student_name'] = stu.name
                     session['student_dept'] = stu.department
-                    session['specialization'] = stu.specialization
+                    session['curriculum_id'] = stu.curriculum_id or "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE"
                     session['is_demo'] = True
             return True, auth_user
         return False, None
@@ -312,158 +299,75 @@ def login_demo_user():
 
 
 def seed_default_users():
-    """Initializes standard demonstration accounts and maps institutional relationships."""
-    from app.database import Enrollment, Subject
+    """Initializes standard demonstration accounts and maps official AR23 curriculum data."""
     db = get_db_session()
     try:
-        # Resolve default academic entities
-        raghu_col = db.query(College).filter(College.code == "REC").first() or db.query(College).first()
-        r23_reg = db.query(Regulation).filter(Regulation.code == "R23").first() or db.query(Regulation).first()
-        csd_branch = db.query(Branch).filter(Branch.code == "CSD").first() or db.query(Branch).first()
+        col = db.query(College).filter(College.name == "Raghu Engineering College").first()
+        reg_ar23 = db.query(Regulation).filter(Regulation.code == "AR23").first()
+        br_cse = db.query(Branch).filter(Branch.code == "CSE", Branch.specialization == "Core Computer Science").first()
 
-        # Seed Rahul Kumar (Official Demo User)
-        demo_student = db.query(Student).filter(Student.student_id == "2024CSE001").first()
+        curr_id = "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE"
+        
+        # Seed Rahul Kumar (Official Verified Demo User)
+        demo_student = db.query(Student).filter(Student.student_id == "STU2024001").first()
         if not demo_student:
             demo_student = Student(
-                student_id="2024CSE001",
+                student_id="STU2024001",
                 name="Rahul Kumar",
-                email="demo_user@studiq.edu",
+                email="rahul.cse@studiq.edu",
                 department="Computer Science & Engineering",
-                college_id=raghu_col.id if raghu_col else 1,
-                regulation_id=r23_reg.id if r23_reg else 1,
-                branch_id=csd_branch.id if csd_branch else 1,
+                college_id=col.id if col else None,
+                regulation_id=reg_ar23.id if reg_ar23 else None,
+                branch_id=br_cse.id if br_cse else None,
+                curriculum_id=curr_id,
                 college_name="Raghu Engineering College",
-                specialization="CSE (Data Science)",
+                degree="B.Tech",
+                regulation_name="AR23",
+                branch_name="CSE",
+                specialization="Core Computer Science",
                 current_semester=3,
-                enrollment_year=2024
+                enrollment_year=2023
             )
             db.add(demo_student)
             db.flush()
-        else:
-            demo_student.name = "Rahul Kumar"
-            demo_student.college_name = "Raghu Engineering College"
-            demo_student.specialization = "CSE (Data Science)"
-            demo_student.current_semester = 3
-            if raghu_col:
-                demo_student.college_id = raghu_col.id
-            if r23_reg:
-                demo_student.regulation_id = r23_reg.id
-            if csd_branch:
-                demo_student.branch_id = csd_branch.id
 
-        # Seed demo user login account
-        demo_u = db.query(User).filter(User.username == "demo_user").first()
-        if not demo_u:
-            pwd_hash = generate_password_hash("demo123", method="pbkdf2:sha256")
-            demo_u = User(
-                username="demo_user",
-                email="demo_user@studiq.edu",
-                password_hash=pwd_hash,
-                role="STUDENT",
-                student_id="2024CSE001"
-            )
-            db.add(demo_u)
-        else:
-            demo_u.student_id = "2024CSE001"
+        # Seed users
+        for uname, pwd in [("demo_user", "demo123"), ("rahulkumar", "Student@123"), ("student_demo", "Student@123")]:
+            u = db.query(User).filter(User.username == uname).first()
+            if not u:
+                u = User(
+                    username=uname,
+                    email=f"{uname}@studiq.edu",
+                    password_hash=generate_password_hash(pwd, method="pbkdf2:sha256"),
+                    role="STUDENT",
+                    student_id="STU2024001"
+                )
+                db.add(u)
 
-        # Also preserve legacy student_demo account
-        leg_u = db.query(User).filter(User.username == "student_demo").first()
-        if not leg_u:
-            pwd_hash = generate_password_hash("Student@123", method="pbkdf2:sha256")
-            leg_u = User(
-                username="student_demo",
-                email="student@university.edu",
-                password_hash=pwd_hash,
-                role="STUDENT",
-                student_id="2024CSE001"
-            )
-            db.add(leg_u)
+        # Seed pre-loaded marks for Rahul Kumar in Semester 3 using official AR23 CSE subjects
+        ar23_sem3_subs = db.query(CurriculumSubject).filter(
+            CurriculumSubject.curriculum_id == curr_id,
+            CurriculumSubject.semester == 3
+        ).all()
 
-        # Seed pre-loaded marks for Rahul Kumar (Semester 3)
-        sem3_marks_data = [
-            ("CS301", "Data Structures", 4.0, 85.0, "A", 9.0, 78.0),
-            ("CS302", "Database Management", 3.0, 78.0, "B", 8.0, 75.0),
-            ("CS303", "Digital Logic Design", 4.0, 92.0, "S", 10.0, 82.0),
-            ("CS304", "Object Oriented Programming", 4.0, 88.0, "A", 9.0, 80.0),
-            ("CS305", "Discrete Mathematics", 3.0, 76.0, "B", 8.0, 76.0),
-            ("CS306", "Data Structures Lab", 1.5, 90.0, "A", 9.0, 85.0),
-            ("CS307", "DBMS Lab", 1.5, 82.0, "A", 9.0, 79.0),
-        ]
-        for ccode, ctitle, cred, mrk, grd, gp, att in sem3_marks_data:
-            subj = db.query(Subject).filter(
-                Subject.branch_id == csd_branch.id,
-                Subject.code == f"CSD{ccode.replace('CS', '')}"
-            ).first() or db.query(Subject).filter(Subject.code.like(f"%{ccode.replace('CS', '')}")).first()
-            
-            sub_id = subj.id if subj else None
+        for s in ar23_sem3_subs:
             existing_enr = db.query(Enrollment).filter(
-                Enrollment.student_id == "2024CSE001",
-                Enrollment.semester == 3,
-                (Enrollment.course_id == ccode) | (Enrollment.subject_id == sub_id)
+                Enrollment.student_id == "STU2024001",
+                Enrollment.curriculum_subject_id == s.id
             ).first()
             if not existing_enr:
                 enr = Enrollment(
-                    student_id="2024CSE001",
-                    course_id=ccode,
-                    subject_id=sub_id,
-                    marks_obtained=mrk,
-                    grade=grd,
-                    grade_letter=grd,
-                    grade_point=gp,
-                    attendance_percentage=att,
+                    student_id="STU2024001",
+                    curriculum_subject_id=s.id,
+                    course_id=s.subject_code,
+                    marks_obtained=86.0,
+                    grade="A+",
+                    grade_letter="A+",
+                    grade_point=9.0,
+                    credits_used=s.official_credits or s.credits or 3.0,
+                    attendance_percentage=88.0,
                     semester=3,
                     academic_year="2024-2025"
-                )
-                db.add(enr)
-
-        # Seed Semester 1 and Semester 2 records for Rahul Kumar to provide realistic multi-semester progression
-        sem1_data = [
-            ("CS101", "Engineering Mathematics I", 4.0, 80.0, "A", 9.0, 78.0),
-            ("CS102", "Applied Physics & Optics", 4.0, 75.0, "B", 8.0, 80.0),
-            ("CS103", "Programming Fundamentals", 4.0, 82.0, "A", 9.0, 80.0),
-        ]
-        for ccode, ctitle, cred, mrk, grd, gp, att in sem1_data:
-            existing_enr = db.query(Enrollment).filter(
-                Enrollment.student_id == "2024CSE001",
-                Enrollment.semester == 1,
-                Enrollment.course_id == ccode
-            ).first()
-            if not existing_enr:
-                enr = Enrollment(
-                    student_id="2024CSE001",
-                    course_id=ccode,
-                    marks_obtained=mrk,
-                    grade=grd,
-                    grade_letter=grd,
-                    grade_point=gp,
-                    attendance_percentage=att,
-                    semester=1,
-                    academic_year="2023-2024"
-                )
-                db.add(enr)
-
-        sem2_data = [
-            ("CS201", "Data Structures", 4.0, 78.0, "B", 8.0, 76.0),
-            ("CS202", "Database Management Systems", 3.0, 80.0, "A", 9.0, 78.0),
-            ("CS203", "Digital Logic Design", 4.0, 74.0, "B", 8.0, 75.0),
-        ]
-        for ccode, ctitle, cred, mrk, grd, gp, att in sem2_data:
-            existing_enr = db.query(Enrollment).filter(
-                Enrollment.student_id == "2024CSE001",
-                Enrollment.semester == 2,
-                Enrollment.course_id == ccode
-            ).first()
-            if not existing_enr:
-                enr = Enrollment(
-                    student_id="2024CSE001",
-                    course_id=ccode,
-                    marks_obtained=mrk,
-                    grade=grd,
-                    grade_letter=grd,
-                    grade_point=gp,
-                    attendance_percentage=att,
-                    semester=2,
-                    academic_year="2023-2024"
                 )
                 db.add(enr)
 

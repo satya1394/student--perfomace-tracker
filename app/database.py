@@ -1,11 +1,12 @@
 """
 SQLAlchemy Database Models and Connection Management.
-Implements models for Colleges, Regulations, Branches, Subjects, Users, Students, Courses, Enrollments, Predictions, and Audit Logs.
+Implements models for Curricula, CurriculumSubjects, ElectiveOptions, StudentSubjectSelections,
+StudentSemesterResults, Colleges, Regulations, Branches, Subjects, Users, Students, Courses, Enrollments, Predictions, and Audit Logs.
 """
 
 from datetime import datetime, timezone
 from sqlalchemy import (
-    create_engine, Column, Integer, String, Float, 
+    create_engine, Column, Integer, String, Float, Boolean,
     DateTime, ForeignKey, Text, JSON, text
 )
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship, scoped_session
@@ -21,7 +22,155 @@ def utc_now():
 
 
 # =========================================================================
-# 1. Institutional Academic Framework Models
+# 1. Canonical Curriculum Framework Models (Section 5 & 6)
+# =========================================================================
+
+class Curriculum(Base):
+    """Canonical curriculum identity representing College + Degree + Regulation + Branch + Specialization."""
+    __tablename__ = "curricula"
+
+    curriculum_id = Column(String(100), primary_key=True, index=True)
+    college = Column(String(150), nullable=False, index=True)
+    degree = Column(String(32), nullable=False, default="B.Tech")
+    regulation = Column(String(32), nullable=False, index=True)  # AR20, AR23
+    branch = Column(String(64), nullable=False, index=True)      # CSE, ECE, EEE, MECH, CIVIL
+    specialization = Column(String(100), nullable=False, index=True)
+    curriculum_version = Column(String(20), default="1.0")
+    effective_from = Column(String(20), default="2023")
+    effective_until = Column(String(20), nullable=True)
+    source_document = Column(String(200), nullable=True)
+    last_verified_at = Column(DateTime, default=utc_now)
+    created_at = Column(DateTime, default=utc_now)
+
+    # Relationships
+    subjects = relationship("CurriculumSubject", back_populates="curriculum", cascade="all, delete-orphan")
+    elective_options = relationship("ElectiveOption", back_populates="curriculum", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Curriculum {self.curriculum_id}>"
+
+
+class CurriculumSubject(Base):
+    """Detailed canonical subject record with exact classification, credits, and verification metadata."""
+    __tablename__ = "curriculum_subjects"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    curriculum_id = Column(String(100), ForeignKey("curricula.curriculum_id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    # 6-Field Explicit Composite Keys
+    college = Column(String(150), nullable=False, index=True)
+    degree = Column(String(32), nullable=False, default="B.Tech")
+    regulation = Column(String(32), nullable=False, index=True)
+    branch = Column(String(64), nullable=False, index=True)
+    specialization = Column(String(100), nullable=False, index=True)
+    semester = Column(Integer, nullable=False, index=True)
+
+    # Subject details
+    subject_code = Column(String(32), nullable=False, index=True)
+    subject_name = Column(String(180), nullable=False)
+    subject_type = Column(String(40), nullable=False, default="COMPULSORY_THEORY")  # COMPULSORY_THEORY, COMPULSORY_LAB, PROFESSIONAL_ELECTIVE, OPEN_ELECTIVE, HONORS, MINORS, SKILL_COURSE, AUDIT_COURSE, PROJECT, INTERNSHIP
+    
+    credits = Column(Float, nullable=True)
+    official_credits = Column(Float, nullable=True)
+    student_credits = Column(Float, nullable=True)
+    credits_used = Column(Float, nullable=True)
+
+    is_compulsory = Column(Boolean, default=True)
+    is_elective = Column(Boolean, default=False)
+    elective_group = Column(String(80), nullable=True)  # e.g. "Professional Elective I", "Open Elective II"
+    theory_or_lab = Column(String(20), default="Theory")  # Theory, Lab, Skill, Project, Audit
+    max_marks = Column(Float, default=100.0)
+    pass_marks = Column(Float, default=40.0)
+
+    # Verification and Status Values (Section 5)
+    credit_source = Column(String(40), default="official_course_structure")  # official_course_structure, official_regulation, official_subject_pdf, official_notice, student_reported_official, student_estimate
+    credit_status = Column(String(30), default="confirmed")                  # confirmed, pending, not_applicable
+    verification_status = Column(String(30), default="official_verified")     # official_verified, student_confirmed, unverified, needs_review, unavailable
+    
+    source_url = Column(String(255), nullable=True)
+    source_document = Column(String(200), nullable=True)
+    curriculum_version = Column(String(20), default="1.0")
+    effective_from = Column(String(20), default="2023")
+    effective_until = Column(String(20), nullable=True)
+    last_verified_at = Column(DateTime, default=utc_now)
+    notes = Column(Text, nullable=True)
+
+    # Relationship
+    curriculum = relationship("Curriculum", back_populates="subjects")
+
+    def __repr__(self):
+        return f"<CurriculumSubject {self.subject_code}: {self.subject_name} ({self.credits} cr, Sem {self.semester})>"
+
+
+class ElectiveOption(Base):
+    """Categorized elective, honor, and minor pools selectable per semester."""
+    __tablename__ = "elective_options"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    curriculum_id = Column(String(100), ForeignKey("curricula.curriculum_id", ondelete="CASCADE"), nullable=False, index=True)
+    semester = Column(Integer, nullable=False, index=True)
+    category = Column(String(40), nullable=False)  # PROFESSIONAL_ELECTIVE, OPEN_ELECTIVE, HONORS, MINORS
+    group_name = Column(String(80), nullable=False)  # e.g. "Professional Elective I"
+    subject_code = Column(String(32), nullable=False)
+    subject_name = Column(String(180), nullable=False)
+    credits = Column(Float, nullable=True)
+    credit_status = Column(String(30), default="confirmed")
+    verification_status = Column(String(30), default="official_verified")
+    source_url = Column(String(255), nullable=True)
+
+    # Relationship
+    curriculum = relationship("Curriculum", back_populates="elective_options")
+
+    def __repr__(self):
+        return f"<ElectiveOption {self.group_name} -> {self.subject_code}: {self.subject_name}>"
+
+
+class StudentSubjectSelection(Base):
+    """Individual student custom selections for electives, honors, and minors."""
+    __tablename__ = "student_subject_selections"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    student_id = Column(String(32), ForeignKey("students.student_id", ondelete="CASCADE"), nullable=False, index=True)
+    curriculum_id = Column(String(100), nullable=False, index=True)
+    semester = Column(Integer, nullable=False, index=True)
+    category = Column(String(40), nullable=False)
+    group_name = Column(String(80), nullable=False)
+    subject_code = Column(String(32), nullable=False)
+    subject_name = Column(String(180), nullable=False)
+    official_credits = Column(Float, nullable=True)
+    student_credits = Column(Float, nullable=True)
+    credits_used = Column(Float, nullable=True)
+    credit_source = Column(String(40), default="official_course_structure")
+    credit_status = Column(String(30), default="confirmed")
+    marks = Column(Float, nullable=True)
+    grade = Column(String(5), nullable=True)
+    grade_point = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=utc_now)
+
+
+class StudentSemesterResult(Base):
+    """Preserved semester calculation snapshot with auditability and calculation status."""
+    __tablename__ = "student_semester_results"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    student_id = Column(String(32), ForeignKey("students.student_id", ondelete="CASCADE"), nullable=False, index=True)
+    curriculum_id = Column(String(100), nullable=False, index=True)
+    curriculum_version = Column(String(20), default="1.0")
+    regulation = Column(String(32), nullable=False)
+    branch = Column(String(64), nullable=False)
+    specialization = Column(String(100), nullable=False)
+    semester = Column(Integer, nullable=False, index=True)
+    sgpa = Column(Float, nullable=True)
+    calculation_status = Column(String(30), nullable=False, default="VERIFIED_SGPA")  # VERIFIED_SGPA, ESTIMATED_SGPA, INCOMPLETE_SGPA
+    total_credits_used = Column(Float, default=0.0)
+    official_credits_used = Column(Float, default=0.0)
+    student_credits_used = Column(Float, default=0.0)
+    subjects_used_json = Column(JSON, nullable=True)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now)
+
+
+# =========================================================================
+# 2. Legacy Institutional & Profile Models
 # =========================================================================
 
 class College(Base):
@@ -42,13 +191,13 @@ class College(Base):
 
 
 class Regulation(Base):
-    """Academic curriculum regulations (e.g. R23, R20, R19, R21, R22)."""
+    """Academic curriculum regulations (e.g. AR23, AR20, R20)."""
     __tablename__ = "regulations"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     college_id = Column(Integer, ForeignKey("colleges.id", ondelete="CASCADE"), nullable=True)
-    code = Column(String(20), nullable=False)  # e.g. "R23", "R20"
-    name = Column(String(150), nullable=False)  # e.g. "R23 - JNTU 2023 Syllabus"
+    code = Column(String(20), nullable=False)  # e.g. "AR23", "AR20"
+    name = Column(String(150), nullable=False)
 
     # Relationships
     college = relationship("College", back_populates="regulations")
@@ -66,9 +215,9 @@ class Branch(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     college_id = Column(Integer, ForeignKey("colleges.id", ondelete="CASCADE"), nullable=True)
     regulation_id = Column(Integer, ForeignKey("regulations.id", ondelete="CASCADE"), nullable=True)
-    code = Column(String(32), nullable=False)  # e.g. "CSE", "CSD", "CSM"
-    name = Column(String(100), nullable=False)  # e.g. "Computer Science & Engineering"
-    specialization = Column(String(100), nullable=False)  # e.g. "Data Science", "AI & ML"
+    code = Column(String(32), nullable=False)
+    name = Column(String(100), nullable=False)
+    specialization = Column(String(100), nullable=False)
 
     # Relationships
     regulation = relationship("Regulation", back_populates="branches")
@@ -83,7 +232,7 @@ class Branch(Base):
 
 
 class Subject(Base):
-    """Canonical curriculum subjects with credit points and term allocations."""
+    """Canonical curriculum subjects table."""
     __tablename__ = "subjects"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -103,28 +252,20 @@ class Subject(Base):
         return f"<Subject {self.code}: {self.title} ({self.credits} cr, Sem {self.semester})>"
 
 
-# =========================================================================
-# 2. User Authentication and Student Profile Models
-# =========================================================================
-
 class User(Base):
-    """User accounts table for Flask-Login authentication and role control."""
+    """User accounts table."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(64), unique=True, nullable=False, index=True)
     email = Column(String(120), unique=True, nullable=False, index=True)
     password_hash = Column(String(256), nullable=False)
-    role = Column(String(20), nullable=False, default="STUDENT")  # STUDENT, FACULTY, ADMIN
+    role = Column(String(20), nullable=False, default="STUDENT")
     student_id = Column(String(32), ForeignKey("students.student_id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relationships
     student = relationship("Student", back_populates="user_account")
     audit_logs = relationship("AuditLog", back_populates="user")
-
-    def __repr__(self):
-        return f"<User {self.username} ({self.role})>"
 
 
 class Student(Base):
@@ -140,27 +281,27 @@ class Student(Base):
     college_id = Column(Integer, ForeignKey("colleges.id", ondelete="SET NULL"), nullable=True)
     regulation_id = Column(Integer, ForeignKey("regulations.id", ondelete="SET NULL"), nullable=True)
     branch_id = Column(Integer, ForeignKey("branches.id", ondelete="SET NULL"), nullable=True)
+    curriculum_id = Column(String(100), nullable=True)
 
-    # Human-readable meta mappings
-    college_name = Column(String(150), default="Apex Institute of Engineering & Technology", nullable=True)
-    specialization = Column(String(100), default="CSE (Data Science)", nullable=True)
-    current_semester = Column(Integer, default=8, nullable=True)
+    # Academic metadata
+    college_name = Column(String(150), default="Raghu Engineering College", nullable=True)
+    degree = Column(String(32), default="B.Tech", nullable=True)
+    regulation_name = Column(String(32), default="AR23", nullable=True)
+    branch_name = Column(String(64), default="CSE", nullable=True)
+    specialization = Column(String(100), default="Core Computer Science", nullable=True)
+    current_semester = Column(Integer, default=3, nullable=True)
     enrollment_year = Column(Integer, nullable=False, default=2024)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relationships
     user_account = relationship("User", back_populates="student", uselist=False)
     college = relationship("College", back_populates="students")
     branch = relationship("Branch", back_populates="students")
     enrollments = relationship("Enrollment", back_populates="student", cascade="all, delete-orphan")
     predictions = relationship("Prediction", back_populates="student", cascade="all, delete-orphan")
 
-    def __repr__(self):
-        return f"<Student {self.student_id} - {self.name} ({self.specialization})>"
-
 
 class Course(Base):
-    """Curriculum courses table with credit weights and semester allocations."""
+    """Courses catalog."""
     __tablename__ = "courses"
 
     course_id = Column(String(32), primary_key=True, index=True)
@@ -170,11 +311,7 @@ class Course(Base):
     semester = Column(Integer, nullable=False, index=True)
     department = Column(String(64), nullable=False, index=True)
 
-    # Relationships
     enrollments = relationship("Enrollment", back_populates="course")
-
-    def __repr__(self):
-        return f"<Course {self.course_code}: {self.course_name} ({self.credits} cr)>"
 
 
 class Enrollment(Base):
@@ -185,22 +322,20 @@ class Enrollment(Base):
     student_id = Column(String(32), ForeignKey("students.student_id", ondelete="CASCADE"), nullable=False, index=True)
     course_id = Column(String(32), ForeignKey("courses.course_id", ondelete="CASCADE"), nullable=True, index=True)
     subject_id = Column(Integer, ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True, index=True)
+    curriculum_subject_id = Column(Integer, ForeignKey("curriculum_subjects.id", ondelete="SET NULL"), nullable=True)
     
     marks_obtained = Column(Float, nullable=False)
     grade = Column(String(5), nullable=False)
     grade_letter = Column(String(5), nullable=True)
     grade_point = Column(Float, nullable=False)
+    credits_used = Column(Float, default=3.0)
     attendance_percentage = Column(Float, nullable=False)
     semester = Column(Integer, nullable=False, index=True)
     academic_year = Column(String(20), nullable=False, default="2024-2025")
 
-    # Relationships
     student = relationship("Student", back_populates="enrollments")
     course = relationship("Course", back_populates="enrollments")
     subject_ref = relationship("Subject", back_populates="enrollments")
-
-    def __repr__(self):
-        return f"<Enrollment {self.student_id} in {self.course_id or self.subject_id}: {self.grade} ({self.marks_obtained}m)>"
 
 
 class Prediction(Base):
@@ -211,38 +346,29 @@ class Prediction(Base):
     student_id = Column(String(32), ForeignKey("students.student_id", ondelete="CASCADE"), nullable=False, index=True)
     predicted_score = Column(Float, nullable=False)
     pass_probability = Column(Float, nullable=False)
-    risk_level = Column(String(20), nullable=False, index=True)  # LOW, MEDIUM, HIGH
+    risk_level = Column(String(20), nullable=False, index=True)
     confidence_score = Column(Float, nullable=False)
     shap_values = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relationships
     student = relationship("Student", back_populates="predictions")
-
-    def __repr__(self):
-        return f"<Prediction {self.student_id}: Risk={self.risk_level}, Score={self.predicted_score:.1f}>"
 
 
 class GradeRule(Base):
-    """Academic grade boundary rules by regulation framework (e.g. R23, R20)."""
+    """Academic grade boundary rules by regulation framework (e.g. AR23, AR20)."""
     __tablename__ = "grade_rules"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    regulation_code = Column(String(20), nullable=False, default="AR23")
     regulation_id = Column(Integer, ForeignKey("regulations.id", ondelete="CASCADE"), nullable=True)
     grade_letter = Column(String(5), nullable=False)
     grade_point = Column(Float, nullable=False)
     min_marks = Column(Float, nullable=False)
     max_marks = Column(Float, nullable=False)
 
-    # Relationships
-    regulation = relationship("Regulation")
-
-    def __repr__(self):
-        return f"<GradeRule Reg {self.regulation_id}: {self.grade_letter} ({self.grade_point} GP)>"
-
 
 class AuditLog(Base):
-    """System-wide audit trail for compliance, role actions, and data changes."""
+    """System-wide audit trail."""
     __tablename__ = "audit_logs"
 
     log_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -253,238 +379,38 @@ class AuditLog(Base):
     details = Column(JSON, nullable=True)
     timestamp = Column(DateTime, default=utc_now, index=True)
 
-    # Relationships
     user = relationship("User", back_populates="audit_logs")
 
-    def __repr__(self):
-        return f"<AuditLog {self.action} on {self.target_entity}:{self.entity_id} at {self.timestamp}>"
 
-
-# =========================================================================
-# 3. Seeding & Schema Migration Utilities
-# =========================================================================
-
-def seed_academic_framework():
-    """Seeds institutional colleges, regulations, branches, grade rules, and semester subjects."""
-    db = get_db_session()
+def init_db():
+    """Create all database tables and seed grade rules and institutional metadata."""
+    Base.metadata.create_all(bind=engine)
+    
+    # Populate standard Grade Rules for AR23 & AR20 if not present
+    db = SessionLocal()
     try:
-        # 1. Colleges
-        colleges_data = [
-            ("REC", "Raghu Engineering College", "Visakhapatnam"),
-            ("APEX", "Apex Institute of Engineering & Technology", "Jaipur"),
-            ("IITB", "Indian Institute of Technology (IIT)", "Mumbai"),
-            ("NITT", "National Institute of Technology (NIT)", "Trichy"),
-            ("DTU", "Delhi Technological University (DTU)", "New Delhi"),
-            ("BITS", "Birla Institute of Technology and Science (BITS)", "Pilani"),
-            ("VIT", "Vellore Institute of Technology (VIT)", "Vellore"),
-        ]
-        colleges = {}
-        for code, name, loc in colleges_data:
-            c = db.query(College).filter(College.code == code).first()
-            if not c:
-                c = College(code=code, name=name, location=loc)
-                db.add(c)
-                db.flush()
-            colleges[code] = c
-
-        # 2. Regulations
-        regulations_data = [
-            ("R23", "R23 - JNTU 2023 Syllabus"),
-            ("R20", "R20 - CBCS Autonomous 2020"),
-            ("R19", "R19 - Outcome Based Curriculum"),
-            ("R21", "R21 - AICTE Model Curriculum"),
-            ("R22", "R22 - Industry 4.0 Standard"),
-        ]
-        regulations = {}
-        for reg_code, reg_name in regulations_data:
-            r = db.query(Regulation).filter(Regulation.code == reg_code).first()
-            if not r:
-                r = Regulation(code=reg_code, name=reg_name, college_id=colleges["REC"].id)
-                db.add(r)
-                db.flush()
-            regulations[reg_code] = r
-
-        # 3. Grade Rules for R23 & Standard Regulations
-        r23_reg = regulations.get("R23")
-        if r23_reg:
-            r23_rules = [
-                ("S", 10.0, 90.0, 100.0),
-                ("A", 9.0, 80.0, 89.99),
-                ("B", 8.0, 70.0, 79.99),
-                ("C", 7.0, 60.0, 69.99),
-                ("D", 6.0, 50.0, 59.99),
-                ("E", 5.0, 40.0, 49.99),
-                ("F", 0.0, 0.0, 39.99),
-            ]
-            for g_let, gp, min_m, max_m in r23_rules:
-                existing_gr = db.query(GradeRule).filter(
-                    GradeRule.regulation_id == r23_reg.id,
-                    GradeRule.grade_letter == g_let
-                ).first()
-                if not existing_gr:
-                    gr = GradeRule(
-                        regulation_id=r23_reg.id,
+        if db.query(GradeRule).count() == 0:
+            for reg in ["AR23", "AR20", "R23", "R20"]:
+                rules = [
+                    ("O", 10.0, 90.0, 100.0),
+                    ("A+", 9.0, 80.0, 89.99),
+                    ("A", 8.0, 70.0, 79.99),
+                    ("B+", 7.0, 60.0, 69.99),
+                    ("B", 6.0, 50.0, 59.99),
+                    ("C", 5.0, 40.0, 49.99),
+                    ("F", 0.0, 0.0, 39.99),
+                ]
+                for g_let, gp, min_m, max_m in rules:
+                    db.add(GradeRule(
+                        regulation_code=reg,
                         grade_letter=g_let,
                         grade_point=gp,
                         min_marks=min_m,
                         max_marks=max_m
-                    )
-                    db.add(gr)
-
-        # 4. Branches
-        branches_data = [
-            ("CSE", "Computer Science & Engineering", "Core Computer Science", "R23", "REC"),
-            ("CSD", "Computer Science & Engineering", "Data Science", "R23", "REC"),
-            ("CSM", "Computer Science & Engineering", "AI & ML", "R23", "REC"),
-            ("CSC", "Computer Science & Engineering", "Cyber Security", "R23", "REC"),
-            ("CSI", "Computer Science & Engineering", "IoT & Embedded Systems", "R23", "REC"),
-            ("ECE", "Electronics & Communication Engineering", "VLSI & Embedded", "R23", "REC"),
-            ("IT", "Information Technology", "Cloud & Web Computing", "R23", "REC"),
-            # Apex branches
-            ("CSE_APEX", "Computer Science & Engineering", "Core Computer Science", "R20", "APEX"),
-            ("CSD_APEX", "Computer Science & Engineering", "Data Science", "R20", "APEX"),
-        ]
-        branches = {}
-        for b_code, b_name, b_spec, reg_key, col_key in branches_data:
-            b = db.query(Branch).filter(Branch.code == b_code, Branch.specialization == b_spec).first()
-            if not b:
-                b = Branch(
-                    code=b_code,
-                    name=b_name,
-                    specialization=b_spec,
-                    college_id=colleges[col_key].id if col_key in colleges else colleges["REC"].id,
-                    regulation_id=regulations[reg_key].id
-                )
-                db.add(b)
-                db.flush()
-            branches[f"{b_code}_{b_spec}"] = b
-
-        # 5. Canonical Semester Subjects (Sem 1 to 8) for Branches
-        semester_subjects = {
-            1: [
-                ("101", "Engineering Mathematics I", 4.0),
-                ("102", "Applied Physics & Optics", 4.0),
-                ("103", "Programming Fundamentals in C", 4.0),
-            ],
-            2: [
-                ("201", "Data Structures", 4.0),
-                ("202", "Database Management Systems", 3.0),
-                ("203", "Digital Logic Design", 4.0),
-                ("204", "Object Oriented Programming", 4.0),
-                ("205", "Discrete Mathematics", 3.0),
-                ("206", "Data Structures Lab", 1.5),
-                ("207", "DBMS Lab", 1.5),
-            ],
-            3: [
-                ("301", "Data Structures", 4.0),
-                ("302", "Database Management", 3.0),
-                ("303", "Digital Logic Design", 4.0),
-                ("304", "Object Oriented Programming", 4.0),
-                ("305", "Discrete Mathematics", 3.0),
-                ("306", "Data Structures Lab", 1.5),
-                ("307", "DBMS Lab", 1.5),
-            ],
-            4: [
-                ("401", "Design & Analysis of Algorithms", 4.0),
-                ("402", "Database Management Systems", 4.0),
-                ("403", "Operating Systems & Kernel Design", 4.0),
-            ],
-            5: [
-                ("501", "Theory of Computation & Automata", 4.0),
-                ("502", "Computer Networks & Protocols", 4.0),
-                ("503", "Software Engineering & Agile DevOps", 4.0),
-            ],
-            6: [
-                ("601", "Compiler Design & Optimization", 4.0),
-                ("602", "Machine Learning Systems & Modeling", 4.0),
-                ("603", "Web & Cloud Native Technologies", 4.0),
-            ],
-            7: [
-                ("701", "Distributed Systems & Cloud Clusters", 4.0),
-                ("702", "Cybersecurity & Cryptographic Protocols", 4.0),
-                ("703", "Deep Learning & Neural Architectures", 3.0),
-            ],
-            8: [
-                ("801", "Capstone Major Project & Viva", 6.0),
-                ("802", "Structural Dynamics & System Synthesis", 4.0),
-                ("803", "Industrial Seminar & Professional Ethics", 2.0),
-            ]
-        }
-
-        # Seed subjects for each branch
-        for b_key, b_obj in branches.items():
-            prefix = b_obj.code.replace("_APEX", "")
-            for sem, subjs in semester_subjects.items():
-                for sub_code_num, sub_title, creds in subjs:
-                    full_code = f"{prefix}{sub_code_num}"
-                    existing_sub = db.query(Subject).filter(
-                        Subject.branch_id == b_obj.id,
-                        Subject.code == full_code
-                    ).first()
-                    if not existing_sub:
-                        s = Subject(
-                            branch_id=b_obj.id,
-                            regulation_id=b_obj.regulation_id,
-                            code=full_code,
-                            title=sub_title,
-                            credits=creds,
-                            semester=sem
-                        )
-                        db.add(s)
-
-        # Seed corresponding Course records
-        for sem, subjs in semester_subjects.items():
-            for sub_code_num, sub_title, creds in subjs:
-                for dept_pfx in ["CS", "EC", "ME", "CE"]:
-                    cid = f"CRS_{dept_pfx}{sub_code_num}"
-                    ccode = f"{dept_pfx}{sub_code_num}"
-                    c = db.query(Course).filter(Course.course_id == cid).first()
-                    if not c:
-                        c = Course(
-                            course_id=cid,
-                            course_code=ccode,
-                            course_name=sub_title,
-                            credits=int(creds),
-                            semester=sem,
-                            department="Computer Science" if dept_pfx == "CS" else "Electronics"
-                        )
-                        db.add(c)
-
-        db.commit()
+                    ))
+            db.commit()
     finally:
         db.close()
-
-
-def init_db():
-    """Create all database tables and safely migrate added columns."""
-    Base.metadata.create_all(bind=engine)
-    with engine.connect() as conn:
-        for col, col_type in [
-            ("college_id", "INTEGER"),
-            ("regulation_id", "INTEGER"),
-            ("branch_id", "INTEGER"),
-            ("college_name", "VARCHAR(150) DEFAULT 'Raghu Engineering College'"),
-            ("specialization", "VARCHAR(100) DEFAULT 'CSE (Data Science)'"),
-            ("current_semester", "INTEGER DEFAULT 3")
-        ]:
-            try:
-                conn.execute(text(f"ALTER TABLE students ADD COLUMN {col} {col_type}"))
-                conn.commit()
-            except Exception:
-                pass
-
-        for col, col_type in [
-            ("subject_id", "INTEGER"),
-            ("grade_letter", "VARCHAR(5)")
-        ]:
-            try:
-                conn.execute(text(f"ALTER TABLE enrollments ADD COLUMN {col} {col_type}"))
-                conn.commit()
-            except Exception:
-                pass
-
-    # Populate canonical institutional dataset
-    seed_academic_framework()
 
 
 def get_db_session():
