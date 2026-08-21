@@ -1,10 +1,14 @@
 # ⚡ StudIQ: Student Academic Performance & Curriculum Tracking Platform
 
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11+-blue.svg)](https://www.python.org/)
-[![Plotly Dash](https://img.shields.io/badge/Plotly%20Dash-2.18+-00F0FF.svg)](https://dash.plotly.com/)
-[![SQLite / SQLAlchemy](https://img.shields.io/badge/Database-SQLite%20%7C%20SQLAlchemy-8B5CF6.svg)](https://www.sqlalchemy.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![LIVE DEMO](https://img.shields.io/badge/LIVE%20DEMO-Open%20StudIQ-00C853?style=flat)](https://student-perfomace-tracker.onrender.com/)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11+-111827?style=flat-square&logo=python&logoColor=3776AB)](https://www.python.org/)
+
+[![Plotly Dash](https://img.shields.io/badge/Plotly%20Dash-2.18+-111827?style=flat-square&logo=plotly&logoColor=00C2FF)](https://dash.plotly.com/)
+
+[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20SQLAlchemy-111827?style=flat-square&logo=sqlite&logoColor=8B5CF6)](https://www.sqlalchemy.org/)
+
+[![License](https://img.shields.io/badge/License-MIT-111827?style=flat-square&logo=opensourceinitiative&logoColor=FACC15)](https://opensource.org/licenses/MIT)
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20StudIQ-111827?style=flat-square&logo=googlechrome&logoColor=22C55E)](https://student-perfomace-tracker.onrender.com/)
 
 **StudIQ** is a modern, student-centric academic performance tracker and exact curriculum management platform. Designed exclusively as a **Student Self-Service Platform**, StudIQ eliminates generic estimation by resolving subjects through an exact 6-parameter academic path, enforcing regulation boundaries, managing elective and honors pools, calculating verified SGPA/CGPA with audit course exclusions, and delivering intuitive, presentation-ready visual analytics.
 
