@@ -4,7 +4,7 @@
 [![Plotly Dash](https://img.shields.io/badge/Plotly%20Dash-2.18+-111827?style=flat-square&logo=plotly&logoColor=00C2FF)](https://dash.plotly.com/)
 [![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20SQLAlchemy-111827?style=flat-square&logo=sqlite&logoColor=8B5CF6)](https://www.sqlalchemy.org/)
 [![License](https://img.shields.io/badge/License-MIT-111827?style=flat-square&logo=opensourceinitiative&logoColor=FACC15)](https://opensource.org/licenses/MIT)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20StudIQ-111827?style=flat-square&logo=googlechrome&logoColor=22C55E)](https://student-perfomace-tracker.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20StudIQ-111827?style=flat-square&logo=googlechrome&logoColor=22C55E)](https://student-perfomace-tracker.onrender.com/app/)
 
 **StudIQ** is a modern, student-centric academic performance tracker and exact curriculum management platform. Designed exclusively as a **Student Self-Service Platform**, StudIQ eliminates generic estimation by resolving subjects through an exact 6-parameter academic path, enforcing regulation boundaries, managing elective and honors pools, calculating verified SGPA/CGPA with audit course exclusions, and delivering intuitive, presentation-ready visual analytics.
 
