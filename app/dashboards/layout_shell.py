@@ -305,3 +305,29 @@ def build_dashboard_shell(active_path: str = "/overview"):
         dcc.Download(id="download-student-excel"),
         dcc.Download(id="download-student-pdf")
     ], fluid=True, className="cockpit-main-wrapper pb-5")
+
+
+def create_demo_cockpit_layout(active_path: str = "/overview"):
+    """
+    Renders the complete interactive Demo Cockpit with persistent navbar and overview page.
+    Automatically populates demo session state.
+    """
+    from flask import session, has_request_context
+    if has_request_context():
+        session["is_demo"] = True
+        session["student_id"] = "STU2024001"
+        session["college_name"] = "Raghu Engineering College"
+        session["degree"] = "B.Tech"
+        session["regulation_name"] = "AR23"
+        session["branch_name"] = "CSE"
+        session["specialization"] = "Core Computer Science"
+        session["active_semester"] = 3
+        session["student_name"] = "Rahul Kumar"
+        session["student_dept"] = "Computer Science & Engineering"
+        session["curriculum_id"] = "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE"
+
+    return build_dashboard_shell(active_path=active_path)
+
+# Aliases for robust backwards compatibility
+create_dashboard_layout = build_dashboard_shell
+render_demo_page = create_demo_cockpit_layout

@@ -121,3 +121,5 @@ def create_hero_landing_layout():
 def build_hero_page_layout():
     """Alias for backwards compatibility."""
     return create_hero_landing_layout()
+
+from app.dashboards.layout_shell import create_demo_cockpit_layout, build_dashboard_shell

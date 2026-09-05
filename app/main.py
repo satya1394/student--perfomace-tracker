@@ -19,7 +19,7 @@ import dash_bootstrap_components as dbc
 from app.config import Config
 from app.database import init_db, get_db_session, College, Regulation, Branch
 from app.auth import login_manager, authenticate_user, seed_default_users, register_student_user, login_demo_user
-from app.dashboards.layout_shell import build_dashboard_shell, create_framer_navbar_with_active
+from app.dashboards.layout_shell import build_dashboard_shell, create_framer_navbar_with_active, create_demo_cockpit_layout, create_dashboard_layout, render_demo_page
 from app.dashboards.hero_page import create_hero_landing_layout, build_hero_page_layout
 from app.callbacks import register_callbacks
 
@@ -225,10 +225,22 @@ def register_route():
 
 @server.route("/demo")
 def demo_route():
-    success, user = login_demo_user()
-    if success:
-        return redirect("/app/overview")
-    return redirect("/login")
+    try:
+        success, user = login_demo_user()
+    except Exception:
+        success = False
+    session['is_demo'] = True
+    session['student_id'] = "STU2024001"
+    session['college_name'] = "Raghu Engineering College"
+    session['degree'] = "B.Tech"
+    session['regulation_name'] = "AR23"
+    session['branch_name'] = "CSE"
+    session['specialization'] = "Core Computer Science"
+    session['active_semester'] = 3
+    session['student_name'] = "Rahul Kumar"
+    session['student_dept'] = "Computer Science & Engineering"
+    session['curriculum_id'] = "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE"
+    return redirect("/app/overview")
 
 @server.route("/student")
 @server.route("/dashboard")
@@ -325,11 +337,20 @@ def display_page(pathname):
 
     # 2. Interactive Demo Cockpit
     if norm_path in ("/demo", "/app/demo"):
-        success, user = login_demo_user()
-        if success:
-            nav = create_framer_navbar_with_active(active_path="/overview")
-            return nav, build_dashboard_shell(active_path="/overview")
-        return None, create_hero_landing_layout()
+        try:
+            login_demo_user()
+        except Exception:
+            pass
+        session["is_demo"] = True
+        session["student_id"] = "STU2024001"
+        session["college_name"] = "Raghu Engineering College"
+        session["degree"] = "B.Tech"
+        session["regulation_name"] = "AR23"
+        session["branch_name"] = "CSE"
+        session["specialization"] = "Core Computer Science"
+        session["active_semester"] = 3
+        nav = create_framer_navbar_with_active(active_path="/overview")
+        return nav, create_demo_cockpit_layout(active_path="/overview")
 
     # 3. Dedicated Login & Sign-In Routes
     if norm_path in ("/login", "/app/login", "/signin", "/app/signin"):
