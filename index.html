@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#000000 !important; color:#ffffff;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudIQ.ai — Operational Student Intelligence & Academic Platform</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Force black immediately */
+    html, body { background: #000000 !important; color: #ffffff !important; }
+
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --muted: #9a9a9a;
+      --stat: #d8d8d8;
+      --border: rgba(255, 255, 255, 0.16);
+      --border-soft: rgba(255, 255, 255, 0.12);
+
+      --logo: 15.5px;
+      --logo-mark: 22px;
+      --nav: 14px;
+      --nav-h: 40px;
+      --btn: 13.5px;
+      --btn-h: 40px;
+      --hero-btn-h: 42px;
+      --h1: 48px;
+      --lede: 15.5px;
+      --badge: 12.5px;
+      --stat-size: 13.5px;
+      --header-y: 22px;
+      --header-x: 40px;
+      --stats-x: 72px;
+      --stats-y: 36px;
+      --hero-gap: 75px;
+      --copy-max: 880px;
+      --lede-max: 560px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      background: #000000;
+      background: var(--bg, #000000);
+      color: #ffffff;
+      color: var(--text, #ffffff);
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .mono-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Video Background Layer */
+    .hero-photo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .hero-photo video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+    }
+
+    .hero-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header — 3-column grid */
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: var(--header-y) var(--header-x) 10px;
+      z-index: 50;
+      position: relative;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      justify-self: start;
+      font-size: var(--logo);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+
+    .logo-mark {
+      width: var(--logo-mark);
+      height: var(--logo-mark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-suffix {
+      font-weight: 400;
+      opacity: 0.85;
+    }
+
+    /* Center Nav — Liquid Metal Pills */
+    #site-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-self: center;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--nav-h);
+      padding: 0 18px;
+      border-radius: 7px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(198,198,198,0.55);
+      background: linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
+      color: #f3f3f3;
+      font-size: var(--nav);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
+    }
+
+    .nav-pill::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.16) 50%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform 0.6s ease;
+    }
+
+    .nav-pill:hover::before {
+      transform: translateX(120%);
+    }
+
+    .nav-pill:hover {
+      border-color: rgba(235,235,235,0.9);
+      background: linear-gradient(105deg, #111111 0%, #3a3a3a 45%, #6a6a6a 100%);
+      box-shadow: 0 0 18px rgba(200,210,230,0.18);
+    }
+
+    /* Buttons */
+    .btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--btn-h);
+      padding: 0 16px;
+      border-radius: 6px;
+      font-size: var(--btn);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.35s ease, border 0.35s ease, box-shadow 0.35s ease, color 0.35s ease, filter 0.35s ease;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.45) 48%, transparent 76%);
+      transform: translateX(-130%);
+      transition: transform 0.65s ease;
+    }
+
+    .btn:hover::after {
+      transform: translateX(130%);
+    }
+
+    .btn-solid {
+      background: linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
+      color: #111 !important;
+      border: 1px solid #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.95);
+    }
+
+    .btn-solid:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #f3f6ff 42%, #d5def2 100%);
+      border-color: #f2f6ff;
+      box-shadow: inset 0 1px 0 #fff, 0 0 22px rgba(186,208,255,0.35), 0 8px 18px rgba(255,255,255,0.12);
+    }
+
+    .btn-ghost {
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(0,0,0,0.5) 46%, rgba(150,170,200,0.1));
+      color: #fff !important;
+      border: 1px solid rgba(198,198,198,0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(220,230,255,0.8);
+      box-shadow: 0 0 24px rgba(170,200,255,0.28);
+    }
+
+    .header-cta {
+      justify-self: end;
+    }
+
+    .hero-btn {
+      height: var(--hero-btn-h);
+      padding: 0 20px;
+    }
+
+    /* Burger */
+    .burger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(8,8,8,0.55);
+      z-index: 60;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .burger-bar {
+      width: 16px;
+      height: 1.5px;
+      background: #fff;
+      border-radius: 1px;
+      transition: transform 0.25s ease, opacity 0.2s ease;
+    }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px var(--hero-gap);
+      min-height: 80vh;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: var(--copy-max);
+      width: 100%;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      padding: 9px 16px;
+      border: 0;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #7d7d7d 0%, #2a2a2a 52%, #0a0a0a 100%);
+      color: #f2f2f2;
+      font-size: var(--badge);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .badge-star {
+      width: 18px;
+      height: 20px;
+      filter: drop-shadow(0 0 3px rgba(255,255,255,0.45));
+    }
+
+    /* H1 Headline */
+    .hero h1 {
+      font-family: "Inter", sans-serif;
+      font-size: var(--h1);
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      line-height: 1.14;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline-line {
+      display: block;
+      overflow: hidden;
+      padding: 0.06em 0.15em 0.14em;
+    }
+
+    .hero h1 em {
+      font-family: "Instrument Serif", "Times New Roman", Times, serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.1em;
+      letter-spacing: -0.03em;
+      color: #9a9a9a;
+    }
+
+    /* Lede */
+    .lede {
+      max-width: var(--lede-max);
+      margin-top: 20px;
+      color: #9a9a9a;
+      font-size: var(--lede);
+      font-weight: 400;
+      line-height: 1.6;
+      letter-spacing: -0.015em;
+    }
+
+    /* Actions */
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    /* Stats Section */
+    .stats {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 var(--stats-x) var(--stats-y);
+      color: #d8d8d8;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-size: var(--stat-size);
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+    }
+
+    .stat-icon {
+      width: 20px;
+      height: 20px;
+      color: #e8e8e8;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon-wide {
+      width: 38px;
+      height: 21px;
+    }
+
+    /* Section Containers */
+    .content-section {
+      padding: 80px var(--stats-x);
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .section-subtitle {
+      font-size: 0.98rem;
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* Bento Cards */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .bento-card {
+      background: rgba(10, 10, 10, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 28px 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+    }
+
+    .bento-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .bento-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .bento-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .bento-icon {
+      font-size: 1.35rem;
+    }
+
+    .bento-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .bento-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Workflow Steps */
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .workflow-card {
+      background: rgba(10, 10, 10, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px 20px;
+      backdrop-filter: blur(16px);
+      transition: all 0.2s ease;
+    }
+
+    .workflow-card:hover {
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    .workflow-step {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 12px;
+    }
+
+    .workflow-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .workflow-card p {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Preview Cockpit Card */
+    .cockpit-preview {
+      background: rgba(8, 8, 8, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .cockpit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 20px;
+    }
+
+    .cockpit-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .cockpit-metric-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .cockpit-metric-box .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .cockpit-metric-box .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Footer */
+    .site-footer {
+      padding: 40px var(--stats-x);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.82rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    /* Entrance Motion */
+    .appear {
+      opacity: 1;
+      animation-duration: 1.05s;
+      animation-fill-mode: both;
+      animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+      animation-delay: var(--d, 0.08s);
+    }
+
+    .appear.is-in {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .appear--scale { animation-name: in-scale; }
+    .appear--soft { animation-name: in-soft; }
+    .appear--mask { animation-name: in-mask; }
+    .appear--pop { animation-name: in-pop; }
+    .appear--btn { animation-name: in-btn; }
+    .appear--side { animation-name: in-side; }
+    .appear--stat { animation-name: in-stat; }
+
+    @keyframes in-scale { 0% { opacity: 0; transform: scale(0.84); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes in-soft { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes in-mask { 0% { opacity: 0; transform: translateY(40%); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes in-pop { 0% { opacity: 0; transform: scale(0.9); } 70% { transform: scale(1.03); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes in-btn { 0% { opacity: 0; transform: translateY(18px) scale(0.94); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes in-side { 0% { opacity: 0; transform: translateX(22px); } 100% { opacity: 1; transform: translateX(0); } }
+    @keyframes in-stat { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes in-star { 0% { transform: scale(0.2) rotate(-50deg); opacity: 0; } 65% { transform: scale(1.2) rotate(8deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+
+    .badge-star { animation: in-star 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .header { grid-template-columns: 1fr auto auto; padding: 16px 20px; }
+      #site-nav { display: none; }
+      .stats { flex-direction: column; align-items: center; gap: 16px; padding: 24px 20px; }
+      .content-section { padding: 60px 20px; }
+      .site-footer { flex-direction: column; gap: 16px; padding: 30px 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body style="background:#000;color:#fff">
+  <div class="grain"></div>
+  
+  <div class="hero-photo">
+    <video autoplay loop muted playsinline src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4"></video>
+  </div>
+
+  <div class="page">
+    <!-- Header -->
+    <header class="header">
+      <a href="#top" class="logo appear appear--scale" style="--d: 0.08s" aria-label="StudIQ">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <g transform="rotate(-30 12 12)">
+              <circle cx="7.3" cy="3.2" r="1.45"/>
+              <rect x="5.5" y="4.7" width="3.6" height="14.6" rx="1.8"/>
+              <rect x="14.9" y="4.7" width="3.6" height="14.6" rx="1.8"/>
+              <circle cx="16.7" cy="20.8" r="1.45"/>
+            </g>
+          </svg>
+        </span>
+        <span>StudIQ<span class="logo-suffix">.ai</span></span>
+      </a>
+
+      <nav id="site-nav" aria-label="Primary">
+        <a href="#capabilities" class="nav-pill appear appear--scale" style="--d: 0.16s">Capabilities</a>
+        <a href="#workflow" class="nav-pill appear appear--soft" style="--d: 0.28s">Workflow</a>
+        <a href="#cockpit" class="nav-pill appear appear--scale" style="--d: 0.40s">Live Cockpit</a>
+        <a href="/login" class="nav-pill appear appear--soft" style="--d: 0.52s">Sign In</a>
+      </nav>
+
+      <a href="/demo" class="btn btn-solid header-cta appear appear--scale" style="--d: 0.34s">✦ Try Interactive Demo</a>
+    </header>
+
+    <!-- Main Hero -->
+    <main class="hero" id="top">
+      <div class="hero-copy">
+        <div class="badge appear appear--pop" style="--d: 0.22s">
+          <svg class="badge-star" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/>
+          </svg>
+          <span>Operational Student Intelligence</span>
+        </div>
+
+        <h1>
+          <span class="headline-line appear appear--mask" style="--d: 0.42s">
+            Master <em>academic performance</em> across
+          </span>
+          <span class="headline-line appear appear--mask" style="--d: 0.62s">
+            every semester in minutes.
+          </span>
+        </h1>
+
+        <p class="lede appear appear--soft" style="--d: 0.82s; animation-duration: 1.25s">
+          Calculate regulation-weighted SGPA &amp; CGPA, monitor statutory 75% attendance compliance, and track course mastery with curriculum-aware precision.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/demo" class="btn btn-solid hero-btn appear appear--btn" style="--d: 0.96s">✦ Launch Student Cockpit</a>
+          <a href="#capabilities" class="btn btn-ghost hero-btn appear appear--side" style="--d: 1.10s">Explore Capabilities &darr;</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Stats Bar -->
+    <section class="stats">
+      <div class="stat appear appear--stat" style="--d: 1.12s">
+        <svg class="stat-icon" viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="wf-g1" x1="3" y1="2" x2="14" y2="22" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#ffffff" stop-opacity="0.38"/>
+              <stop offset="1" stop-color="#3a3a3a" stop-opacity="0.62"/>
+            </linearGradient>
+            <linearGradient id="wf-g2" x1="13" y1="2" x2="24" y2="22" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#3a3a3a" stop-opacity="0.38"/>
+              <stop offset="1" stop-color="#ffffff" stop-opacity="0.62"/>
+            </linearGradient>
+          </defs>
+          <rect x="3.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#wf-g1)"/>
+          <rect x="13.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#wf-g2)"/>
+          <rect x="9.2" y="10.9" width="5.6" height="2.2" rx="1.1" fill="#4a4a4a"/>
+        </svg>
+        <span>10.0 Grading Scale &amp; SGPA Engine</span>
+      </div>
+
+      <div class="stat appear appear--stat" style="--d: 1.28s">
+        <svg class="stat-icon" viewBox="0 0 24 24">
+          <rect x="2.4" y="2.4" width="19.2" height="19.2" rx="6.2" fill="#ffffff"/>
+          <path d="M12 7.1v7.4M8.15 12.35L12 16.2l3.85-3.85" stroke="#111111" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span>75% Statutory Attendance Guard</span>
+      </div>
+
+      <div class="stat appear appear--stat" style="--d: 1.44s">
+        <svg class="stat-icon-wide" viewBox="0 0 40 22">
+          <circle cx="10.2" cy="11" r="9.2" fill="#2b2b2b"/>
+          <ellipse cx="10.2" cy="12.1" rx="4.15" ry="3.7" fill="#f4f4f4"/>
+          <polygon points="8,4 10.2,7 6.8,6.5" fill="#2b2b2b"/>
+          <polygon points="12.4,4 10.2,7 13.6,6.5" fill="#2b2b2b"/>
+          <circle cx="9" cy="11.5" r="0.7" fill="#1a1a1a"/>
+          <circle cx="11.4" cy="11.5" r="0.7" fill="#1a1a1a"/>
+          <circle cx="20.2" cy="11" r="9.2" fill="#ffffff"/>
+          <circle cx="17.5" cy="10" r="1.7" fill="#111111"/>
+          <circle cx="22.9" cy="10" r="1.7" fill="#111111"/>
+          <path d="M18 14.5 Q20.2 16.5 22.4 14.5" stroke="#111111" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <circle cx="30.2" cy="11" r="9.2" fill="#f26b1d"/>
+          <text x="30.2" y="15.1" font-family="Inter, sans-serif" font-size="12.5" font-weight="700" fill="white" text-anchor="middle">e</text>
+        </svg>
+        <span>8 Semesters &amp; Elective Pools</span>
+      </div>
+    </section>
+
+    <!-- Section 1: Core Capabilities (Bento Grid) -->
+    <section class="content-section" id="capabilities">
+      <span class="section-eyebrow">Core Capabilities</span>
+      <h2 class="section-title">Engineered for Academic Mastery</h2>
+      <p class="section-subtitle">A high-precision student intelligence system designed to model exact university credit weights, regulation schemas, and semester trajectories.</p>
+
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-num">01</span>
+            <span class="bento-icon">📊</span>
+          </div>
+          <h3>Credit-Weighted SGPA Engine</h3>
+          <p>Instantaneous calculation of term SGPA and cumulative CGPA according to exact institutional syllabus models (e.g. Raghu AR23 &amp; AR20).</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-num">02</span>
+            <span class="bento-icon">⏱️</span>
+          </div>
+          <h3>75% Statutory Attendance Guard</h3>
+          <p>Automated course-level attendance monitoring against university examination cutoffs with condonation risk alerts.</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-num">03</span>
+            <span class="bento-icon">🎯</span>
+          </div>
+          <h3>Subject Competency &amp; Radar</h3>
+          <p>Pinpoint weak courses, analyze grade point spreads, and focus study hours where they maximize term grade point averages.</p>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-header">
+            <span class="bento-num">04</span>
+            <span class="bento-icon">📋</span>
+          </div>
+          <h3>Elective &amp; Honors Management</h3>
+          <p>Manage Professional Electives (PE), Open Electives (OE), and Honors tracks across Semesters 5 through 8 with zero credit confusion.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Four-Step Workflow -->
+    <section class="content-section" id="workflow">
+      <span class="section-eyebrow">Structured Architecture</span>
+      <h2 class="section-title">Four-Step Academic Workflow</h2>
+      <p class="section-subtitle">How StudIQ turns complex curriculum credit rules into clear, actionable semester clarity.</p>
+
+      <div class="workflow-grid">
+        <div class="workflow-card">
+          <div class="workflow-step">01</div>
+          <h4>Profile Setup</h4>
+          <p>Select your college, regulation (AR23/AR20), branch, and active term to load the verified syllabus.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-step">02</div>
+          <h4>Grade Point Entry</h4>
+          <p>Record marks or letter grades for compulsory courses and choose your elective specializations.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-step">03</div>
+          <h4>Velocity Tracking</h4>
+          <p>View multi-term SGPA curves, CGPA averages, and examination eligibility indicators in real time.</p>
+        </div>
+
+        <div class="workflow-card">
+          <div class="workflow-step">04</div>
+          <h4>Target Optimization</h4>
+          <p>Receive prioritized study roadmaps identifying exact courses needed to reach distinction thresholds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Live Cockpit Preview -->
+    <section class="content-section" id="cockpit">
+      <span class="section-eyebrow">Cockpit Preview</span>
+      <h2 class="section-title">Real-Time Performance Dashboard</h2>
+      <p class="section-subtitle">High-density data visualization showing authenticated student standing and semester progression.</p>
+
+      <div class="cockpit-preview">
+        <div class="cockpit-header">
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem; color: #fff;">Rahul Kumar &bull; STU2024001</div>
+            <div style="font-size: 0.78rem; color: var(--muted);" class="mono-font">Raghu Engineering College &bull; AR23 CSE &bull; Semester 3</div>
+          </div>
+          <span style="font-size: 0.75rem; background: rgba(16,185,129,0.15); color: #34D399; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(16,185,129,0.3);" class="mono-font">✓ Distinction Tier</span>
+        </div>
+
+        <div class="cockpit-metrics">
+          <div class="cockpit-metric-box">
+            <div class="label">Cumulative CGPA</div>
+            <div class="value mono-font">8.34</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Overall 0 - 10.0 Scale</div>
+          </div>
+          <div class="cockpit-metric-box">
+            <div class="label">Term SGPA (Sem 3)</div>
+            <div class="value mono-font" style="color: #60A5FA;">8.52</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">21.0 Credits Weighted</div>
+          </div>
+          <div class="cockpit-metric-box">
+            <div class="label">Attendance Rate</div>
+            <div class="value mono-font" style="color: #34D399;">78.5%</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Exam Safe (&ge;75%)</div>
+          </div>
+          <div class="cockpit-metric-box">
+            <div class="label">Courses Enrolled</div>
+            <div class="value mono-font">8 Courses</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">AR23 Verified Structure</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 24px;">
+          <a href="/demo" class="btn btn-solid" style="padding: 10px 24px; font-weight: 600;">✦ Launch Full Interactive Cockpit &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div>
+        <span style="font-weight: 600; color: #fff;">StudIQ.ai</span> &bull; Operational Academic Platform &copy; 2026
+      </div>
+      <div class="footer-links">
+        <a href="/demo">Demo Cockpit</a>
+        <a href="/login">Student Sign In</a>
+        <a href="/register">Register Profile</a>
+        <a href="#top">Back to Top &uarr;</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function() {
+      document.querySelectorAll('.appear').forEach(function(el) {
+        el.addEventListener('animationend', function() {
+          el.classList.add('is-in');
+        }, { once: true });
+      });
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          document.querySelectorAll('.appear').forEach(function(el) {
+            var anims = el.getAnimations ? el.getAnimations() : [];
+            var isRunningOrFinished = false;
+            for (var i = 0; i < anims.length; i++) {
+              if (anims[i].playState === 'running' || anims[i].playState === 'finished') {
+                isRunningOrFinished = true;
+                break;
+              }
+            }
+            if (!isRunningOrFinished) {
+              el.classList.add('is-in');
+            }
+          });
+          var photo = document.querySelector('.hero-photo');
+          if (photo) photo.classList.add('is-in');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
