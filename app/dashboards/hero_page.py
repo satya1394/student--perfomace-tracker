@@ -1,8 +1,6 @@
 """
-StudIQ - Clean, Minimalist, Spacious Hero Landing Page
-Design: Agenciy Framer + BetterStack Dark Aesthetic
-Theme: Minimal, Uncluttered, Editorial Scale, Generous Whitespace.
-Strictly Student Self-Service.
+StudIQ - Vesper.ai Operational Academic Infrastructure Landing Page
+Pure Black #000000 | Background Video | Liquid-Metal Nav | Instrument Serif Italic Accent | 3-Stat Footer
 """
 
 from dash import html, dcc
@@ -10,451 +8,129 @@ import dash_bootstrap_components as dbc
 
 
 def build_hero_page_layout():
-    """Builds the spacious, uncluttered, editorial dark Hero page for StudIQ."""
+    """Builds the single-viewport Vesper.ai landing page."""
     return html.Div([
-        # Ambient Lighting Blooms (Soft Cyan & Purple)
-        html.Div(className="hero-glow-cyan"),
-        html.Div(className="hero-glow-purple"),
+        # Background Video Layer (100% opacity, no overlay)
+        html.Video(
+            children=[
+                html.Source(
+                    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4",
+                    type="video/mp4"
+                )
+            ],
+            autoPlay=True,
+            loop=True,
+            muted=True,
+            playsInline=True,
+            className="hero-video-bg"
+        ),
 
-        # 1. Navigation Bar (Top Sticky Glass Dock)
+        # Scrim / Grain overlay
+        html.Div(className="grain"),
+
+        # Page Container
         html.Div([
-            dbc.Container([
-                html.Div([
-                    # Logo & Brand Name
-                    html.A([
-                        html.Div("⚡", className="celestial-orb"),
-                        html.Span("StudIQ", className="celestial-title fs-3 fw-bold")
-                    ], href="/", className="celestial-brand me-4 text-decoration-none"),
+            # Menu Backdrop (for mobile)
+            html.Div(className="menu-backdrop"),
 
-                    # Center Nav Links
-                    html.Div([
-                        html.A("Features", href="#features", className="celestial-nav-link"),
-                        html.A("How It Works", href="#how-it-works", className="celestial-nav-link"),
-                        html.A("About", href="#benefits", className="celestial-nav-link"),
-                    ], className="d-none d-md-flex align-items-center me-auto gap-2"),
-
-                    # Right Action Buttons
-                    html.Div([
-                        html.A("Try Demo", href="/demo", className="btn btn-neon me-2", style={"padding": "8px 18px", "fontSize": "0.85rem"}),
-                        html.A("Login", href="/login", className="btn btn-celestial-outline me-2", style={"padding": "8px 18px", "fontSize": "0.85rem"}),
-                        html.A("Register →", href="/register", className="btn btn-gradient", style={"padding": "8px 20px", "fontSize": "0.85rem"})
-                    ], className="d-flex align-items-center")
-                ], className="d-flex align-items-center justify-content-between celestial-dock py-2 px-4")
-            ], fluid=True, style={"maxWidth": "1280px"})
-        ], className="celestial-navbar-container", style={"position": "sticky", "top": "0", "zIndex": "100"}),
-
-        # 2. Hero Section (Centered, Grand Editorial Scale, Spacious & Clean)
-        dbc.Container([
-            html.Div([
-                # Small Pill Badge
-                html.Div([
+            # 1. Header — 3-Column Grid
+            html.Header([
+                # Left: Logo + Mark SVG
+                html.A([
                     html.Span([
-                        html.Span("●", className="me-2", style={"color": "#22D3EE", "fontSize": "0.75rem"}),
-                        "Student Academic Intelligence"
-                    ], className="badge px-3 py-2 rounded-pill fw-bold text-white",
-                       style={
-                           "background": "#101728",
-                           "border": "1px solid rgba(34, 211, 238, 0.35)",
-                           "fontSize": "0.85rem",
-                           "letterSpacing": "0.06em",
-                           "boxShadow": "0 0 16px rgba(34, 211, 238, 0.2)"
-                       })
-                ], className="text-center mb-4 pt-4 anim-hero-label"),
+                        html.Img(
+                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cg transform='rotate(-30 12 12)'%3E%3Ccircle cx='7.3' cy='3.2' r='1.45'/%3E%3Crect x='5.5' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Crect x='14.9' y='4.7' width='3.6' height='14.6' rx='1.8'/%3E%3Ccircle cx='16.7' cy='20.8' r='1.45'/%3E%3C/g%3E%3C/svg%3E",
+                            alt="Vesper mark",
+                            className="logo-mark"
+                        )
+                    ], className="d-inline-flex align-items-center me-1"),
+                    html.Span("Vesper", className="fw-bold"),
+                    html.Span(".ai", className="logo-suffix")
+                ], href="#top", className="logo appear appear--scale", style={"--d": "0.08s"}, **{"aria-label": "Vesper.ai"}),
 
-                # Main Heading (Two Editorial Lines with Staggered Upward Fade)
-                html.H1([
-                    html.Div("Understand Your Progress.", className="anim-hero-heading-1 text-white mb-2", style={"letterSpacing": "-0.03em"}),
+                # Center: Liquid-Metal Nav Pills
+                html.Nav([
+                    html.A("Benefits", href="#benefits", className="nav-pill appear appear--scale", style={"--d": "0.16s"}),
+                    html.A("How It Works", href="#how-it-works", className="nav-pill appear appear--soft", style={"--d": "0.28s"}),
+                    html.A("FAQs", href="#faqs", className="nav-pill appear appear--scale", style={"--d": "0.40s"}),
+                    html.A("Pricing", href="#pricing", className="nav-pill appear appear--soft", style={"--d": "0.52s"}),
+                ], id="site-nav", **{"aria-label": "Primary"}),
+
+                # Right: Header CTA
+                html.A("Start for Free", href="/demo", className="btn btn-solid header-cta appear appear--scale", style={"--d": "0.34s"})
+            ], className="header"),
+
+            # 2. Main Hero (Bottom-Centered)
+            html.Main([
+                html.Div([
+                    # Sparkle Badge
                     html.Div([
-                        "Improve Your ",
-                        html.Span("Performance.", className="gradient-text")
-                    ], className="anim-hero-heading-2")
-                ], className="text-center fw-extrabold display-3 mb-4", style={"lineHeight": "1.15", "fontFamily": "'Space Grotesk', sans-serif"}),
+                        html.Img(
+                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z'/%3E%3C/svg%3E",
+                            alt="Sparkle",
+                            className="badge-star"
+                        ),
+                        html.Span("Operational AI Infrastructure")
+                    ], className="badge appear appear--pop", style={"--d": "0.22s"}),
 
-                # Supporting Text
-                html.P(
-                    "Track marks, attendance, SGPA, CGPA, and academic progress in one intelligent student dashboard.",
-                    className="text-center text-secondary fs-5 mb-5 anim-hero-subtext",
-                    style={"maxWidth": "680px", "margin": "0 auto", "lineHeight": "1.7", "color": "#94A3B8"}
-                ),
+                    # H1 Headline (Masked 2 lines with Instrument Serif italic em)
+                    html.H1([
+                        html.Span([
+                            "Train ",
+                            html.Em("AI agents"),
+                            " on your"
+                        ], className="headline-line appear appear--mask", style={"--d": "0.42s"}),
+                        html.Span(
+                            "workflows in minutes.",
+                            className="headline-line appear appear--mask", style={"--d": "0.62s"}
+                        )
+                    ]),
 
-                # Modern Rounded CTA Buttons
-                html.Div([
-                    html.A("✦ Try Interactive Demo →", href="/demo", className="btn btn-gradient px-4 py-3 me-3 fs-6 rounded-pill fw-bold"),
-                    html.A("Create Free Account →", href="/register", className="btn btn-neon px-4 py-3 fs-6 rounded-pill fw-bold")
-                ], className="d-flex justify-content-center flex-wrap gap-3 mb-5 anim-hero-buttons"),
+                    # Lede
+                    html.P(
+                        "Deploy adaptive AI agents that learn, execute, and scale operational tasks across your business.",
+                        className="lede appear appear--soft", style={"--d": "0.82s", "animationDuration": "1.25s"}
+                    ),
 
-                # Central Visual Hero: Wide, Clean Floating Dashboard Preview
-                html.Div([
+                    # Action Buttons
                     html.Div([
-                        # Window Header
-                        html.Div([
-                            html.Div([
-                                html.Span(className="d-inline-block rounded-circle me-1", style={"width": "10px", "height": "10px", "background": "#EF4444"}),
-                                html.Span(className="d-inline-block rounded-circle me-1", style={"width": "10px", "height": "10px", "background": "#F59E0B"}),
-                                html.Span(className="d-inline-block rounded-circle", style={"width": "10px", "height": "10px", "background": "#10B981"}),
-                            ], className="d-flex align-items-center me-3"),
-                            html.Span("⚡ StudIQ — Rahul Kumar (2024CSE001) • Raghu Engineering College R23", 
-                                      className="small text-secondary fw-semibold text-truncate", style={"fontSize": "0.82rem"}),
-                            html.Span("SEM 3 • 8.52 SGPA", className="badge bg-success bg-opacity-25 text-success ms-auto py-1 px-3 rounded-pill fw-bold small")
-                        ], className="d-flex align-items-center px-4 py-3 border-bottom border-secondary border-opacity-20 bg-black bg-opacity-30"),
+                        html.A("Start for Free", href="/demo", className="btn btn-solid hero-btn appear appear--btn", style={"--d": "0.96s"}),
+                        html.A("See it in action", href="/demo", className="btn btn-ghost hero-btn appear appear--side", style={"--d": "1.10s"})
+                    ], className="hero-actions")
+                ], className="hero-copy")
+            ], className="hero", id="top"),
 
-                        # Window Body Content
-                        html.Div([
-                            # 3 Clean KPI Cards
-                            dbc.Row([
-                                dbc.Col([
-                                    html.Div([
-                                        html.Div("Cumulative CGPA", className="kpi-label", style={"fontSize": "0.72rem", "color": "#94A3B8"}),
-                                        html.Div("8.34", className="stat-big-num fs-2 mb-0 text-white fw-bold"),
-                                        html.Div("Overall Scale 0 - 10.0", className="small", style={"color": "#64748B", "fontSize": "0.75rem"})
-                                    ], className="p-3 rounded-3 border border-secondary border-opacity-20", style={"background": "#070A13"})
-                                ], md=4, xs=12, className="mb-3 mb-md-0"),
-                                dbc.Col([
-                                    html.Div([
-                                        html.Div("Term SGPA (Sem 3)", className="kpi-label", style={"fontSize": "0.72rem", "color": "#94A3B8"}),
-                                        html.Div("8.52", className="stat-big-num fs-2 mb-0 text-info fw-bold"),
-                                        html.Div("21 Credits Weighted", className="small", style={"color": "#64748B", "fontSize": "0.75rem"})
-                                    ], className="p-3 rounded-3 border border-secondary border-opacity-20", style={"background": "#070A13"})
-                                ], md=4, xs=12, className="mb-3 mb-md-0"),
-                                dbc.Col([
-                                    html.Div([
-                                        html.Div("Class Attendance", className="kpi-label", style={"fontSize": "0.72rem", "color": "#94A3B8"}),
-                                        html.Div("78.5%", className="stat-big-num fs-2 mb-0 text-success fw-bold"),
-                                        html.Div("Safe Exam Eligibility (75%+)", className="small", style={"color": "#64748B", "fontSize": "0.75rem"})
-                                    ], className="p-3 rounded-3 border border-secondary border-opacity-20", style={"background": "#070A13"})
-                                ], md=4, xs=12),
-                            ], className="g-3 mb-4"),
-
-                            # Wide Progression Graph & Subject Mastery
-                            dbc.Row([
-                                dbc.Col([
-                                    html.Div([
-                                        html.Div([
-                                            html.Span("📈 ", className="me-1"),
-                                            html.Span("Multi-Term SGPA Progression", className="fw-bold text-white small")
-                                        ], className="mb-2"),
-                                        html.Img(
-                                            src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 135' fill='none'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='%2322D3EE'/><stop offset='100%' stop-color='%238B5CF6'/></linearGradient><linearGradient id='area' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%2322D3EE' stop-opacity='0.25'/><stop offset='100%' stop-color='%2322D3EE' stop-opacity='0.0'/></linearGradient></defs><line x1='30' y1='50' x2='570' y2='50' stroke='%2310B981' stroke-width='1.5' stroke-dasharray='3 3'/><text x='490' y='45' fill='%2310B981' font-size='9' font-family='sans-serif'>8.00 Distinction</text><path d='M 30 100 Q 150 70 260 80 T 420 40 T 570 20 L 570 125 L 30 125 Z' fill='url(%23area)'/><path d='M 30 100 Q 150 70 260 80 T 420 40 T 570 20' stroke='url(%23grad)' stroke-width='3.5' stroke-linecap='round'/><circle cx='30' cy='100' r='5' fill='%23FFFFFF' stroke='%2322D3EE' stroke-width='2'/><circle cx='260' cy='80' r='5' fill='%23FFFFFF' stroke='%2322D3EE' stroke-width='2'/><circle cx='420' cy='40' r='5' fill='%23FFFFFF' stroke='%238B5CF6' stroke-width='2'/><circle cx='570' cy='20' r='6' fill='%2322D3EE' stroke='%23FFFFFF' stroke-width='2'/><text x='25' y='126' fill='%2394A3B8' font-size='10' font-family='sans-serif'>Sem 1 (8.00)</text><text x='240' y='126' fill='%2394A3B8' font-size='10' font-family='sans-serif'>Sem 2 (8.15)</text><text x='400' y='126' fill='%2394A3B8' font-size='10' font-family='sans-serif'>Sem 3 (8.52)</text></svg>",
-                                            style={"width": "100%", "height": "auto"}
-                                        )
-                                    ], className="p-3 rounded-3 border border-secondary border-opacity-20 h-100", style={"background": "#070A13"})
-                                ], lg=7, xs=12, className="mb-3 mb-lg-0"),
-
-                                dbc.Col([
-                                    html.Div([
-                                        html.Div([
-                                            html.Span("🎯 ", className="me-1"),
-                                            html.Span("Subject Mastery", className="fw-bold text-white small")
-                                        ], className="mb-2"),
-                                        
-                                        html.Div([
-                                            html.Div([
-                                                html.Span("Data Structures", className="small text-secondary"),
-                                                html.Span("85% (Grade A)", className="small text-info fw-bold")
-                                            ], className="d-flex justify-content-between mb-1"),
-                                            dbc.Progress(value=85, color="info", className="mb-2", style={"height": "5px", "backgroundColor": "#1E293B"}),
-
-                                            html.Div([
-                                                html.Span("Digital Logic Design", className="small text-secondary"),
-                                                html.Span("92% (Grade S)", className="small text-success fw-bold")
-                                            ], className="d-flex justify-content-between mb-1"),
-                                            dbc.Progress(value=92, color="success", className="mb-2", style={"height": "5px", "backgroundColor": "#1E293B"}),
-
-                                            html.Div([
-                                                html.Span("Database Management", className="small text-secondary"),
-                                                html.Span("78% (Grade B)", className="small text-warning fw-bold")
-                                            ], className="d-flex justify-content-between mb-1"),
-                                            dbc.Progress(value=78, color="warning", className="mb-3", style={"height": "5px", "backgroundColor": "#1E293B"}),
-
-                                            html.Div([
-                                                html.Span("🤖 ML Tip: ", className="fw-bold text-info small"),
-                                                html.Span("Focus on DBMS unit tests to reach 8.80+ term GPA.", className="small text-secondary")
-                                            ], className="p-2 rounded-2 border border-info border-opacity-25", style={"background": "#070A13"})
-                                        ])
-                                    ], className="p-3 rounded-3 border border-secondary border-opacity-20 h-100", style={"background": "#070A13"})
-                                ], lg=5, xs=12)
-                            ], className="g-3")
-                        ], className="p-4")
-                    ], className="preview-glass-card")
-                ], className="anim-hero-preview preview-floating-container mb-5", style={"maxWidth": "1060px", "margin": "0 auto"})
-            ], className="py-3")
-        ], fluid=True, style={"maxWidth": "1280px"}),
-
-        # 3. Moving Feature Ticker (Infinite Seamless Marquee)
-        html.Div([
-            html.Div([
+            # 3. Footer Stats (3 Clean Items)
+            html.Footer([
+                # Stat 1: Dual-Pill / Workflow Icon
                 html.Div([
-                    html.Span("SGPA Tracking", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("CGPA Insights", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Attendance Analytics", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Subject Performance", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Smart Study Tips", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
+                    html.Img(
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='3' y1='2' x2='14' y2='22' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%23ffffff' stop-opacity='0.38'/%3E%3Cstop offset='1' stop-color='%233a3a3a' stop-opacity='0.62'/%3E%3C/linearGradient%3E%3ClinearGradient id='g2' x1='13' y1='2' x2='24' y2='22' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%233a3a3a' stop-opacity='0.38'/%3E%3Cstop offset='1' stop-color='%23ffffff' stop-opacity='0.62'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3.4' y='2.6' width='7.2' height='18.8' rx='3.6' fill='url(%23g1)'/%3E%3Crect x='13.4' y='2.6' width='7.2' height='18.8' rx='3.6' fill='url(%23g2)'/%3E%3Crect x='9.2' y='10.9' width='5.6' height='2.2' rx='1.1' fill='%234a4a4a'/%3E%3C/svg%3E",
+                        alt="Workflows",
+                        className="stat-icon"
+                    ),
+                    html.Span("4.2M+ workflows automated")
+                ], className="stat appear appear--stat", style={"--d": "1.12s"}),
 
-                    # Duplicate for infinite loop
-                    html.Span("SGPA Tracking", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("CGPA Insights", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Attendance Analytics", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Subject Performance", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                    html.Span("Smart Study Tips", className="ticker-item"),
-                    html.Span("•", className="ticker-dot"),
-                ], className="ticker-track")
-            ], className="ticker-wrap")
-        ]),
-
-        # 4. Features Section: "What StudIQ Helps You Do"
-        html.Div(id="features", children=[
-            dbc.Container([
+                # Stat 2: Download Rounded Tile Icon
                 html.Div([
-                    html.Span("CORE CAPABILITIES", className="badge px-3 py-1 rounded-pill mb-2", 
-                              style={"background": "rgba(34, 211, 238, 0.15)", "color": "#22D3EE", "border": "1px solid rgba(34, 211, 238, 0.3)"}),
-                    html.H2("What StudIQ Helps You Do", className="fw-bold display-5 text-white mb-3", style={"fontFamily": "'Space Grotesk', sans-serif"}),
-                    html.P("Engineered exclusively for engineering and university scholars to master their academic trajectory.", className="text-secondary fs-5 mb-5", style={"maxWidth": "680px", "color": "#94A3B8"})
-                ], className="reveal-on-scroll text-center mx-auto"),
+                    html.Img(
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.4' y='2.4' width='19.2' height='19.2' rx='6.2' fill='%23ffffff'/%3E%3Cpath d='M12 7.1v7.4M8.15 12.35L12 16.2l3.85-3.85' stroke='%23111111' stroke-width='1.85' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
+                        alt="Download tile",
+                        className="stat-icon"
+                    ),
+                    html.Span("92% reduction in manual operations")
+                ], className="stat appear appear--stat", style={"--d": "1.28s"}),
 
-                dbc.Row([
-                    # Card 01: Track
-                    dbc.Col([
-                        html.Div([
-                            html.Span("01 — Track", className="editorial-num"),
-                            html.H3("Track", className="editorial-title"),
-                            html.P("Monitor marks, credits, attendance, and semester progress.", className="editorial-desc")
-                        ], className="editorial-card h-100")
-                    ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    # Card 02: Calculate
-                    dbc.Col([
-                        html.Div([
-                            html.Span("02 — Calculate", className="editorial-num"),
-                            html.H3("Calculate", className="editorial-title"),
-                            html.P("Automatically calculate regulation-based SGPA and CGPA.", className="editorial-desc")
-                        ], className="editorial-card h-100")
-                    ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    # Card 03: Understand
-                    dbc.Col([
-                        html.Div([
-                            html.Span("03 — Understand", className="editorial-num"),
-                            html.H3("Understand", className="editorial-title"),
-                            html.P("Explore subject performance through interactive visualizations.", className="editorial-desc")
-                        ], className="editorial-card h-100")
-                    ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    # Card 04: Improve
-                    dbc.Col([
-                        html.Div([
-                            html.Span("04 — Improve", className="editorial-num"),
-                            html.H3("Improve", className="editorial-title"),
-                            html.P("Use academic insights to focus on the areas that need attention.", className="editorial-desc")
-                        ], className="editorial-card h-100")
-                    ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-                ], className="g-4")
-            ], fluid=True, style={"maxWidth": "1280px"}, className="py-5")
-        ]),
-
-        # 5. How It Works Section (4-Step Process)
-        html.Div(id="how-it-works", children=[
-            dbc.Container([
+                # Stat 3: Three Avatars Icon
                 html.Div([
-                    html.Span("FOUR-STEP WORKFLOW", className="badge px-3 py-1 rounded-pill mb-2", 
-                              style={"background": "rgba(34, 211, 238, 0.15)", "color": "#22D3EE", "border": "1px solid rgba(34, 211, 238, 0.3)"}),
-                    html.H2("How It Works", className="fw-bold display-5 text-white mb-3", style={"fontFamily": "'Space Grotesk', sans-serif"}),
-                    html.P("A streamlined four-step journey to full academic clarity.", className="text-secondary fs-5 mb-5", style={"maxWidth": "680px", "color": "#94A3B8"})
-                ], className="reveal-on-scroll text-center mx-auto"),
-
-                html.Div([
-                    dbc.Row([
-                        # Step 1
-                        dbc.Col([
-                            html.Div([
-                                html.Div("01", className="process-pill"),
-                                html.H4("01 — Register", className="fw-bold text-white mb-2 fs-5"),
-                                html.P("Create your profile with your college, regulation, branch, and semester.", className="editorial-desc")
-                            ], className="process-card h-100")
-                        ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                        # Step 2
-                        dbc.Col([
-                            html.Div([
-                                html.Div("02", className="process-pill"),
-                                html.H4("02 — Add Marks", className="fw-bold text-white mb-2 fs-5"),
-                                html.P("Enter your subject marks, credits, and attendance information.", className="editorial-desc")
-                            ], className="process-card h-100")
-                        ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                        # Step 3
-                        dbc.Col([
-                            html.Div([
-                                html.Div("03", className="process-pill"),
-                                html.H4("03 — Analyze", className="fw-bold text-white mb-2 fs-5"),
-                                html.P("View SGPA, CGPA, performance trends, and subject insights.", className="editorial-desc")
-                            ], className="process-card h-100")
-                        ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-
-                        # Step 4
-                        dbc.Col([
-                            html.Div([
-                                html.Div("04", className="process-pill"),
-                                html.H4("04 — Improve", className="fw-bold text-white mb-2 fs-5"),
-                                html.P("Use your insights to focus on the areas that need attention.", className="editorial-desc")
-                            ], className="process-card h-100")
-                        ], md=6, lg=3, xs=12, className="mb-4 reveal-on-scroll"),
-                    ], className="g-4")
-                ], className="process-step-container")
-            ], fluid=True, style={"maxWidth": "1280px"}, className="py-5")
-        ]),
-
-        # 6. Statistics Section
-        html.Div([
-            dbc.Container([
-                dbc.Row([
-                    dbc.Col([
-                        html.Div([
-                            html.Div("8", className="stat-big-num"),
-                            html.Div("Semesters Supported", className="stat-label-text")
-                        ], className="stat-item-card h-100")
-                    ], md=3, xs=6, className="mb-3 mb-md-0 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.Div("10", className="stat-big-num"),
-                            html.Div("Point Grading Scale", className="stat-label-text")
-                        ], className="stat-item-card h-100")
-                    ], md=3, xs=6, className="mb-3 mb-md-0 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.Div("4", className="stat-big-num"),
-                            html.Div("Academic Journey Steps", className="stat-label-text")
-                        ], className="stat-item-card h-100")
-                    ], md=3, xs=6, className="reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.Div("1", className="stat-big-num"),
-                            html.Div("Student-Focused Platform", className="stat-label-text")
-                        ], className="stat-item-card h-100")
-                    ], md=3, xs=6, className="reveal-on-scroll"),
-                ], className="g-3")
-            ], fluid=True, style={"maxWidth": "1280px"}, className="py-4")
-        ]),
-
-        # 7. Student Benefits Section ("Built Around the Student Journey")
-        html.Div(id="benefits", children=[
-            dbc.Container([
-                html.Div([
-                    html.Span("STUDENT ADVANTAGE", className="badge px-3 py-1 rounded-pill mb-2", 
-                              style={"background": "rgba(139, 92, 246, 0.15)", "color": "#C4B5FD", "border": "1px solid rgba(139, 92, 246, 0.3)"}),
-                    html.H2("Built Around the Student Journey", className="fw-bold display-5 text-white mb-3", style={"fontFamily": "'Space Grotesk', sans-serif"}),
-                    html.P("Designed from the ground up to solve the exact problems engineering students face each term.", className="text-secondary fs-5 mb-5", style={"maxWidth": "720px", "color": "#94A3B8"})
-                ], className="reveal-on-scroll text-center mx-auto"),
-
-                dbc.Row([
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Less Manual Calculation", className="fw-bold text-white mb-2"),
-                            html.P("No more messy Excel formulas or hand calculations. Instant credit-weighted math automatically.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Clearer Academic Progress", className="fw-bold text-white mb-2"),
-                            html.P("See your cumulative growth across terms 1 through 8 in clean, high-contrast visual spline charts.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Faster Understanding of Weak Subjects", className="fw-bold text-white mb-2"),
-                            html.P("Pinpoint exactly which subjects pull your GPA down and how many marks you need to recover.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Regulation-Aware Results", className="fw-bold text-white mb-2"),
-                            html.P("Tailored to your exact college framework — whether R23, R20, or autonomous credit scales.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Interactive Student Dashboard", className="fw-bold text-white mb-2"),
-                            html.P("Explore terms, filter by semester, review marksheets, and test scenarios seamlessly.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-
-                    dbc.Col([
-                        html.Div([
-                            html.H5("Data-Based Study Recommendations", className="fw-bold text-white mb-2"),
-                            html.P("Machine-learning models provide personalized target scores and attendance risk alerts.", className="text-secondary small mb-0")
-                        ], className="editorial-card h-100")
-                    ], md=4, xs=12, className="mb-4 reveal-on-scroll"),
-                ], className="g-4")
-            ], fluid=True, style={"maxWidth": "1280px"}, className="py-5")
-        ]),
-
-        # 8. Final Call to Action ("Make Every Semester Count")
-        dbc.Container([
-            html.Div([
-                html.H2("Make Every Semester Count", className="fw-bold display-5 text-white mb-3", style={"fontFamily": "'Space Grotesk', sans-serif"}),
-                html.P(
-                    "Your marks contain more than a score. They show your progress, your strengths, and your next opportunity to improve.",
-                    className="text-secondary fs-5 mb-5",
-                    style={"maxWidth": "680px", "margin": "0 auto", "lineHeight": "1.7", "color": "#94A3B8"}
-                ),
-                html.Div([
-                    html.A("✦ Try the Demo →", href="/demo", className="btn btn-gradient px-4 py-3 me-3 fs-6 rounded-pill fw-bold"),
-                    html.A("Create Your Account →", href="/register", className="btn btn-neon px-4 py-3 fs-6 rounded-pill fw-bold")
-                ], className="d-flex justify-content-center flex-wrap gap-3")
-            ], className="editorial-card text-center p-5 mb-5", 
-               style={
-                   "background": "linear-gradient(145deg, #101728 0%, #070A13 100%)",
-                   "border": "1px solid rgba(34, 211, 238, 0.4)",
-                   "boxShadow": "0 25px 80px rgba(0, 0, 0, 0.95), 0 0 35px rgba(34, 211, 238, 0.2)"
-               })
-        ], fluid=True, style={"maxWidth": "1180px"}, className="py-4"),
-
-        # 9. Footer (Clean, Minimalist, No Faculty/Admin)
-        html.Footer([
-            dbc.Container([
-                dbc.Row([
-                    # Left: Brand & Tagline
-                    dbc.Col([
-                        html.Div([
-                            html.Span("⚡ StudIQ", className="fw-bold text-white fs-4 me-2"),
-                            html.Span("Student Academic Intelligence", className="text-info small fw-bold")
-                        ], className="d-flex align-items-center mb-2"),
-                        html.P("Understand your progress. Improve your performance.", className="text-secondary small mb-3"),
-                        html.P("Built for students, by students.", className="text-secondary small mb-0")
-                    ], md=6, xs=12, className="mb-4 mb-md-0"),
-
-                    # Right: Quick Navigation Links
-                    dbc.Col([
-                        html.Div([
-                            html.A("Home", href="/", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("Features", href="#features", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("Demo", href="/demo", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("Login", href="/login", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("Register", href="/register", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("Dashboard", href="/student", className="text-secondary small text-decoration-none me-3 mb-2"),
-                            html.A("GitHub", href="#", className="text-info small text-decoration-none mb-2")
-                        ], className="d-flex flex-wrap justify-content-md-end")
-                    ], md=6, xs=12, className="d-flex align-items-center justify-content-md-end")
-                ], className="py-4 border-top border-secondary border-opacity-20"),
-
-                html.Div([
-                    html.Span("© 2026 StudIQ. All rights reserved.", className="text-secondary small")
-                ], className="text-center pb-4")
-            ], fluid=True, style={"maxWidth": "1280px"})
-        ])
-    ])
+                    html.Img(
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 22'%3E%3Ccircle cx='10.2' cy='11' r='9.2' fill='%232b2b2b'/%3E%3Cellipse cx='10.2' cy='12.1' rx='4.15' ry='3.7' fill='%23f4f4f4'/%3E%3Cpolygon points='8,4 10.2,7 6.8,6.5' fill='%232b2b2b'/%3E%3Cpolygon points='12.4,4 10.2,7 13.6,6.5' fill='%232b2b2b'/%3E%3Ccircle cx='9' cy='11.5' r='0.7' fill='%231a1a1a'/%3E%3Ccircle cx='11.4' cy='11.5' r='0.7' fill='%231a1a1a'/%3E%3Ccircle cx='20.2' cy='11' r='9.2' fill='%23ffffff'/%3E%3Ccircle cx='17.5' cy='10' r='1.7' fill='%23111111'/%3E%3Ccircle cx='22.9' cy='10' r='1.7' fill='%23111111'/%3E%3Cpath d='M18 14.5 Q20.2 16.5 22.4 14.5' stroke='%23111111' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='30.2' cy='11' r='9.2' fill='%23f26b1d'/%3E%3Ctext x='30.2' y='15.1' font-family='Inter, sans-serif' font-size='12.5' font-weight='700' fill='white' text-anchor='middle'%3Ee%3C/text%3E%3C/svg%3E",
+                        alt="Avatars",
+                        className="stat-icon-wide"
+                    ),
+                    html.Span("180+ operational teams onboarded")
+                ], className="stat appear appear--stat", style={"--d": "1.44s"})
+            ], className="stats")
+        ], className="page")
+    ], style={"background": "#000", "color": "#fff"})
