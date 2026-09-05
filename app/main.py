@@ -308,21 +308,69 @@ app.layout = html.Div([
     [Input("url", "pathname")]
 )
 def display_page(pathname):
-    pathname = pathname or "/app/overview"
-    is_auth = (current_user and current_user.is_authenticated) or session.get("is_demo", False)
+    """
+    Main URL router with strict priority:
+    1. Public Hero Landing: rendered immediately with zero auth interception
+    2. Demo Cockpit: logs in demo session and mounts overview
+    3. Login / Sign-in: dedicated sign in form
+    4. Protected Views: authenticated users view subpages, unauthenticated redirect to /login
+    5. Fallback: unknown routes safely fall back to public landing page
+    """
+    raw_path = (pathname or "/").strip()
+    norm_path = raw_path.rstrip("/") if (raw_path and raw_path != "/") else "/"
 
-    # Protected Dashboard Routes
-    if not is_auth:
+    # 1. Public Hero Landing Page Routes (Zero Auth Interception)
+    if norm_path in ("/", "", "/app", "/landing", "/home", "/app/landing", "/app/home"):
+        return None, create_hero_landing_layout()
+
+    # 2. Interactive Demo Cockpit
+    if norm_path in ("/demo", "/app/demo"):
+        success, user = login_demo_user()
+        if success:
+            nav = create_framer_navbar_with_active(active_path="/overview")
+            return nav, build_dashboard_shell(active_path="/overview")
+        return None, create_hero_landing_layout()
+
+    # 3. Dedicated Login & Sign-In Routes
+    if norm_path in ("/login", "/app/login", "/signin", "/app/signin"):
+        is_auth = (current_user and current_user.is_authenticated) or session.get("is_demo", False)
+        if is_auth:
+            nav = create_framer_navbar_with_active(active_path="/overview")
+            return nav, build_dashboard_shell(active_path="/overview")
         return None, html.Div([
             dcc.Location(href="/login", id="auth-redirect"),
-            html.Div("Redirecting to login...", className="text-secondary p-4 text-center")
+            html.Div("Redirecting to Student Portal Sign In...", className="text-secondary p-4 text-center")
         ])
 
-    target_subroute = pathname.replace("/app", "")
-    if target_subroute not in ("/overview", "/analytics", "/marks-subjects", "/attendance", "/academic-profile", "/settings"):
+    # 4. Protected Subpages (Overview, Analytics, Marks & Subjects, Attendance, Academic Profile, Settings, Dashboard)
+    target_subroute = norm_path.replace("/app", "")
+    if target_subroute in ("", "/"):
         target_subroute = "/overview"
-    nav = create_framer_navbar_with_active(active_path=target_subroute)
-    return nav, build_dashboard_shell(active_path=target_subroute)
+
+    protected_subroutes = {
+        "/overview": "/overview",
+        "/analytics": "/analytics",
+        "/marks-subjects": "/marks-subjects",
+        "/attendance": "/attendance",
+        "/academic-profile": "/academic-profile",
+        "/settings": "/settings",
+        "/dashboard": "/overview",
+        "/student": "/overview"
+    }
+
+    if target_subroute in protected_subroutes:
+        actual_subroute = protected_subroutes[target_subroute]
+        is_auth = (current_user and current_user.is_authenticated) or session.get("is_demo", False)
+        if not is_auth:
+            return None, html.Div([
+                dcc.Location(href="/login", id="auth-redirect"),
+                html.Div("Redirecting to login...", className="text-secondary p-4 text-center")
+            ])
+        nav = create_framer_navbar_with_active(active_path=actual_subroute)
+        return nav, build_dashboard_shell(active_path=actual_subroute)
+
+    # 5. Safe Fallback for Any Unhandled / Unknown Routes
+    return None, create_hero_landing_layout()
 
 # 5. Register All Reactive Callbacks
 register_callbacks(app)
