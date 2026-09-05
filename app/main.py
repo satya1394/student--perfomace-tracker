@@ -20,6 +20,7 @@ from app.config import Config
 from app.database import init_db, get_db_session, College, Regulation, Branch
 from app.auth import login_manager, authenticate_user, seed_default_users, register_student_user, login_demo_user
 from app.dashboards.layout_shell import build_dashboard_shell, create_framer_navbar_with_active
+from app.dashboards.hero_page import create_hero_landing_layout, build_hero_page_layout
 from app.callbacks import register_callbacks
 
 # 1. Initialize Flask Application
