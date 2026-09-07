@@ -7,14 +7,13 @@
 </p>
 
 [![Production Live](https://img.shields.io/badge/PRODUCTION-LIVE-22C55E?style=for-the-badge&logo=render&logoColor=000&color=09090b&labelColor=22C55E)](https://student-perfomace-tracker.onrender.com/)
-[![Python](https://img.shields.io/badge/PYTHON-3.10%20%7C%2011%20%7C%2012-71717a?style=for-the-badge&logo=python&logoColor=fff&color=09090b&labelColor=27272a)]Transformation(https://www.python.org/)
+[![Python](https://img.shields.io/badge/PYTHON-3.10%20%7C%2011%20%7C%2012-71717a?style=for-the-badge&logo=python&logoColor=fff&color=09090b&labelColor=27272a)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/FRAMEWORK-FLASK%203.0-71717a?style=for-the-badge&logo=flask&logoColor=fff&color=09090b&labelColor=27272a)](https://flask.palletsprojects.com/)
 [![Plotly Dash](https://img.shields.io/badge/ANALYTICS-DASH%203.0-71717a?style=for-the-badge&logo=plotly&logoColor=fff&color=09090b&labelColor=27272a)](https://dash.plotly.com/)
 [![Gunicorn](https://img.shields.io/badge/SERVER-GUNICORN-71717a?style=for-the-badge&logo=gunicorn&logoColor=fff&color=09090b&labelColor=27272a)](https://gunicorn.org/)
-[![Database](https://img.shields.io/badge/DATABASE-SQLITE%20%7C%20OR_M-71717a?style=for-the-badge&logo=sqlite&logoColor=fff&color=09090b&labelColor=27272a)](https://www.sqlalchemy.org/)
+[![Database](https://img.shields.io/badge/DATABASE-SQLITE%20%7C%20ORM-71717a?style=for-the-badge&logo=sqlite&logoColor=fff&color=09090b&labelColor=27272a)](https://www.sqlalchemy.org/)
 [![Deploy](https://img.shields.io/badge/DEPLOYMENT-RENDER-71717a?style=for-the-badge&logo=render&logoColor=fff&color=09090b&labelColor=27272a)](https://student-perfomace-tracker.onrender.com/)
 [![License: MIT](https://img.shields.io/badge/LICENSE-MIT-71717a?style=for-the-badge&logo=opensourceinitiative&logoColor=fff&color=09090b&labelColor=27272a)](https://opensource.org/licenses/MIT)
-
 </div>
 
 ---
