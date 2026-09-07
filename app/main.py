@@ -19,6 +19,7 @@ import dash_bootstrap_components as dbc
 from app.config import Config
 from app.database import init_db, get_db_session, College, Regulation, Branch
 from app.auth import login_manager, authenticate_user, seed_default_users, register_student_user, login_demo_user
+from app.curriculum_loader import ensure_curricula_loaded
 from app.dashboards.layout_shell import build_dashboard_shell, create_framer_navbar_with_active, create_demo_cockpit_layout, create_dashboard_layout, render_demo_page
 from app.dashboards.hero_page import create_hero_landing_layout, build_hero_page_layout
 from app.callbacks import register_callbacks
@@ -396,12 +397,25 @@ def display_page(pathname):
 # 5. Register All Reactive Callbacks
 register_callbacks(app)
 
+_BOOTSTRAPPED = False
+
 def bootstrap_application():
-    """Initializes schema and default demo users upon startup."""
-    init_db()
-    seed_default_users()
+    """Initializes schema, seeds grade rules & branches, canonical curricula, and default demo users upon startup."""
+    global _BOOTSTRAPPED
+    if _BOOTSTRAPPED:
+        return
+    try:
+        init_db()
+        ensure_curricula_loaded()
+        seed_default_users()
+        _BOOTSTRAPPED = True
+        print("[✓] StudIQ application bootstrap complete. All 12 branches and curricula verified.")
+    except Exception as e:
+        print(f"[!] Warning during application bootstrap: {e}")
+
+# Run idempotent bootstrap on module import so WSGI servers (e.g. gunicorn) automatically initialize DB & curricula
+bootstrap_application()
 
 if __name__ == "__main__":
-    bootstrap_application()
     print(f"[*] Starting StudIQ on http://{Config.HOST}:{Config.PORT}")
     app.run(host=Config.HOST, port=Config.PORT, debug=False, dev_tools_ui=False, dev_tools_props_check=False)

@@ -383,12 +383,12 @@ class AuditLog(Base):
 
 
 def init_db():
-    """Create all database tables and seed grade rules and institutional metadata."""
+    """Create all database tables and seed grade rules, colleges, regulations, and all branch specializations."""
     Base.metadata.create_all(bind=engine)
     
-    # Populate standard Grade Rules for AR23 & AR20 if not present
     db = SessionLocal()
     try:
+        # 1. Populate standard Grade Rules for AR23 & AR20 if not present
         if db.query(GradeRule).count() == 0:
             for reg in ["AR23", "AR20", "R23", "R20"]:
                 rules = [
@@ -409,6 +409,76 @@ def init_db():
                         max_marks=max_m
                     ))
             db.commit()
+
+        # 2. Seed College record
+        col = db.query(College).filter(College.name == "Raghu Engineering College").first()
+        if not col:
+            col = College(
+                code="REC",
+                name="Raghu Engineering College",
+                location="Visakhapatnam, Andhra Pradesh"
+            )
+            db.add(col)
+            db.flush()
+
+        # 3. Seed Regulation records
+        reg_map = {}
+        for reg_code, reg_name in [("AR23", "Autonomous Regulation 2023"), ("AR20", "Autonomous Regulation 2020")]:
+            reg_obj = db.query(Regulation).filter(Regulation.code == reg_code).first()
+            if not reg_obj:
+                reg_obj = Regulation(
+                    college_id=col.id,
+                    code=reg_code,
+                    name=reg_name
+                )
+                db.add(reg_obj)
+                db.flush()
+            reg_map[reg_code] = reg_obj
+
+        # 4. Seed All Branch & Specialization Combinations for AR23 and AR20
+        branches_data = [
+            # AR23 Branches
+            ("AR23", "CSE", "Computer Science & Engineering", "Core Computer Science"),
+            ("AR23", "CSE", "Computer Science & Engineering", "AI & ML"),
+            ("AR23", "CSE", "Computer Science & Engineering", "Data Science"),
+            ("AR23", "CSE", "Computer Science & Engineering", "Cyber Security"),
+            ("AR23", "CSE", "Computer Science & Engineering", "IoT & Blockchain"),
+            ("AR23", "ECE", "Electronics & Communication Engineering", "VLSI & Embedded Systems"),
+            ("AR23", "EEE", "Electrical & Electronics Engineering", "Power Systems & Automation"),
+            ("AR23", "MECH", "Mechanical Engineering", "Design & Manufacturing"),
+            ("AR23", "CIVIL", "Civil Engineering", "Structural Engineering"),
+            # AR20 Branches
+            ("AR20", "CSE", "Computer Science & Engineering", "Core Computer Science"),
+            ("AR20", "CSE", "Computer Science & Engineering", "AI & ML"),
+            ("AR20", "CSE", "Computer Science & Engineering", "Data Science"),
+            ("AR20", "CSE", "Computer Science & Engineering", "Cyber Security"),
+            ("AR20", "CSE", "Computer Science & Engineering", "IoT & Embedded"),
+            ("AR20", "ECE", "Electronics & Communication Engineering", "VLSI & Embedded Systems"),
+            ("AR20", "EEE", "Electrical & Electronics Engineering", "Power Systems"),
+            ("AR20", "MECH", "Mechanical Engineering", "Thermal & Design"),
+            ("AR20", "CIVIL", "Civil Engineering", "Structural Engineering"),
+        ]
+
+        for reg_code, b_code, b_name, b_spec in branches_data:
+            reg_obj = reg_map.get(reg_code)
+            if not reg_obj:
+                continue
+            existing_br = db.query(Branch).filter(
+                Branch.regulation_id == reg_obj.id,
+                Branch.code == b_code,
+                Branch.specialization == b_spec
+            ).first()
+            if not existing_br:
+                new_br = Branch(
+                    college_id=col.id,
+                    regulation_id=reg_obj.id,
+                    code=b_code,
+                    name=b_name,
+                    specialization=b_spec
+                )
+                db.add(new_br)
+
+        db.commit()
     finally:
         db.close()
 

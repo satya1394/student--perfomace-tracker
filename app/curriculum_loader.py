@@ -23,15 +23,50 @@ from app.database import (
 from app.curriculum_engine import get_curriculum_id
 
 
+def find_curriculum_data_file() -> Path:
+    """Finds official_curricula.csv across all possible directory structures in production or local."""
+    candidates = [
+        BASE_DIR / "data" / "official_curricula.csv",
+        Path(__file__).resolve().parent.parent / "data" / "official_curricula.csv",
+        Path.cwd() / "data" / "official_curricula.csv",
+        Path.cwd() / "official_curricula.csv",
+        Path(__file__).resolve().parent / "official_curricula.csv",
+        Path("/opt/render/project/src/data/official_curricula.csv"),
+    ]
+    for p in candidates:
+        if p.exists() and p.is_file() and p.stat().st_size > 0:
+            return p
+    return candidates[0]
+
+
+def ensure_curricula_loaded(force: bool = False) -> bool:
+    """Idempotently ensures all canonical curricula and subjects are populated in the database."""
+    db = get_db_session()
+    try:
+        count = db.query(CurriculumSubject).count()
+        if count == 0 or force:
+            print(f"[*] Seeding canonical branch curricula (current count: {count})...")
+            report = load_and_validate_curricula()
+            print(f"[✓] Successfully seeded {report.get('valid_subjects_imported', 0)} subjects across {report.get('curricula_count', 0)} curricula.")
+            return True
+        return False
+    except Exception as e:
+        print(f"[!] Error during ensure_curricula_loaded: {e}")
+        return False
+    finally:
+        db.close()
+
+
 def load_and_validate_curricula(csv_path: str = None) -> Dict[str, Any]:
     """
     Parses and validates official curricula CSV file, loads records into DB,
     and returns a detailed validation report.
     """
     if csv_path is None:
-        csv_path = Path(__file__).resolve().parent.parent / "data" / "official_curricula.csv"
+        csv_file = find_curriculum_data_file()
+    else:
+        csv_file = Path(csv_path)
     
-    csv_file = Path(csv_path)
     if not csv_file.exists():
         raise FileNotFoundError(f"Curriculum CSV not found at {csv_file}")
 
