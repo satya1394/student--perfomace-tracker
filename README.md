@@ -6,14 +6,14 @@
   <strong>Enterprise-grade student self-service academic intelligence cockpit, 6-parameter deterministic curriculum resolution engine, and verified SGPA/CGPA analytics platform.</strong>
 </p>
 
-[![Live Production](https://img.shields.io/badge/Production%20Live-student--perfomace--tracker.onrender.com-00F0FF?style=for-the-badge&logo=render&logoColor=000000)](https://student-perfomace-tracker.onrender.com/)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0+-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Plotly Dash](https://img.shields.io/badge/Plotly%20Dash-3.0+-00C2FF?style=for-the-badge&logo=plotly&logoColor=white)](https://dash.plotly.com/)
-[![Gunicorn WSGI](https://img.shields.io/badge/Gunicorn-Production%20WSGI-499848?style=for-the-badge&logo=gunicorn&logoColor=white)](https://gunicorn.org/)
-[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20SQLAlchemy%202.0+-8B5CF6?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlalchemy.org/)
-[![Deployment](https://img.shields.io/badge/Deploy-Zero--Config%20Cloud%20Ready-22C55E?style=for-the-badge&logo=githubactions&logoColor=white)](https://student-perfomace-tracker.onrender.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-FACC15?style=for-the-badge&logo=opensourceinitiative&logoColor=black)](https://opensource.org/licenses/MIT)
+[![Production Live](https://img.shields.io/badge/PRODUCTION-LIVE-22C55E?style=for-the-badge&logo=render&logoColor=000&color=09090b&labelColor=22C55E)](https://student-perfomace-tracker.onrender.com/)
+[![Python](https://img.shields.io/badge/PYTHON-3.10%20%7C%2011%20%7C%2012-71717a?style=for-the-badge&logo=python&logoColor=fff&color=09090b&labelColor=27272a)]Transformation(https://www.python.org/)
+[![Flask](https://img.shields.io/badge/FRAMEWORK-FLASK%203.0-71717a?style=for-the-badge&logo=flask&logoColor=fff&color=09090b&labelColor=27272a)](https://flask.palletsprojects.com/)
+[![Plotly Dash](https://img.shields.io/badge/ANALYTICS-DASH%203.0-71717a?style=for-the-badge&logo=plotly&logoColor=fff&color=09090b&labelColor=27272a)](https://dash.plotly.com/)
+[![Gunicorn](https://img.shields.io/badge/SERVER-GUNICORN-71717a?style=for-the-badge&logo=gunicorn&logoColor=fff&color=09090b&labelColor=27272a)](https://gunicorn.org/)
+[![Database](https://img.shields.io/badge/DATABASE-SQLITE%20%7C%20OR_M-71717a?style=for-the-badge&logo=sqlite&logoColor=fff&color=09090b&labelColor=27272a)](https://www.sqlalchemy.org/)
+[![Deploy](https://img.shields.io/badge/DEPLOYMENT-RENDER-71717a?style=for-the-badge&logo=render&logoColor=fff&color=09090b&labelColor=27272a)](https://student-perfomace-tracker.onrender.com/)
+[![License: MIT](https://img.shields.io/badge/LICENSE-MIT-71717a?style=for-the-badge&logo=opensourceinitiative&logoColor=fff&color=09090b&labelColor=27272a)](https://opensource.org/licenses/MIT)
 
 </div>
 
