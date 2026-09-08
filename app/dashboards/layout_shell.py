@@ -83,13 +83,78 @@ def create_stage_route_header(title_markup, subtitle: str, badge_text: str = "PA
 def build_dashboard_shell(active_path: str = "/overview"):
     """
     Builds the clean, unified frosted liquid-glass dashboard shell.
+    Automatically binds and persists branch, specialization, and regulation across all navigation tabs.
     """
-    def_college = session.get("college_name", "Raghu Engineering College") if has_request_context() else "Raghu Engineering College"
-    def_degree = session.get("degree", "B.Tech") if has_request_context() else "B.Tech"
-    def_reg = session.get("regulation_name", "AR23") if has_request_context() else "AR23"
-    def_branch = session.get("branch_name", "CSE") if has_request_context() else "CSE"
-    def_spec = session.get("specialization", "Core Computer Science") if has_request_context() else "Core Computer Science"
-    def_sem = str(session.get("active_semester", 3)) if has_request_context() else "3"
+    from app.database import get_db_session, Student
+    from app.curriculum_engine import CurriculumEngine
+
+    def_college = session.get("college_name") if has_request_context() else None
+    def_degree = session.get("degree") if has_request_context() else None
+    def_reg = session.get("regulation_name") if has_request_context() else None
+    def_branch = session.get("branch_name") if has_request_context() else None
+    def_spec = session.get("specialization") if has_request_context() else None
+    def_sem = session.get("active_semester") if has_request_context() else None
+
+    # Fallback to querying Student DB record if missing from session
+    if (not def_branch or not def_spec or not def_reg) and current_user and current_user.is_authenticated:
+        db = get_db_session()
+        try:
+            sid = current_user.student_id or current_user.username.upper()
+            stu = db.query(Student).filter(Student.student_id == sid).first()
+            if not stu and current_user.email:
+                stu = db.query(Student).filter(Student.email == current_user.email).first()
+            if stu:
+                def_college = def_college or stu.college_name or "Raghu Engineering College"
+                def_degree = def_degree or stu.degree or "B.Tech"
+                def_reg = def_reg or stu.regulation_name or "AR23"
+                def_branch = def_branch or stu.branch_name or "CSE"
+                def_spec = def_spec or stu.specialization or "Core Computer Science"
+                def_sem = def_sem or stu.current_semester or 3
+                if has_request_context():
+                    session["college_name"] = def_college
+                    session["degree"] = def_degree
+                    session["regulation_name"] = def_reg
+                    session["branch_name"] = def_branch
+                    session["specialization"] = def_spec
+                    session["active_semester"] = def_sem
+                    session["student_id"] = stu.student_id
+                    session["student_name"] = stu.name
+                    session["student_dept"] = stu.department
+                    session["curriculum_id"] = stu.curriculum_id
+        finally:
+            db.close()
+
+    def_college = def_college or "Raghu Engineering College"
+    def_degree = def_degree or "B.Tech"
+    def_reg = def_reg or "AR23"
+    def_branch = def_branch or "CSE"
+    def_spec = def_spec or ("VLSI & Embedded Systems" if def_branch == "ECE" else ("Power Systems & Automation" if def_branch == "EEE" else ("Design & Manufacturing" if def_branch == "MECH" else ("Structural Engineering" if def_branch == "CIVIL" else "Core Computer Science"))))
+    def_sem = str(def_sem or 3)
+
+    # Dynamic specialization options for active branch
+    db = get_db_session()
+    try:
+        spec_list = CurriculumEngine.get_specializations(db, def_college, def_degree, def_reg, def_branch)
+    finally:
+        db.close()
+
+    if not spec_list:
+        if def_branch == "CSE":
+            spec_list = ["Core Computer Science", "AI & ML", "Data Science", "Cyber Security", "IoT & Blockchain"]
+        elif def_branch == "ECE":
+            spec_list = ["VLSI & Embedded Systems"]
+        elif def_branch == "EEE":
+            spec_list = ["Power Systems & Automation"] if def_reg == "AR23" else ["Power Systems"]
+        elif def_branch == "MECH":
+            spec_list = ["Design & Manufacturing"] if def_reg == "AR23" else ["Thermal & Design"]
+        elif def_branch == "CIVIL":
+            spec_list = ["Structural Engineering"]
+        else:
+            spec_list = [def_spec] if def_spec else ["Core Computer Science"]
+
+    if def_spec not in spec_list:
+        spec_list.insert(0, def_spec)
+    spec_options = [{"label": s, "value": s} for s in spec_list]
 
     norm_path = active_path.replace("/app", "") if active_path.startswith("/app") else active_path
     if norm_path in ("", "/"):
@@ -113,7 +178,7 @@ def build_dashboard_shell(active_path: str = "/overview"):
             "ANALYTICS"
         )
         subpage_content = build_analytics_page()
-    elif norm_path == "/marks-subjects":
+    elif norm_path in ("/marks-subjects", "/marks", "/subjects"):
         route_header = create_stage_route_header(
             [html.Span("Marks & Subjects "), html.Em("Marksheet")],
             "Official semester subject roster, grade point entry, elective course selections, and verified transcript.",
@@ -127,7 +192,7 @@ def build_dashboard_shell(active_path: str = "/overview"):
             "ATTENDANCE"
         )
         subpage_content = build_attendance_page()
-    elif norm_path == "/academic-profile":
+    elif norm_path in ("/academic-profile", "/profile"):
         route_header = create_stage_route_header(
             [html.Span("Student "), html.Em("Academic Profile")],
             "Student enrollment credentials, institutional affiliation, branch specialization, and regulation governance.",
@@ -143,7 +208,7 @@ def build_dashboard_shell(active_path: str = "/overview"):
         subpage_content = build_settings_page()
 
     return dbc.Container([
-                        # Exact Preview Card Container with Strict CSS Grid
+        # Exact Preview Card Container with Strict CSS Grid
         html.Div([
             html.Div([
                 html.Span([
@@ -152,7 +217,7 @@ def build_dashboard_shell(active_path: str = "/overview"):
                 ], className="preview-card-heading"),
                 html.Span([
                     html.Span("●", style={"color": "#34D399", "fontSize": "0.8rem"}),
-                    html.Span("AR23 Autonomous Active Context")
+                    html.Span(f"{def_reg} {def_branch} ({def_spec})")
                 ], className="preview-card-status-pill mono-font")
             ], className="preview-card-top-header"),
 
@@ -218,13 +283,7 @@ def build_dashboard_shell(active_path: str = "/overview"):
                     html.Label("🎯 Specialization Track", className="preview-field-label"),
                     dbc.Select(
                         id="curriculum-spec-select",
-                        options=[
-                            {"label": "Core Computer Science", "value": "Core Computer Science"},
-                            {"label": "AI & ML", "value": "AI & ML"},
-                            {"label": "Data Science", "value": "Data Science"},
-                            {"label": "Cyber Security", "value": "Cyber Security"},
-                            {"label": "IoT & Blockchain", "value": "IoT & Blockchain"}
-                        ],
+                        options=spec_options,
                         value=def_spec,
                         className="preview-form-select"
                     )

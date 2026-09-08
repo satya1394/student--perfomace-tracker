@@ -170,6 +170,37 @@ LOGIN_TEMPLATE = '''<!DOCTYPE html>
 </html>
 '''
 
+@server.before_request
+def sync_academic_session():
+    """Guarantees branch_name, specialization, regulation_name, and student profile are permanently bound in session."""
+    if current_user and current_user.is_authenticated:
+        if not session.get("branch_name") or not session.get("specialization") or not session.get("student_id"):
+            db = get_db_session()
+            try:
+                sid = current_user.student_id or current_user.username.upper()
+                stu = db.query(Student).filter(Student.student_id == sid).first()
+                if not stu and current_user.email:
+                    stu = db.query(Student).filter(Student.email == current_user.email).first()
+                if stu:
+                    session['student_id'] = stu.student_id
+                    session['college_name'] = stu.college_name or "Raghu Engineering College"
+                    session['degree'] = stu.degree or "B.Tech"
+                    session['regulation_name'] = stu.regulation_name or "AR23"
+                    session['branch_name'] = stu.branch_name or "CSE"
+                    session['specialization'] = stu.specialization or "Core Computer Science"
+                    session['active_semester'] = stu.current_semester or 3
+                    session['student_name'] = stu.name
+                    session['student_dept'] = stu.department or f"{stu.branch_name or 'CSE'} ({stu.specialization or 'Core Computer Science'})"
+                    session['curriculum_id'] = stu.curriculum_id or get_curriculum_id(
+                        stu.college_name or "Raghu Engineering College",
+                        stu.degree or "B.Tech",
+                        stu.regulation_name or "AR23",
+                        stu.branch_name or "CSE",
+                        stu.specialization or "Core Computer Science"
+                    )
+            finally:
+                db.close()
+
 @server.route("/login", methods=["GET", "POST"])
 def login_route():
     if current_user.is_authenticated:
@@ -195,6 +226,16 @@ def register_route():
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
+        roll_number = request.form.get("roll_number", "").strip().upper() or username.upper()
+        branch_name = request.form.get("branch_name", "").strip() or "CSE"
+        specialization = request.form.get("specialization", "").strip() or ("VLSI & Embedded Systems" if branch_name == "ECE" else ("Power Systems & Automation" if branch_name == "EEE" else ("Design & Manufacturing" if branch_name == "MECH" else ("Structural Engineering" if branch_name == "CIVIL" else "Core Computer Science"))))
+        regulation_name = request.form.get("regulation_name", "").strip() or "AR23"
+        semester_val = request.form.get("semester", 3)
+        try:
+            semester = int(semester_val)
+        except Exception:
+            semester = 3
+
         db = get_db_session()
         try:
             col = db.query(College).first()
@@ -205,15 +246,21 @@ def register_route():
             branch_id = br.id if br else 1
         finally:
             db.close()
+
         user, err = register_student_user(
             full_name=full_name,
-            roll_number=username.upper(),
+            roll_number=roll_number,
             username=username,
             email=email,
-            department="Computer Science & Engineering",
-            semester=3,
+            department=f"{branch_name} ({specialization})",
+            semester=semester,
             password=password,
             confirm_password=confirm_password,
+            college_name="Raghu Engineering College",
+            degree="B.Tech",
+            regulation_name=regulation_name,
+            branch_name=branch_name,
+            specialization=specialization,
             college_id=college_id,
             regulation_id=regulation_id,
             branch_id=branch_id
@@ -247,8 +294,24 @@ def demo_route():
 @server.route("/student")
 @server.route("/dashboard")
 @server.route("/dashboard/student")
+@server.route("/overview")
+@server.route("/analytics")
+@server.route("/marks")
+@server.route("/subjects")
+@server.route("/marks-subjects")
+@server.route("/attendance")
+@server.route("/profile")
+@server.route("/academic-profile")
+@server.route("/settings")
 def dashboard_redirect():
-    return redirect("/app/overview")
+    sub = request.path.lstrip("/")
+    if sub in ("marks", "subjects"):
+        sub = "marks-subjects"
+    elif sub == "profile":
+        sub = "academic-profile"
+    elif sub in ("student", "dashboard", "dashboard/student", ""):
+        sub = "overview"
+    return redirect(f"/app/{sub}")
 
 @server.route("/logout")
 def logout_route():
@@ -374,8 +437,11 @@ def display_page(pathname):
         "/overview": "/overview",
         "/analytics": "/analytics",
         "/marks-subjects": "/marks-subjects",
+        "/marks": "/marks-subjects",
+        "/subjects": "/marks-subjects",
         "/attendance": "/attendance",
         "/academic-profile": "/academic-profile",
+        "/profile": "/academic-profile",
         "/settings": "/settings",
         "/dashboard": "/overview",
         "/student": "/overview"

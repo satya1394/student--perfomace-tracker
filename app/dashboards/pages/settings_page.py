@@ -8,6 +8,14 @@ import dash_bootstrap_components as dbc
 
 def build_settings_page():
     """Builds the clean, structured Settings subpage with zero button overlaps."""
+    from flask import session, has_request_context
+    from flask_login import current_user
+
+    sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
+    name = (session.get("student_name") if has_request_context() else None) or "Student"
+    branch = (session.get("branch_name") if has_request_context() else None) or "CSE"
+    reg = (session.get("regulation_name") if has_request_context() else None) or "AR23"
+
     return html.Div([
         dbc.Row([
             # Card 1: Session & Authentication Controls
@@ -31,7 +39,7 @@ def build_settings_page():
                         html.Span("AUTHENTICATED IDENTITY", className="profile-micro-label mb-1"),
                         html.Div([
                             html.Span("Active Session: ", className="text-secondary small"),
-                            html.Span("STU2024001 (Verified Token)", className="mono-font text-info small fw-bold")
+                            html.Span(f"{sid} ({name} • {branch})", className="mono-font text-info small fw-bold")
                         ])
                     ], className="p-3 rounded-3 mb-3", style={"background": "rgba(0, 0, 0, 0.40)", "border": "1px solid rgba(255, 255, 255, 0.08)"}),
 
@@ -95,7 +103,7 @@ def build_settings_page():
 
                     html.Div([
                         html.Span("EXPORT FORMAT", className="profile-micro-label mb-1"),
-                        html.P("Official AR23 Transcript Spreadsheet (.xlsx)", className="text-light small mb-0")
+                        html.P(f"Official {reg} {branch} Transcript Spreadsheet (.xlsx)", className="text-light small mb-0")
                     ], className="p-3 rounded-3 mb-3", style={"background": "rgba(0, 0, 0, 0.40)", "border": "1px solid rgba(255, 255, 255, 0.08)"}),
 
                     # Dedicated Export Action Row

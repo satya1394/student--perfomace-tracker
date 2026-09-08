@@ -16,12 +16,18 @@ def build_academic_profile_page():
     db = get_db_session()
     try:
         student = db.query(Student).filter(Student.student_id == sid).first()
-        name = student.name if student else "Rahul Kumar"
-        email = student.email if student else "rahul.kumar@raghuengg.edu"
+        if not student and current_user and current_user.is_authenticated and current_user.email:
+            student = db.query(Student).filter(Student.email == current_user.email).first()
+            
+        name = student.name if student else (session.get("student_name") if has_request_context() else "Rahul Kumar")
+        email = student.email if student else (session.get("email") if has_request_context() else "student@studiq.edu")
         roll = getattr(student, "student_id", None) or sid
-        col_name = (student.college_name if student else None) or "Raghu Engineering College (Autonomous)"
-        reg_name = (student.regulation_name if student else None) or "AR23 Autonomous Framework"
-        br_name = (student.branch_name if student else None) or "Computer Science & Engineering"
+        col_name = (student.college_name if student else None) or (session.get("college_name") if has_request_context() else "Raghu Engineering College (Autonomous)")
+        reg_name = (student.regulation_name if student else None) or (session.get("regulation_name") if has_request_context() else "AR23")
+        br_name = (student.branch_name if student else None) or (session.get("branch_name") if has_request_context() else "CSE")
+        spec_name = (student.specialization if student else None) or (session.get("specialization") if has_request_context() else "Core Computer Science")
+        curr_sem = (student.current_semester if student else None) or (session.get("active_semester") if has_request_context() else 3)
+        dept_display = f"{br_name} — {spec_name}"
     finally:
         db.close()
 
@@ -63,14 +69,14 @@ def build_academic_profile_page():
 
                 # 5. Regulation
                 html.Div([
-                    html.Span("REGULATORY MODEL", className="profile-micro-label"),
-                    html.H5(reg_name, className="profile-micro-value text-warning mono-font")
+                    html.Span("REGULATORY MODEL & TERM", className="profile-micro-label"),
+                    html.H5(f"{reg_name} (Semester {curr_sem})", className="profile-micro-value text-warning mono-font")
                 ], className="profile-micro-card", style={"background": "rgba(0, 0, 0, 0.45)", "border": "1px solid rgba(255, 255, 255, 0.10)", "borderRadius": "14px", "padding": "20px 22px"}),
 
                 # 6. Branch / Department
                 html.Div([
-                    html.Span("DEPARTMENT & BRANCH", className="profile-micro-label"),
-                    html.H5(br_name, className="profile-micro-value text-white")
+                    html.Span("DEPARTMENT & SPECIALIZATION", className="profile-micro-label"),
+                    html.H5(dept_display, className="profile-micro-value text-white")
                 ], className="profile-micro-card", style={"background": "rgba(0, 0, 0, 0.45)", "border": "1px solid rgba(255, 255, 255, 0.10)", "borderRadius": "14px", "padding": "20px 22px"}),
             ], className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 profile-cards-grid",
                style={"display": "grid", "gridTemplateColumns": "repeat(auto-fit, minmax(280px, 1fr))", "gap": "20px", "width": "100%"})

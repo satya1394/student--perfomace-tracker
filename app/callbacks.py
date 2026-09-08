@@ -40,22 +40,99 @@ def create_empty_figure(message: str) -> go.Figure:
     return fig
 
 
+def resolve_academic_context(college=None, degree=None, regulation=None, branch=None, specialization=None, semester=None):
+    """
+    Resolves academic parameters with fallback to session and student database profile.
+    Automatically updates session and student record so branch and specialization persist globally across all pages.
+    """
+    sid = None
+    if has_request_context():
+        sid = session.get("student_id")
+    if not sid and current_user and current_user.is_authenticated:
+        sid = getattr(current_user, "student_id", None) or getattr(current_user, "username", "").upper()
+    if not sid:
+        sid = "STU2024001"
+
+    # Fetch session defaults
+    sess_college = session.get("college_name") if has_request_context() else None
+    sess_degree = session.get("degree") if has_request_context() else None
+    sess_reg = session.get("regulation_name") if has_request_context() else None
+    sess_branch = session.get("branch_name") if has_request_context() else None
+    sess_spec = session.get("specialization") if has_request_context() else None
+    sess_sem = session.get("active_semester") if has_request_context() else None
+
+    # Fallback to DB query if session is missing academic metadata
+    if not (sess_branch and sess_spec and sess_reg):
+        db = get_db_session()
+        try:
+            stu = db.query(Student).filter(Student.student_id == sid).first()
+            if not stu and current_user and current_user.is_authenticated and current_user.email:
+                stu = db.query(Student).filter(Student.email == current_user.email).first()
+            if stu:
+                sess_college = sess_college or stu.college_name
+                sess_degree = sess_degree or stu.degree
+                sess_reg = sess_reg or stu.regulation_name
+                sess_branch = sess_branch or stu.branch_name
+                sess_spec = sess_spec or stu.specialization
+                sess_sem = sess_sem or stu.current_semester
+        finally:
+            db.close()
+
+    final_college = college or sess_college or "Raghu Engineering College"
+    final_degree = degree or sess_degree or "B.Tech"
+    final_reg = regulation or sess_reg or "AR23"
+    final_branch = branch or sess_branch or "CSE"
+    final_spec = specialization or sess_spec or ("VLSI & Embedded Systems" if final_branch == "ECE" else ("Power Systems & Automation" if final_branch == "EEE" else ("Design & Manufacturing" if final_branch == "MECH" else ("Structural Engineering" if final_branch == "CIVIL" else "Core Computer Science"))))
+    try:
+        final_sem = int(semester if semester is not None and str(semester).strip() != "" else (sess_sem or 3))
+    except (ValueError, TypeError):
+        final_sem = 3
+
+    # Sync into Flask session for global persistence across all tabs & navigation routes
+    if has_request_context():
+        session["college_name"] = final_college
+        session["degree"] = final_degree
+        session["regulation_name"] = final_reg
+        session["branch_name"] = final_branch
+        session["specialization"] = final_spec
+        session["active_semester"] = final_sem
+        session["student_id"] = sid
+        session["curriculum_id"] = get_curriculum_id(final_college, final_degree, final_reg, final_branch, final_spec)
+
+    # If student is authenticated and not demo, update database profile as well
+    if has_request_context() and current_user and current_user.is_authenticated and not session.get("is_demo", False):
+        try:
+            db = get_db_session()
+            try:
+                stu = db.query(Student).filter(Student.student_id == sid).first()
+                if not stu and current_user.email:
+                    stu = db.query(Student).filter(Student.email == current_user.email).first()
+                if stu:
+                    stu.college_name = final_college
+                    stu.degree = final_degree
+                    stu.regulation_name = final_reg
+                    stu.branch_name = final_branch
+                    stu.specialization = final_spec
+                    stu.current_semester = final_sem
+                    stu.department = f"{final_branch} ({final_spec})"
+                    stu.curriculum_id = session.get("curriculum_id")
+                    db.commit()
+            finally:
+                db.close()
+        except Exception:
+            pass
+
+    return final_college, final_degree, final_reg, final_branch, final_spec, final_sem, sid
+
+
 def update_overview_page_logic(college, degree, regulation, branch, specialization, semester, refresh_cnt):
     """Overview KPI cards, SGPA spline progression chart, and academic standing."""
-    college = college or "Raghu Engineering College"
-    degree = degree or "B.Tech"
-    regulation = regulation or "AR23"
-    branch = branch or "CSE"
-    specialization = specialization or "Core Computer Science"
-    try:
-        sem = int(semester or 3)
-    except Exception:
-        sem = 3
-
+    college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+        college, degree, regulation, branch, specialization, semester
+    )
     curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
     db = get_db_session()
     try:
-        sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
         comp_subs = db.query(CurriculumSubject).filter(
             CurriculumSubject.curriculum_id == curr_id,
@@ -264,20 +341,12 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
 
 def update_analytics_page_logic(college, degree, regulation, branch, specialization, semester, refresh_cnt):
     """Subject Mastery and AI Study Roadmap."""
-    college = college or "Raghu Engineering College"
-    degree = degree or "B.Tech"
-    regulation = regulation or "AR23"
-    branch = branch or "CSE"
-    specialization = specialization or "Core Computer Science"
-    try:
-        sem = int(semester or 3)
-    except Exception:
-        sem = 3
-
+    college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+        college, degree, regulation, branch, specialization, semester
+    )
     curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
     db = get_db_session()
     try:
-        sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
         comp_subs = db.query(CurriculumSubject).filter(
             CurriculumSubject.curriculum_id == curr_id,
@@ -445,20 +514,12 @@ def update_analytics_page_logic(college, degree, regulation, branch, specializat
 
 def update_marks_subjects_page_logic(college, degree, regulation, branch, specialization, semester, refresh_cnt):
     """Marks & Subjects DataTable."""
-    college = college or "Raghu Engineering College"
-    degree = degree or "B.Tech"
-    regulation = regulation or "AR23"
-    branch = branch or "CSE"
-    specialization = specialization or "Core Computer Science"
-    try:
-        sem = int(semester or 3)
-    except Exception:
-        sem = 3
-
+    college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+        college, degree, regulation, branch, specialization, semester
+    )
     curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
     db = get_db_session()
     try:
-        sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
         comp_subs = db.query(CurriculumSubject).filter(
             CurriculumSubject.curriculum_id == curr_id,
@@ -579,20 +640,12 @@ def update_marks_subjects_page_logic(college, degree, regulation, branch, specia
 
 def update_attendance_page_logic(college, degree, regulation, branch, specialization, semester, refresh_cnt):
     """Subject Attendance Bar Chart & 75% Cutoff Indicator with Modern SaaS Visuals."""
-    college = college or "Raghu Engineering College"
-    degree = degree or "B.Tech"
-    regulation = regulation or "AR23"
-    branch = branch or "CSE"
-    specialization = specialization or "Core Computer Science"
-    try:
-        sem = int(semester or 3)
-    except Exception:
-        sem = 3
-
+    college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+        college, degree, regulation, branch, specialization, semester
+    )
     curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
     db = get_db_session()
     try:
-        sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
         comp_subs = db.query(CurriculumSubject).filter(
             CurriculumSubject.curriculum_id == curr_id,
@@ -791,8 +844,12 @@ def register_callbacks(app):
         [State("curriculum-spec-select", "value")]
     )
     def update_specialization_options(branch, regulation, current_val):
-        branch = branch or "CSE"
-        regulation = regulation or "AR23"
+        sess_br = session.get("branch_name") if has_request_context() else None
+        sess_reg = session.get("regulation_name") if has_request_context() else None
+        sess_spec = session.get("specialization") if has_request_context() else None
+
+        branch = branch or sess_br or "CSE"
+        regulation = regulation or sess_reg or "AR23"
         
         db = get_db_session()
         try:
@@ -812,7 +869,18 @@ def register_callbacks(app):
                     specs = ["General"]
             
             opts = [{"label": s, "value": s} for s in specs]
-            sel_val = current_val if current_val in specs else (specs[0] if specs else "Core Computer Science")
+            if current_val in specs:
+                sel_val = current_val
+            elif sess_spec in specs:
+                sel_val = sess_spec
+            else:
+                sel_val = specs[0] if specs else "Core Computer Science"
+
+            if has_request_context():
+                session["branch_name"] = branch
+                session["regulation_name"] = regulation
+                session["specialization"] = sel_val
+
             return opts, sel_val
         finally:
             db.close()
@@ -830,21 +898,13 @@ def register_callbacks(app):
          Input("marks-refresh-trigger", "data")]
     )
     def render_curriculum_banner(college, degree, regulation, branch, specialization, semester, refresh_cnt):
-        college = college or "Raghu Engineering College"
-        degree = degree or "B.Tech"
-        regulation = regulation or "AR23"
-        branch = branch or "CSE"
-        specialization = specialization or "Core Computer Science"
-        try:
-            sem = int(semester or 3)
-        except Exception:
-            sem = 3
-
+        college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+            college, degree, regulation, branch, specialization, semester
+        )
         db = get_db_session()
         try:
             curr_data = CurriculumEngine.get_subjects(db, college, degree, regulation, branch, specialization, sem)
             
-            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
             custom_selections = db.query(StudentSubjectSelection).filter(
                 StudentSubjectSelection.student_id == sid,
                 StudentSubjectSelection.semester == sem
@@ -909,20 +969,12 @@ def register_callbacks(app):
         if triggered_id == "elective-modal-cancel-btn" and cancel_clicks:
             return False, no_update, no_update, ""
 
-        college = college or "Raghu Engineering College"
-        degree = degree or "B.Tech"
-        regulation = regulation or "AR23"
-        branch = branch or "CSE"
-        specialization = specialization or "Core Computer Science"
-        try:
-            sem = int(semester or 3)
-        except Exception:
-            sem = 3
-
+        college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+            college, degree, regulation, branch, specialization, semester
+        )
         curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
         db = get_db_session()
         try:
-            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
             if triggered_id == "elective-modal-save-btn":
                 if not save_clicks:
@@ -1088,20 +1140,12 @@ def register_callbacks(app):
         if triggered_id == "marks-modal-cancel-btn":
             return False, no_update, no_update, "", refresh_cnt
 
-        college = college or "Raghu Engineering College"
-        degree = degree or "B.Tech"
-        regulation = regulation or "AR23"
-        branch = branch or "CSE"
-        specialization = specialization or "Core Computer Science"
-        try:
-            sem = int(semester or 3)
-        except Exception:
-            sem = 3
-
+        college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+            college, degree, regulation, branch, specialization, semester
+        )
         curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
         db = get_db_session()
         try:
-            sid = (session.get("student_id") if has_request_context() else None) or getattr(current_user, "student_id", None) or "STU2024001"
 
             # SAVE CLICKED
             if triggered_id == "marks-modal-save-btn":
@@ -1488,12 +1532,9 @@ def register_callbacks(app):
     def export_excel(n_clicks, college, degree, regulation, branch, specialization, semester):
         if not n_clicks:
             return no_update
-        college = college or "Raghu Engineering College"
-        degree = degree or "B.Tech"
-        regulation = regulation or "AR23"
-        branch = branch or "CSE"
-        specialization = specialization or "Core Computer Science"
-        sem = int(semester or 3)
+        college, degree, regulation, branch, specialization, sem, sid = resolve_academic_context(
+            college, degree, regulation, branch, specialization, semester
+        )
 
         curr_id = get_curriculum_id(college, degree, regulation, branch, specialization)
         db = get_db_session()
