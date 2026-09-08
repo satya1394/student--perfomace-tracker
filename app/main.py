@@ -177,11 +177,11 @@ def login_route():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-        success, user, err = authenticate_user(username, password)
-        if success and user:
+        success, result = authenticate_user(username, password)
+        if success and result:
             session['is_demo'] = False
             return redirect("/app/overview")
-        flash(err or "Invalid credentials", "danger")
+        flash(result or "Invalid credentials", "danger")
         return render_template_string(LOGIN_TEMPLATE, active_tab="login")
     return render_template_string(LOGIN_TEMPLATE, active_tab="login")
 
@@ -205,8 +205,9 @@ def register_route():
             branch_id = br.id if br else 1
         finally:
             db.close()
-        success, user, err = register_student_user(
+        user, err = register_student_user(
             full_name=full_name,
+            roll_number=username.upper(),
             username=username,
             email=email,
             department="Computer Science & Engineering",
@@ -217,8 +218,8 @@ def register_route():
             regulation_id=regulation_id,
             branch_id=branch_id
         )
-        if err:
-            flash(err, "danger")
+        if err or not user:
+            flash(err or "Registration failed. Please try again.", "danger")
             return render_template_string(LOGIN_TEMPLATE, active_tab="register")
         session['is_demo'] = False
         return redirect("/app/overview")
@@ -409,7 +410,7 @@ def bootstrap_application():
         ensure_curricula_loaded()
         seed_default_users()
         _BOOTSTRAPPED = True
-        print("[✓] StudIQ application bootstrap complete. All 12 branches and curricula verified.")
+        print("[+] StudIQ application bootstrap complete. All 12 branches and curricula verified.")
     except Exception as e:
         print(f"[!] Warning during application bootstrap: {e}")
 

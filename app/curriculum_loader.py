@@ -47,7 +47,7 @@ def ensure_curricula_loaded(force: bool = False) -> bool:
         if count == 0 or force:
             print(f"[*] Seeding canonical branch curricula (current count: {count})...")
             report = load_and_validate_curricula()
-            print(f"[✓] Successfully seeded {report.get('valid_subjects_imported', 0)} subjects across {report.get('curricula_count', 0)} curricula.")
+            print(f"[+] Successfully seeded {report.get('valid_subjects_imported', 0)} subjects across {report.get('curricula_count', 0)} curricula.")
             return True
         return False
     except Exception as e:

@@ -117,32 +117,31 @@ def authenticate_user(username, password):
         db.close()
 
 
-def register_student_user(full_name, roll_number, username, email, department, semester, password, confirm_password,
+def register_student_user(full_name, roll_number=None, username="", email="", department="Computer Science & Engineering", semester=3, password="", confirm_password="",
                           college_name="Raghu Engineering College", degree="B.Tech", regulation_name="AR23",
                           branch_name="CSE", specialization="Core Computer Science", college_id=None, regulation_id=None, branch_id=None):
     """
     Registers a new student user with strict validation and academic session binding:
     1. Validate required fields and password length (>=8 chars).
-    2. Validate username contains roll number.
-    3. Save exact 6 fields to Student table.
-    4. Store academic identifiers into Flask session.
+    2. Save exact fields to Student table.
+    3. Store academic identifiers into Flask session.
     """
-    full_name = str(full_name).strip()
-    roll_number = str(roll_number).strip().upper()
-    username = str(username).strip()
-    email = str(email).strip().lower()
-    college_name = str(college_name).strip() or "Raghu Engineering College"
-    degree = str(degree).strip() or "B.Tech"
-    regulation_name = str(regulation_name).strip() or "AR23"
-    branch_name = str(branch_name).strip() or "CSE"
-    specialization = str(specialization).strip() or "Core Computer Science"
+    full_name = str(full_name or "").strip()
+    username = str(username or "").strip()
+    email = str(email or "").strip().lower()
+    roll_number = str(roll_number or "").strip().upper() if roll_number else username.upper()
+    college_name = str(college_name or "").strip() or "Raghu Engineering College"
+    degree = str(degree or "").strip() or "B.Tech"
+    regulation_name = str(regulation_name or "").strip() or "AR23"
+    branch_name = str(branch_name or "").strip() or "CSE"
+    specialization = str(specialization or "").strip() or "Core Computer Science"
     
     try:
         semester = int(semester)
     except (ValueError, TypeError):
         semester = 3
 
-    if not full_name or not roll_number or not username or not email or not password:
+    if not full_name or not username or not email or not password:
         return None, "All fields are required."
 
     if len(password) < 8:
@@ -151,7 +150,7 @@ def register_student_user(full_name, roll_number, username, email, department, s
     if password != confirm_password:
         return None, "Passwords do not match."
 
-    if roll_number.lower() not in username.lower():
+    if roll_number and roll_number.lower() != username.lower() and roll_number.lower() not in username.lower():
         return None, f"Username must contain your Roll Number '{roll_number}' (e.g. {username}_{roll_number})."
 
     db = get_db_session()
@@ -332,15 +331,21 @@ def seed_default_users():
             db.flush()
 
         # Seed users
-        for uname, pwd in [("demo_user", "demo123"), ("rahulkumar", "Student@123"), ("student_demo", "Student@123")]:
+        for uname, pwd, role in [
+            ("demo_user", "demo123", "STUDENT"),
+            ("rahulkumar", "Student@123", "STUDENT"),
+            ("student_demo", "Student@123", "STUDENT"),
+            ("faculty_demo", "Faculty@123", "FACULTY"),
+            ("admin_demo", "Admin@123", "ADMIN"),
+        ]:
             u = db.query(User).filter(User.username == uname).first()
             if not u:
                 u = User(
                     username=uname,
                     email=f"{uname}@studiq.edu",
                     password_hash=generate_password_hash(pwd, method="pbkdf2:sha256"),
-                    role="STUDENT",
-                    student_id="STU2024001"
+                    role=role,
+                    student_id="STU2024001" if role == "STUDENT" else None
                 )
                 db.add(u)
 
