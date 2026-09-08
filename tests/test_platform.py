@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT_DIR))
 from app.config import Config
 from app.database import init_db, get_db_session, Student, Course, Enrollment, User
 from app.auth import seed_default_users, authenticate_user
+from app.curriculum_loader import ensure_curricula_loaded
 from app.utils import calculate_grade_and_points, calculate_sgpa, calculate_cgpa, generate_excel_report, generate_pdf_report
 from app.ml_models.train_models import generate_synthetic_training_data, train_and_export_models
 from app.ml_models.predict import predict_student_performance, generate_study_roadmap
@@ -27,6 +28,7 @@ class TestAcademicPlatform(unittest.TestCase):
     def setUpClass(cls):
         """Initializes database schema and default accounts for testing."""
         init_db()
+        ensure_curricula_loaded()
         seed_default_users()
 
     def test_01_grade_and_points_mapping(self):
@@ -170,24 +172,24 @@ class TestAcademicPlatform(unittest.TestCase):
 
     def test_08_academic_framework_seeding(self):
         """Verifies Colleges, Regulations, Branches, and Subjects are properly populated in database."""
-        from app.database import get_db_session, College, Regulation, Branch, Subject
+        from app.database import get_db_session, College, Regulation, Branch, CurriculumSubject
         db = get_db_session()
         try:
             colleges = db.query(College).all()
             regulations = db.query(Regulation).all()
             branches = db.query(Branch).all()
-            subjects = db.query(Subject).all()
+            subjects = db.query(CurriculumSubject).all()
 
-            self.assertGreaterEqual(len(colleges), 5)
-            self.assertGreaterEqual(len(regulations), 5)
-            self.assertGreaterEqual(len(branches), 5)
-            self.assertGreaterEqual(len(subjects), 50)
+            self.assertGreaterEqual(len(colleges), 1)
+            self.assertGreaterEqual(len(regulations), 2)
+            self.assertGreaterEqual(len(branches), 10)
+            self.assertGreaterEqual(len(subjects), 500)
         finally:
             db.close()
 
     def test_09_marks_entry_and_recalculation(self):
         """Verifies marks insertion, grade calculation, and SGPA calculation for student."""
-        from app.database import get_db_session, Student, Subject, Enrollment
+        from app.database import get_db_session, Student, CurriculumSubject, Enrollment
         from app.utils import calculate_grade, calculate_sgpa_for_student
         import uuid
 
@@ -211,19 +213,23 @@ class TestAcademicPlatform(unittest.TestCase):
             db.commit()
 
             # Add test marks for Semester 1 subjects
-            subjects = db.query(Subject).filter(Subject.branch_id == 2, Subject.semester == 1).all()
+            subjects = db.query(CurriculumSubject).filter(
+                CurriculumSubject.curriculum_id == "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE",
+                CurriculumSubject.semester == 1
+            ).all()
             self.assertTrue(len(subjects) > 0)
 
             for s in subjects:
                 g_let, g_pt = calculate_grade(85.0)
                 enr = Enrollment(
                     student_id=roll,
-                    subject_id=s.id,
-                    course_id=s.code,
+                    curriculum_subject_id=s.id,
+                    course_id=s.subject_code,
                     marks_obtained=85.0,
                     grade=g_let,
                     grade_letter=g_let,
                     grade_point=g_pt,
+                    credits_used=s.credits,
                     attendance_percentage=90.0,
                     semester=1,
                     academic_year="2024-2025"

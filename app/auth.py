@@ -78,28 +78,45 @@ def authenticate_user(username, password):
             )
             if has_request_context():
                 login_user(auth_user)
+                stu = None
                 if user.student_id:
                     stu = db.query(Student).filter(Student.student_id == user.student_id).first()
-                    if stu:
-                        session['student_id'] = stu.student_id
-                        session['college_id'] = stu.college_id
-                        session['regulation_id'] = stu.regulation_id
-                        session['branch_id'] = stu.branch_id
-                        session['college_name'] = stu.college_name or "Raghu Engineering College"
-                        session['degree'] = stu.degree or "B.Tech"
-                        session['regulation_name'] = stu.regulation_name or "AR23"
-                        session['branch_name'] = stu.branch_name or "CSE"
-                        session['specialization'] = stu.specialization or "Core Computer Science"
-                        session['active_semester'] = stu.current_semester or 3
-                        session['student_name'] = stu.name
-                        session['student_dept'] = stu.department
-                        session['curriculum_id'] = stu.curriculum_id or get_curriculum_id(
-                            stu.college_name or "Raghu Engineering College",
-                            stu.degree or "B.Tech",
-                            stu.regulation_name or "AR23",
-                            stu.branch_name or "CSE",
-                            stu.specialization or "Core Computer Science"
-                        )
+                if not stu and user.email:
+                    stu = db.query(Student).filter(Student.email == user.email).first()
+                if not stu and user.username:
+                    stu = db.query(Student).filter(Student.student_id == user.username.upper()).first()
+                
+                if stu:
+                    session['student_id'] = stu.student_id
+                    session['college_id'] = stu.college_id
+                    session['regulation_id'] = stu.regulation_id
+                    session['branch_id'] = stu.branch_id
+                    session['college_name'] = stu.college_name or "Raghu Engineering College"
+                    session['degree'] = stu.degree or "B.Tech"
+                    session['regulation_name'] = stu.regulation_name or "AR23"
+                    session['branch_name'] = stu.branch_name or "CSE"
+                    session['specialization'] = stu.specialization or "Core Computer Science"
+                    session['active_semester'] = stu.current_semester or 3
+                    session['student_name'] = stu.name
+                    session['student_dept'] = stu.department or f"{stu.branch_name or 'CSE'} ({stu.specialization or 'Core Computer Science'})"
+                    session['curriculum_id'] = stu.curriculum_id or get_curriculum_id(
+                        stu.college_name or "Raghu Engineering College",
+                        stu.degree or "B.Tech",
+                        stu.regulation_name or "AR23",
+                        stu.branch_name or "CSE",
+                        stu.specialization or "Core Computer Science"
+                    )
+                else:
+                    session['student_id'] = user.student_id or user.username.upper()
+                    session['college_name'] = "Raghu Engineering College"
+                    session['degree'] = "B.Tech"
+                    session['regulation_name'] = "AR23"
+                    session['branch_name'] = "CSE"
+                    session['specialization'] = "Core Computer Science"
+                    session['active_semester'] = 3
+                    session['student_name'] = user.username
+                    session['student_dept'] = "Computer Science & Engineering"
+                    session['curriculum_id'] = "RAGHU_BTECH_AR23_CSE_CORE_COMPUTER_SCIENCE"
             
             # Record audit log
             log = AuditLog(
