@@ -93,7 +93,7 @@ def calculate_grade(marks: float) -> tuple[str, float]:
 
 def calculate_sgpa_for_student(student_id: str, semester: int) -> float:
     """Computes SGPA directly from student enrollments in database."""
-    from app.database import get_db_session, Enrollment, Subject, Course
+    from app.database import get_db_session, Enrollment, Subject, Course, CurriculumSubject
     db = get_db_session()
     try:
         enrollments = db.query(Enrollment).filter(
@@ -105,8 +105,12 @@ def calculate_sgpa_for_student(student_id: str, semester: int) -> float:
         total_credits = 0.0
         weighted_sum = 0.0
         for enr in enrollments:
-            creds = 4.0
-            if enr.subject_id:
+            creds = float(enr.credits_used) if enr.credits_used is not None else 4.0
+            if enr.curriculum_subject_id:
+                csub = db.query(CurriculumSubject).filter(CurriculumSubject.id == enr.curriculum_subject_id).first()
+                if csub:
+                    creds = float(csub.official_credits or csub.credits or creds)
+            elif enr.subject_id:
                 sub = db.query(Subject).filter(Subject.id == enr.subject_id).first()
                 if sub:
                     creds = float(sub.credits)
@@ -124,7 +128,7 @@ def calculate_sgpa_for_student(student_id: str, semester: int) -> float:
 
 def calculate_cgpa_for_student(student_id: str) -> float:
     """Computes CGPA across all enrolled semesters in database."""
-    from app.database import get_db_session, Enrollment, Subject, Course
+    from app.database import get_db_session, Enrollment, Subject, Course, CurriculumSubject
     db = get_db_session()
     try:
         enrollments = db.query(Enrollment).filter(Enrollment.student_id == student_id).all()
@@ -133,8 +137,12 @@ def calculate_cgpa_for_student(student_id: str) -> float:
         total_credits = 0.0
         weighted_sum = 0.0
         for enr in enrollments:
-            creds = 4.0
-            if enr.subject_id:
+            creds = float(enr.credits_used) if enr.credits_used is not None else 4.0
+            if enr.curriculum_subject_id:
+                csub = db.query(CurriculumSubject).filter(CurriculumSubject.id == enr.curriculum_subject_id).first()
+                if csub:
+                    creds = float(csub.official_credits or csub.credits or creds)
+            elif enr.subject_id:
                 sub = db.query(Subject).filter(Subject.id == enr.subject_id).first()
                 if sub:
                     creds = float(sub.credits)
