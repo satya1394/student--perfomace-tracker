@@ -13,7 +13,7 @@
 
 **StudIQ** is a production-grade academic intelligence cockpit and deterministic curriculum resolution engine for autonomous engineering institutions.
 
-[🚀 Explore Live Demo](https://student-perfomace-tracker.onrender.com/) • [📊 Launch Interactive Cockpit](/demo) • [📑 Report Issue](https://github.com/your-org/student-performance-tracker/issues)
+[🚀 Explore Live Demo](https://student-performance-tracker.onrender.com) • [📊 Launch Interactive Cockpit](https://student-performance-tracker.onrender.com/login) • [📋 Report Issue](https://github.com/satya1394/student--perfomace-tracker/issues)
 
 </div>
 
