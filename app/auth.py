@@ -3,6 +3,7 @@ Authentication and Role-Based Access Control Module.
 Integrates Flask-Login with SQLAlchemy User models and provides session security and academic context.
 """
 
+import re
 from functools import wraps
 from flask import redirect, url_for, flash, session, has_request_context
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
@@ -151,7 +152,17 @@ def register_student_user(full_name, roll_number=None, username="", email="", de
     degree = str(degree or "").strip() or "B.Tech"
     regulation_name = str(regulation_name or "").strip() or "AR23"
     branch_name = str(branch_name or "").strip() or "CSE"
-    specialization = str(specialization or "").strip() or "Core Computer Science"
+    # Normalize specialization aliases if selected
+    if specialization in ("Artificial Intelligence and Machine Learning", "AI & ML", "AIML", "AI and ML"):
+        specialization = "AI & ML"
+    elif specialization in ("Data Science", "DS"):
+        specialization = "Data Science"
+    elif specialization in ("Cyber Security", "CS"):
+        specialization = "Cyber Security"
+    elif specialization in ("IoT & Blockchain", "IoT and Blockchain", "IoT"):
+        specialization = "IoT & Blockchain"
+    elif specialization in ("Core Computer Science", "Core CSE", "Core"):
+        specialization = "Core Computer Science"
     
     try:
         semester = int(semester)
@@ -160,6 +171,10 @@ def register_student_user(full_name, roll_number=None, username="", email="", de
 
     if not full_name or not username or not email or not password:
         return None, "All fields are required."
+
+    EMAIL_REGEX = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(EMAIL_REGEX, email):
+        return None, "Please enter a valid email address (e.g., rollnumber@raghuengg.edu.in)."
 
     if len(password) < 8:
         return None, "Password must be at least 8 characters long."

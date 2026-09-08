@@ -144,20 +144,40 @@ LOGIN_TEMPLATE = '''<!DOCTYPE html>
                             <input type="text" name="full_name" class="form-control" placeholder="e.g. Rahul Kumar" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small text-secondary">Username</label>
-                            <input type="text" name="username" class="form-control" placeholder="e.g. rahul_k" required>
+                            <label class="form-label small text-secondary">Username / Roll Number</label>
+                            <input type="text" name="username" class="form-control" placeholder="e.g. 23bq1a0501 or rahul_23bq1a0501" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small text-secondary">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="rahul@example.com" required>
+                            <label class="form-label small text-secondary">College Email Address</label>
+                            <input type="email" name="email" class="form-control" placeholder="rollnumber@raghuengg.edu.in" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label small text-secondary">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                            <label class="form-label small text-secondary">Branch / Department</label>
+                            <select name="branch_name" id="reg_branch_select" class="form-select" required onchange="updateRegisterSpecs()">
+                                <option value="CSE" selected>CSE (Computer Science & Engineering)</option>
+                                <option value="ECE">ECE (Electronics & Communication Engineering)</option>
+                                <option value="EEE">EEE (Electrical & Electronics Engineering)</option>
+                                <option value="MECH">MECH (Mechanical Engineering)</option>
+                                <option value="CIVIL">CIVIL (Civil Engineering)</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small text-secondary">Sub-Branch / Specialization</label>
+                            <select name="specialization" id="reg_spec_select" class="form-select" required>
+                                <option value="Core Computer Science" selected>Core Computer Science</option>
+                                <option value="Artificial Intelligence and Machine Learning">Artificial Intelligence and Machine Learning</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Cyber Security">Cyber Security</option>
+                                <option value="IoT & Blockchain">IoT & Blockchain</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small text-secondary">Password (minimum 8 characters)</label>
+                            <input type="password" name="password" minlength="8" class="form-control" placeholder="••••••••" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-secondary">Confirm Password</label>
-                            <input type="password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+                            <input type="password" name="confirm_password" minlength="8" class="form-control" placeholder="••••••••" required>
                         </div>
                         <button type="submit" class="btn-solid mb-2">Create Account &rarr;</button>
                     </form>
@@ -166,6 +186,44 @@ LOGIN_TEMPLATE = '''<!DOCTYPE html>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const regSpecMap = {
+            "CSE": [
+                { val: "Core Computer Science", label: "Core Computer Science" },
+                { val: "Artificial Intelligence and Machine Learning", label: "Artificial Intelligence and Machine Learning" },
+                { val: "Data Science", label: "Data Science" },
+                { val: "Cyber Security", label: "Cyber Security" },
+                { val: "IoT & Blockchain", label: "IoT & Blockchain" }
+            ],
+            "ECE": [
+                { val: "VLSI & Embedded Systems", label: "VLSI & Embedded Systems" }
+            ],
+            "EEE": [
+                { val: "Power Systems & Automation", label: "Power Systems & Automation" }
+            ],
+            "MECH": [
+                { val: "Design & Manufacturing", label: "Design & Manufacturing" }
+            ],
+            "CIVIL": [
+                { val: "Structural Engineering", label: "Structural Engineering" }
+            ]
+        };
+
+        function updateRegisterSpecs() {
+            const branchSelect = document.getElementById("reg_branch_select");
+            const specSelect = document.getElementById("reg_spec_select");
+            if (!branchSelect || !specSelect) return;
+            const branch = branchSelect.value;
+            const specs = regSpecMap[branch] || regSpecMap["CSE"];
+            specSelect.innerHTML = "";
+            specs.forEach(opt => {
+                const el = document.createElement("option");
+                el.value = opt.val;
+                el.textContent = opt.label;
+                specSelect.appendChild(el);
+            });
+        }
+    </script>
 </body>
 </html>
 '''
