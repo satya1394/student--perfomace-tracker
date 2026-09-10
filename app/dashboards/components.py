@@ -55,25 +55,31 @@ def create_navbar(user=None):
 
 
 def create_kpi_card(title: str, value: str, subtitle: str, color_class: str = "primary", icon_type: str = "cgpa"):
-    """Generates a luminous liquid-metal stat summary card."""
-    pill_class = "kpi-trend-pill--cyan"
-    orb_emoji = "📊"
+    """Generates a luxury dark obsidian-glass KPI card with radial gradients and focus states."""
+    pill_class = "kpi-trend-pill--purple"
+    orb_emoji = "🏆"
+    accent_class = "kpi-card--cgpa"
 
     if color_class == "success" or icon_type == "attendance":
         pill_class = "kpi-trend-pill--green"
         orb_emoji = "⏱️"
+        accent_class = "kpi-card--attendance"
     elif color_class == "warning" or icon_type == "forecast":
         pill_class = "kpi-trend-pill--amber"
         orb_emoji = "⚡"
+        accent_class = "kpi-card--forecast"
     elif color_class == "danger":
         pill_class = "kpi-trend-pill--rose"
         orb_emoji = "⚠️"
+        accent_class = "kpi-card--danger"
     elif color_class == "primary" or icon_type == "cgpa":
         pill_class = "kpi-trend-pill--purple"
         orb_emoji = "🏆"
+        accent_class = "kpi-card--cgpa"
     elif color_class == "info" or icon_type == "sgpa":
         pill_class = "kpi-trend-pill--cyan"
         orb_emoji = "📈"
+        accent_class = "kpi-card--sgpa"
 
     return html.Div([
         html.Div([
@@ -84,7 +90,7 @@ def create_kpi_card(title: str, value: str, subtitle: str, color_class: str = "p
         html.Div([
             html.Span(subtitle, className="small fw-semibold")
         ], className="kpi-trend-pill " + pill_class)
-    ], className="luxury-kpi-card")
+    ], className=f"luxury-kpi-card {accent_class}", tabIndex=0)
 
 
 def create_risk_badge(risk_level: str):

@@ -31,6 +31,7 @@ def create_empty_figure(message: str) -> go.Figure:
         font=dict(size=14, color="#94A3B8", family="Inter, sans-serif")
     )
     fig.update_layout(
+        template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         xaxis=dict(visible=False),
@@ -288,10 +289,11 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
                 name="Term SGPA",
                 text=[f"{v:.2f}" for v in gpa_y],
                 textposition="top center",
-                line=dict(color="#38BDF8", width=3, shape="spline"),
-                marker=dict(size=9, color="#FFFFFF", line=dict(color="#38BDF8", width=2.5)),
+                textfont=dict(color="#FFFFFF", size=11, family="JetBrains Mono, monospace"),
+                line=dict(color="#38BDF8", width=3.5, shape="spline"),
+                marker=dict(size=10, color="#FFFFFF", line=dict(color="#38BDF8", width=3)),
                 fill="tozeroy",
-                fillcolor="rgba(56, 189, 248, 0.15)"
+                fillcolor="rgba(56, 189, 248, 0.12)"
             ))
             if cgpa_val > 0:
                 trend_fig.add_trace(go.Scatter(
@@ -299,30 +301,57 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
                     y=[cgpa_val] * len(sems_x),
                     mode="lines",
                     name=f"CGPA Average ({cgpa_val:.2f})",
-                    line=dict(color="#34D399", width=2, dash="dash")
+                    line=dict(color="#34D399", width=2.5, dash="dash")
                 ))
             trend_fig.add_shape(
                 type="line",
                 x0=-0.5, x1=len(sems_x)-0.5,
                 y0=8.0, y1=8.0,
-                line=dict(color="#FBBF24", width=1.5, dash="dot")
+                line=dict(color="#FBBF24", width=1.8, dash="dot")
             )
             trend_fig.add_annotation(
                 x=len(sems_x)-0.5, y=8.2,
                 text="8.00 Distinction",
                 showarrow=False,
-                font=dict(color="#FBBF24", size=11, family="Inter, sans-serif"),
+                font=dict(color="#FDE68A", size=10, family="JetBrains Mono, monospace", weight="bold"),
+                bgcolor="rgba(251, 191, 36, 0.15)",
+                bordercolor="rgba(251, 191, 36, 0.40)",
+                borderwidth=1,
+                borderpad=4,
                 xanchor="right"
             )
             trend_fig.update_layout(
+                template="plotly_dark",
                 autosize=True,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=40, r=20, t=25, b=35),
                 font=dict(color="#FFFFFF", family="Inter, sans-serif", size=12),
-                yaxis=dict(range=[0, 10.8], title="Grade Points", gridcolor="rgba(255,255,255,0.1)", tickfont=dict(color="#E2E8F0")),
-                xaxis=dict(title="Semester", gridcolor="rgba(255,255,255,0.1)", tickfont=dict(color="#E2E8F0")),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#FFFFFF"))
+                yaxis=dict(
+                    range=[0, 10.8],
+                    title="Grade Points",
+                    gridcolor="rgba(255, 255, 255, 0.05)",
+                    zerolinecolor="rgba(255, 255, 255, 0.08)",
+                    tickfont=dict(color="#94A3B8", family="JetBrains Mono, monospace", size=10)
+                ),
+                xaxis=dict(
+                    title="Semester",
+                    gridcolor="rgba(255, 255, 255, 0.05)",
+                    tickfont=dict(color="#E2E8F0", family="Inter, sans-serif", size=11, weight="bold")
+                ),
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1,
+                    font=dict(color="#E2E8F0", family="Inter, sans-serif", size=11)
+                ),
+                hoverlabel=dict(
+                    bgcolor="rgba(10, 14, 26, 0.95)",
+                    bordercolor="rgba(56, 189, 248, 0.40)",
+                    font=dict(family="Inter, sans-serif", size=12, color="#FFFFFF")
+                )
             )
         else:
             trend_fig = create_empty_figure("Add semester grades to see your progression curve.")
@@ -434,19 +463,23 @@ def update_analytics_page_logic(college, degree, regulation, branch, specializat
             subj_codes = [item["code"] for item in saved_with_gp]
             subj_gps = [item["grade_point"] for item in saved_with_gp]
 
+            bar_colors = ["rgba(56, 189, 248, 0.85)" if v >= 9.0 else ("rgba(129, 140, 248, 0.85)" if v >= 8.0 else "rgba(251, 113, 133, 0.85)") for v in subj_gps]
+            border_colors = ["#38BDF8" if v >= 9.0 else ("#818CF8" if v >= 8.0 else "#FB7185") for v in subj_gps]
+
             subject_fig = go.Figure()
             subject_fig.add_trace(go.Bar(
                 x=subj_codes,
                 y=subj_gps,
                 text=[f"{v:.1f}" for v in subj_gps],
                 textposition="outside",
-                textfont=dict(color="#FFFFFF", size=11, family="Inter, sans-serif"),
+                textfont=dict(color="#FFFFFF", size=11, family="JetBrains Mono, monospace", weight="bold"),
                 hovertext=[f"<b>{item['code']}</b>: {item['name']}<br>Grade Points: {v:.2f}" for item, v in zip(saved_with_gp, subj_gps)],
                 marker=dict(
-                    color="#38BDF8",
-                    line=dict(color="rgba(255, 255, 255, 0.45)", width=1.5),
-                    opacity=0.95
+                    color=bar_colors,
+                    line=dict(color=border_colors, width=1.5),
+                    cornerradius=8
                 ),
+                width=0.45 if len(subj_codes) <= 4 else 0.55,
                 name="Grade Points"
             ))
             # Distinction Reference Line (8.00)
@@ -460,17 +493,37 @@ def update_analytics_page_logic(college, degree, regulation, branch, specializat
                 x=len(subj_codes)-0.5, y=8.25,
                 text="8.00 Distinction Reference",
                 showarrow=False,
-                font=dict(color="#FBBF24", size=10, family="Inter, sans-serif"),
+                font=dict(color="#FDE68A", size=10, family="JetBrains Mono, monospace", weight="bold"),
+                bgcolor="rgba(251, 191, 36, 0.15)",
+                bordercolor="rgba(251, 191, 36, 0.40)",
+                borderwidth=1,
+                borderpad=4,
                 xanchor="right"
             )
             subject_fig.update_layout(
+                template="plotly_dark",
                 autosize=True,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 margin=dict(l=40, r=20, t=30, b=35),
                 font=dict(color="#FFFFFF", family="Inter, sans-serif", size=12),
-                yaxis=dict(range=[0, 11], title="Grade Points (Scale 10.0)", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color="#E2E8F0")),
-                xaxis=dict(title="Subject Code", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color="#E2E8F0")),
+                yaxis=dict(
+                    range=[0, 11],
+                    title="Grade Points (Scale 10.0)",
+                    gridcolor="rgba(255, 255, 255, 0.05)",
+                    zerolinecolor="rgba(255, 255, 255, 0.08)",
+                    tickfont=dict(color="#94A3B8", family="JetBrains Mono, monospace", size=10)
+                ),
+                xaxis=dict(
+                    title="Subject Code",
+                    gridcolor="rgba(255, 255, 255, 0.05)",
+                    tickfont=dict(color="#E2E8F0", family="Inter, sans-serif", size=11, weight="bold")
+                ),
+                hoverlabel=dict(
+                    bgcolor="rgba(10, 14, 26, 0.95)",
+                    bordercolor="rgba(56, 189, 248, 0.40)",
+                    font=dict(family="Inter, sans-serif", size=12, color="#FFFFFF")
+                ),
                 showlegend=False
             )
         else:
@@ -765,6 +818,7 @@ def update_attendance_page_logic(college, degree, regulation, branch, specializa
             )
 
             att_fig.update_layout(
+                template="plotly_dark",
                 autosize=True,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
@@ -774,10 +828,10 @@ def update_attendance_page_logic(college, degree, regulation, branch, specializa
                     range=[0, 115],
                     dtick=25,
                     title="",
-                    gridcolor="rgba(255, 255, 255, 0.07)",
+                    gridcolor="rgba(255, 255, 255, 0.05)",
                     gridwidth=1,
                     zeroline=True,
-                    zerolinecolor="rgba(255, 255, 255, 0.12)",
+                    zerolinecolor="rgba(255, 255, 255, 0.08)",
                     tickfont=dict(color="#94A3B8", family="JetBrains Mono, monospace", size=10),
                     ticksuffix="%"
                 ),

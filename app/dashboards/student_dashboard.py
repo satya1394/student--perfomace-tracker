@@ -60,10 +60,9 @@ def build_student_dashboard_layout():
                     dbc.Select(
                         id="curriculum-college-select",
                         options=[
-                            {"label": "Raghu Engineering College (Autonomous)", "value": "Raghu Engineering College"},
-                            {"label": "+ Custom / Other College (Manual Mode)", "value": "Custom College"}
+                            {"label": "Raghu Engineering College (Autonomous)", "value": "Raghu Engineering College"}
                         ],
-                        value=def_college,
+                        value="Raghu Engineering College",
                         className="form-select-dark"
                     )
                 ], lg=3, md=6, xs=12),

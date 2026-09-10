@@ -25,13 +25,8 @@ class CurriculumEngine:
 
     @staticmethod
     def get_colleges(db_session) -> List[str]:
-        """Returns all distinct colleges in the system."""
-        from app.database import Curriculum
-        results = db_session.query(Curriculum.college).distinct().all()
-        colleges = [r[0] for r in results if r[0]]
-        if "Raghu Engineering College" not in colleges:
-            colleges.insert(0, "Raghu Engineering College")
-        return colleges
+        """Returns all distinct colleges in the system (locked strictly to Raghu Engineering College)."""
+        return ["Raghu Engineering College"]
 
     @staticmethod
     def get_degrees(db_session, college: str) -> List[str]:
