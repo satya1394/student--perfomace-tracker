@@ -44,6 +44,7 @@ def resolve_academic_context(college=None, degree=None, regulation=None, branch=
     """
     Resolves academic parameters with fallback to session and student database profile.
     Automatically updates session and student record so branch and specialization persist globally across all pages.
+    Guarantees a Student profile record exists to prevent foreign key integrity errors.
     """
     sid = None
     if has_request_context():
@@ -88,6 +89,8 @@ def resolve_academic_context(college=None, degree=None, regulation=None, branch=
     except (ValueError, TypeError):
         final_sem = 3
 
+    curr_id = get_curriculum_id(final_college, final_degree, final_reg, final_branch, final_spec)
+
     # Sync into Flask session for global persistence across all tabs & navigation routes
     if has_request_context():
         session["college_name"] = final_college
@@ -97,30 +100,48 @@ def resolve_academic_context(college=None, degree=None, regulation=None, branch=
         session["specialization"] = final_spec
         session["active_semester"] = final_sem
         session["student_id"] = sid
-        session["curriculum_id"] = get_curriculum_id(final_college, final_degree, final_reg, final_branch, final_spec)
+        session["curriculum_id"] = curr_id
 
-    # If student is authenticated and not demo, update database profile as well
-    if has_request_context() and current_user and current_user.is_authenticated and not session.get("is_demo", False):
+    # Guarantee student profile record exists in DB for foreign key constraint safety
+    try:
+        db = get_db_session()
         try:
-            db = get_db_session()
-            try:
-                stu = db.query(Student).filter(Student.student_id == sid).first()
-                if not stu and current_user.email:
-                    stu = db.query(Student).filter(Student.email == current_user.email).first()
-                if stu:
-                    stu.college_name = final_college
-                    stu.degree = final_degree
-                    stu.regulation_name = final_reg
-                    stu.branch_name = final_branch
-                    stu.specialization = final_spec
-                    stu.current_semester = final_sem
-                    stu.department = f"{final_branch} ({final_spec})"
-                    stu.curriculum_id = session.get("curriculum_id")
-                    db.commit()
-            finally:
-                db.close()
-        except Exception:
-            pass
+            stu = db.query(Student).filter(Student.student_id == sid).first()
+            if not stu and current_user and current_user.is_authenticated and current_user.email:
+                stu = db.query(Student).filter(Student.email == current_user.email).first()
+            if stu:
+                stu.college_name = final_college
+                stu.degree = final_degree
+                stu.regulation_name = final_reg
+                stu.branch_name = final_branch
+                stu.specialization = final_spec
+                stu.current_semester = final_sem
+                stu.department = f"{final_branch} ({final_spec})"
+                stu.curriculum_id = curr_id
+                db.commit()
+            else:
+                stu_name = getattr(current_user, "username", "Student User") if current_user and current_user.is_authenticated else "Demo Student"
+                stu_email = getattr(current_user, "email", f"{sid.lower()}@raghuengg.edu.in") if current_user and current_user.is_authenticated else f"{sid.lower()}@raghuengg.edu.in"
+                new_stu = Student(
+                    student_id=sid,
+                    name=stu_name,
+                    email=stu_email,
+                    department=f"{final_branch} ({final_spec})",
+                    college_name=final_college,
+                    degree=final_degree,
+                    regulation_name=final_reg,
+                    branch_name=final_branch,
+                    specialization=final_spec,
+                    current_semester=final_sem,
+                    curriculum_id=curr_id,
+                    enrollment_year=2024
+                )
+                db.add(new_stu)
+                db.commit()
+        finally:
+            db.close()
+    except Exception:
+        pass
 
     return final_college, final_degree, final_reg, final_branch, final_spec, final_sem, sid
 
@@ -165,16 +186,18 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
         for s in comp_subs:
             enr = db.query(Enrollment).filter(
                 Enrollment.student_id == sid,
-                Enrollment.curriculum_subject_id == s.id
+                (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
             ).first()
             
             if enr and (enr.grade_point is not None or enr.attendance_percentage is not None):
                 has_any_saved_data = True
                 gp = float(enr.grade_point) if enr.grade_point is not None else None
                 att = float(enr.attendance_percentage) if enr.attendance_percentage is not None else None
+                cr = float(enr.credits_used if enr.credits_used is not None else (s.official_credits or s.credits or 3.0))
             else:
                 gp = None
                 att = None
+                cr = float(s.official_credits or s.credits or 3.0)
 
             subject_entries.append({
                 "code": s.subject_code,
@@ -182,7 +205,7 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
                 "subject_type": s.subject_type,
                 "theory_or_lab": s.theory_or_lab,
                 "official_credits": s.official_credits or s.credits,
-                "credits": s.credits,
+                "credits": cr,
                 "grade_point": gp,
                 "attendance": att,
                 "credit_source": s.credit_source or "official_course_structure",
@@ -199,7 +222,7 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
                 "subject_type": sel.category,
                 "theory_or_lab": "Theory",
                 "official_credits": sel.official_credits,
-                "credits": sel.credits_used,
+                "credits": sel.credits_used or 3.0,
                 "grade_point": gp,
                 "attendance": None,
                 "credit_source": sel.credit_source or "official_course_structure",
@@ -211,12 +234,18 @@ def update_overview_page_logic(college, degree, regulation, branch, specializati
         sgpa_str = calc_result["sgpa_display"] if has_any_saved_data else "Not Entered"
         total_credits_tracked = calc_result["total_credits_used"]
 
-        # Historical calculation
+        # Historical calculation across all enrolled compulsory & elective courses
         all_student_enrs = db.query(Enrollment).filter(Enrollment.student_id == sid).all()
+        all_student_custom = db.query(StudentSubjectSelection).filter(StudentSubjectSelection.student_id == sid).all()
+
         sem_gps = {}
         for e in all_student_enrs:
             if e.grade_point is not None:
-                sem_gps.setdefault(e.semester, []).append((e.grade_point, e.credits_used or 3.0))
+                sem_gps.setdefault(e.semester, []).append((float(e.grade_point), float(e.credits_used or 3.0)))
+
+        for sel in all_student_custom:
+            if sel.grade_point is not None:
+                sem_gps.setdefault(sel.semester, []).append((float(sel.grade_point), float(sel.credits_used or 3.0)))
 
         historical_sgpas = {}
         total_weighted = 0.0
@@ -370,7 +399,7 @@ def update_analytics_page_logic(college, degree, regulation, branch, specializat
         for s in comp_subs:
             enr = db.query(Enrollment).filter(
                 Enrollment.student_id == sid,
-                Enrollment.curriculum_subject_id == s.id
+                (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
             ).first()
             
             if enr and (enr.grade_point is not None):
@@ -542,29 +571,31 @@ def update_marks_subjects_page_logic(college, degree, regulation, branch, specia
         for s in comp_subs:
             enr = db.query(Enrollment).filter(
                 Enrollment.student_id == sid,
-                Enrollment.curriculum_subject_id == s.id
+                (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
             ).first()
             
             gp = float(enr.grade_point) if (enr and enr.grade_point is not None) else None
-            grd = enr.grade_letter or enr.grade or ("O" if gp and gp >= 10.0 else ("A+" if gp and gp >= 9.0 else ("A" if gp and gp >= 8.0 else ("B+" if gp and gp >= 7.0 else "B")))) if gp is not None else "—"
+            grd = enr.grade_letter or enr.grade or ("O" if gp and gp >= 10.0 else ("A+" if gp and gp >= 9.0 else ("A" if gp and gp >= 8.0 else ("B+" if gp and gp >= 7.0 else ("B" if gp and gp >= 6.0 else ("C" if gp and gp >= 5.0 else ("P" if gp and gp >= 4.0 else "F"))))))) if gp is not None else "—"
             is_audit = (s.subject_type == "AUDIT_COURSE" or (s.theory_or_lab and s.theory_or_lab.lower() == "audit") or s.credits == 0.0)
+            cr_val = float(enr.credits_used if (enr and enr.credits_used is not None) else (s.official_credits or s.credits or 3.0))
 
             table_rows.append({
                 "Subject Code": s.subject_code,
                 "Subject Name": s.subject_name,
-                "Credits": f"{s.credits:.1f}" if not is_audit else "0.0",
+                "Credits": f"{cr_val:.1f}" if not is_audit else "0.0",
                 "Grade": grd,
                 "Grade Points": f"{gp:.2f}" if gp is not None else "—"
             })
 
         for sel in custom_selections:
             gp = float(sel.grade_point) if sel.grade_point is not None else None
-            grd = sel.grade or ("A+" if gp and gp >= 9.0 else "A") if gp is not None else "—"
+            grd = sel.grade or ("O" if gp and gp >= 10.0 else ("A+" if gp and gp >= 9.0 else ("A" if gp and gp >= 8.0 else ("B+" if gp and gp >= 7.0 else ("B" if gp and gp >= 6.0 else ("C" if gp and gp >= 5.0 else ("P" if gp and gp >= 4.0 else "F"))))))) if gp is not None else "—"
+            cr_val = float(sel.credits_used if sel.credits_used is not None else 3.0)
 
             table_rows.append({
                 "Subject Code": sel.subject_code,
                 "Subject Name": f"⭐ {sel.subject_name} [{sel.group_name}]",
-                "Credits": f"{sel.credits_used:.1f}" if sel.credits_used is not None else "3.0",
+                "Credits": f"{cr_val:.1f}",
                 "Grade": grd,
                 "Grade Points": f"{gp:.2f}" if gp is not None else "—"
             })
@@ -662,7 +693,7 @@ def update_attendance_page_logic(college, degree, regulation, branch, specializa
         for s in comp_subs:
             enr = db.query(Enrollment).filter(
                 Enrollment.student_id == sid,
-                Enrollment.curriculum_subject_id == s.id
+                (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
             ).first()
             
             if enr and enr.attendance_percentage is not None:
@@ -1137,6 +1168,7 @@ def register_callbacks(app):
         triggered_id = callback_context.triggered_id or callback_context.triggered[0]["prop_id"].split(".")[0]
         refresh_cnt = refresh_cnt or 0
         
+        # CANCEL CLICKED -> Close modal
         if triggered_id == "marks-modal-cancel-btn":
             return False, no_update, no_update, "", refresh_cnt
 
@@ -1147,13 +1179,24 @@ def register_callbacks(app):
         db = get_db_session()
         try:
 
-            # SAVE CLICKED
+            # SAVE CLICKED -> Parse, Validate, Save to DB, Recalculate SGPA, Close Modal (is_open=False), Increment Refresh Trigger
             if triggered_id == "marks-modal-save-btn":
                 if not save_clicks or save_clicks <= 0:
                     return False, no_update, no_update, "", refresh_cnt
 
-                gp_map = {item_id.get("index"): val for item_id, val in zip(gp_ids, gp_values) if item_id} if gp_ids else {}
-                credit_map = {item_id.get("index"): val for item_id, val in zip(credit_ids, credit_values) if item_id} if credit_ids else {}
+                gp_map = {}
+                if gp_ids and gp_values:
+                    for item_id, val in zip(gp_ids, gp_values):
+                        if item_id:
+                            k = item_id.get("index") if isinstance(item_id, dict) else str(item_id)
+                            gp_map[k] = val
+
+                credit_map = {}
+                if credit_ids and credit_values:
+                    for item_id, val in zip(credit_ids, credit_values):
+                        if item_id:
+                            k = item_id.get("index") if isinstance(item_id, dict) else str(item_id)
+                            credit_map[k] = val
 
                 comp_subjects = db.query(CurriculumSubject).filter(
                     CurriculumSubject.curriculum_id == curr_id,
@@ -1167,41 +1210,64 @@ def register_callbacks(app):
 
                     enr = db.query(Enrollment).filter(
                         Enrollment.student_id == sid,
-                        Enrollment.curriculum_subject_id == s.id
+                        (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
                     ).first()
 
+                    # Strict 0.0 to 10.0 grade point parsing
+                    gp_val = None
                     if raw_gp is not None and str(raw_gp).strip() != "":
                         try:
-                            gp_val = float(raw_gp)
+                            parsed_gp = float(raw_gp)
+                            if not np.isnan(parsed_gp) and not np.isinf(parsed_gp):
+                                gp_val = max(0.0, min(10.0, round(parsed_gp, 2)))
                         except (ValueError, TypeError):
                             gp_val = None
-                    else:
-                        gp_val = None
 
-                    cr_val = float(raw_cr) if raw_cr is not None else (s.official_credits or s.credits or 3.0)
+                    # Safe Credit parsing
+                    cr_val = float(s.official_credits or s.credits or 3.0)
+                    if raw_cr is not None and str(raw_cr).strip() != "":
+                        try:
+                            parsed_cr = float(raw_cr)
+                            if not np.isnan(parsed_cr) and not np.isinf(parsed_cr) and parsed_cr >= 0:
+                                cr_val = max(0.0, min(10.0, round(parsed_cr, 1)))
+                        except (ValueError, TypeError):
+                            pass
 
                     if gp_val is not None:
-                        grd = "O" if gp_val >= 10.0 else ("A+" if gp_val >= 9.0 else ("A" if gp_val >= 8.0 else ("B+" if gp_val >= 7.0 else "B")))
+                        grd = "O" if gp_val >= 10.0 else ("A+" if gp_val >= 9.0 else ("A" if gp_val >= 8.0 else ("B+" if gp_val >= 7.0 else ("B" if gp_val >= 6.0 else ("C" if gp_val >= 5.0 else ("P" if gp_val >= 4.0 else "F"))))))
+                        marks_val = round(gp_val * 9.5, 1)
                         if not enr:
                             enr = Enrollment(
                                 student_id=sid,
                                 curriculum_subject_id=s.id,
                                 course_id=s.subject_code,
-                                marks_obtained=gp_val * 9.5,
+                                marks_obtained=marks_val,
                                 grade=grd,
                                 grade_letter=grd,
                                 grade_point=gp_val,
                                 credits_used=cr_val,
+                                attendance_percentage=85.0,
                                 semester=sem,
                                 academic_year="2024-2025"
                             )
                             db.add(enr)
                         else:
+                            enr.curriculum_subject_id = s.id
+                            enr.course_id = s.subject_code
                             enr.grade_point = gp_val
-                            enr.marks_obtained = gp_val * 9.5
+                            enr.marks_obtained = marks_val
                             enr.grade = grd
                             enr.grade_letter = grd
                             enr.credits_used = cr_val
+                            if enr.attendance_percentage is None:
+                                enr.attendance_percentage = 85.0
+                    elif enr and raw_gp is not None and str(raw_gp).strip() == "":
+                        # User cleared the grade point
+                        enr.grade_point = None
+                        enr.marks_obtained = 0.0
+                        enr.grade = ""
+                        enr.grade_letter = ""
+                        enr.credits_used = cr_val
 
                 custom_selections = db.query(StudentSubjectSelection).filter(
                     StudentSubjectSelection.student_id == sid,
@@ -1213,50 +1279,158 @@ def register_callbacks(app):
                     raw_cr = credit_map.get(sel.subject_code)
                     if raw_gp is not None and str(raw_gp).strip() != "":
                         try:
-                            gp_val = float(raw_gp)
-                            sel.grade_point = gp_val
-                            sel.marks = gp_val * 9.5
-                            sel.grade = "A+" if gp_val >= 9.0 else "A"
+                            parsed_gp = float(raw_gp)
+                            if not np.isnan(parsed_gp) and not np.isinf(parsed_gp):
+                                gp_val = max(0.0, min(10.0, round(parsed_gp, 2)))
+                                grd = "O" if gp_val >= 10.0 else ("A+" if gp_val >= 9.0 else ("A" if gp_val >= 8.0 else ("B+" if gp_val >= 7.0 else ("B" if gp_val >= 6.0 else ("C" if gp_val >= 5.0 else ("P" if gp_val >= 4.0 else "F"))))))
+                                sel.grade_point = gp_val
+                                sel.marks = round(gp_val * 9.5, 1)
+                                sel.grade = grd
                         except (ValueError, TypeError):
                             pass
-                    if raw_cr is not None:
+                    elif raw_gp is not None and str(raw_gp).strip() == "":
+                        sel.grade_point = None
+                        sel.marks = None
+                        sel.grade = None
+
+                    if raw_cr is not None and str(raw_cr).strip() != "":
                         try:
-                            sel.credits_used = float(raw_cr)
+                            parsed_cr = float(raw_cr)
+                            if not np.isnan(parsed_cr) and not np.isinf(parsed_cr) and parsed_cr >= 0:
+                                sel.credits_used = max(0.0, min(10.0, round(parsed_cr, 1)))
                         except (ValueError, TypeError):
                             pass
 
                 # If custom course entry was filled
                 if cust_codes and cust_names:
-                    for c_code, c_name, c_cat, c_cr_raw, c_gp_raw in zip(cust_codes, cust_names, cust_cats or [], cust_credits or [], cust_gps or []):
+                    for c_code, c_name, c_cat, c_cr_raw, c_gp_raw in zip(cust_codes or [], cust_names or [], cust_cats or [], cust_credits or [], cust_gps or []):
                         if c_code and str(c_code).strip() != "" and c_name and str(c_name).strip() != "":
-                            try:
-                                c_gp = float(c_gp_raw) if c_gp_raw is not None and str(c_gp_raw).strip() != "" else None
-                                c_cr = float(c_cr_raw) if c_cr_raw is not None else 3.0
-                                existing_cust = db.query(StudentSubjectSelection).filter(
-                                    StudentSubjectSelection.student_id == sid,
-                                    StudentSubjectSelection.semester == sem,
-                                    StudentSubjectSelection.subject_code == str(c_code).strip().upper()
-                                ).first()
-                                if not existing_cust:
-                                    new_custom_sel = StudentSubjectSelection(
-                                        student_id=sid,
-                                        curriculum_id=curr_id,
-                                        semester=sem,
-                                        category=c_cat or "CUSTOM_COURSE",
-                                        group_name=c_cat or "Custom Subject",
-                                        subject_code=str(c_code).strip().upper(),
-                                        subject_name=str(c_name).strip(),
-                                        official_credits=c_cr,
-                                        credits_used=c_cr,
-                                        grade_point=c_gp,
-                                        marks=c_gp * 9.5 if c_gp is not None else None,
-                                        grade="A+" if c_gp and c_gp >= 9.0 else ("A" if c_gp else None),
-                                        credit_source="student_custom",
-                                        credit_status="confirmed"
-                                    )
-                                    db.add(new_custom_sel)
-                            except Exception:
-                                pass
+                            c_code_clean = str(c_code).strip().upper()
+                            c_name_clean = str(c_name).strip()
+                            c_gp = None
+                            if c_gp_raw is not None and str(c_gp_raw).strip() != "":
+                                try:
+                                    parsed_gp = float(c_gp_raw)
+                                    if not np.isnan(parsed_gp) and not np.isinf(parsed_gp):
+                                        c_gp = max(0.0, min(10.0, round(parsed_gp, 2)))
+                                except (ValueError, TypeError):
+                                    c_gp = None
+                            c_cr = 3.0
+                            if c_cr_raw is not None and str(c_cr_raw).strip() != "":
+                                try:
+                                    parsed_cr = float(c_cr_raw)
+                                    if not np.isnan(parsed_cr) and not np.isinf(parsed_cr) and parsed_cr >= 0:
+                                        c_cr = max(0.0, min(10.0, round(parsed_cr, 1)))
+                                except (ValueError, TypeError):
+                                    c_cr = 3.0
+
+                            c_grd = ("O" if c_gp >= 10.0 else ("A+" if c_gp >= 9.0 else ("A" if c_gp >= 8.0 else ("B+" if c_gp >= 7.0 else ("B" if c_gp >= 6.0 else ("C" if c_gp >= 5.0 else ("P" if c_gp >= 4.0 else "F"))))))) if c_gp is not None else None
+
+                            existing_cust = db.query(StudentSubjectSelection).filter(
+                                StudentSubjectSelection.student_id == sid,
+                                StudentSubjectSelection.semester == sem,
+                                StudentSubjectSelection.subject_code == c_code_clean
+                            ).first()
+                            if not existing_cust:
+                                new_custom_sel = StudentSubjectSelection(
+                                    student_id=sid,
+                                    curriculum_id=curr_id,
+                                    semester=sem,
+                                    category=c_cat or "CUSTOM_COURSE",
+                                    group_name=c_cat or "Custom Subject",
+                                    subject_code=c_code_clean,
+                                    subject_name=c_name_clean,
+                                    official_credits=c_cr,
+                                    credits_used=c_cr,
+                                    grade_point=c_gp,
+                                    marks=round(c_gp * 9.5, 1) if c_gp is not None else None,
+                                    grade=c_grd,
+                                    credit_source="student_custom",
+                                    credit_status="confirmed"
+                                )
+                                db.add(new_custom_sel)
+                            else:
+                                existing_cust.subject_name = c_name_clean
+                                existing_cust.category = c_cat or existing_cust.category
+                                existing_cust.group_name = c_cat or existing_cust.group_name
+                                existing_cust.official_credits = c_cr
+                                existing_cust.credits_used = c_cr
+                                existing_cust.grade_point = c_gp
+                                existing_cust.marks = round(c_gp * 9.5, 1) if c_gp is not None else None
+                                existing_cust.grade = c_grd
+
+                # Immediate Recalculation and Persistence of SGPA snapshot
+                all_sem_entries = []
+                for s in comp_subjects:
+                    enr = db.query(Enrollment).filter(
+                        Enrollment.student_id == sid,
+                        (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
+                    ).first()
+                    gp = float(enr.grade_point) if (enr and enr.grade_point is not None) else None
+                    cr = float(enr.credits_used if (enr and enr.credits_used is not None) else (s.official_credits or s.credits or 3.0))
+                    all_sem_entries.append({
+                        "code": s.subject_code,
+                        "name": s.subject_name,
+                        "subject_type": s.subject_type,
+                        "theory_or_lab": s.theory_or_lab,
+                        "official_credits": s.official_credits or s.credits,
+                        "credits": cr,
+                        "grade_point": gp,
+                        "credit_source": s.credit_source or "official_course_structure",
+                        "verification_status": s.verification_status or "official_verified"
+                    })
+
+                all_cust_for_sem = db.query(StudentSubjectSelection).filter(
+                    StudentSubjectSelection.student_id == sid,
+                    StudentSubjectSelection.semester == sem
+                ).all()
+                for sel in all_cust_for_sem:
+                    all_sem_entries.append({
+                        "code": sel.subject_code,
+                        "name": sel.subject_name,
+                        "subject_type": sel.category,
+                        "theory_or_lab": "Theory",
+                        "official_credits": sel.official_credits,
+                        "credits": sel.credits_used,
+                        "grade_point": sel.grade_point,
+                        "credit_source": sel.credit_source or "student_custom",
+                        "verification_status": "official_verified"
+                    })
+
+                calc_res = CurriculumEngine.calculate_sgpa(all_sem_entries)
+                computed_sgpa = calc_res.get("sgpa")
+                calc_status = calc_res.get("status", "VERIFIED_SGPA")
+
+                sem_result = db.query(StudentSemesterResult).filter(
+                    StudentSemesterResult.student_id == sid,
+                    StudentSemesterResult.semester == sem
+                ).first()
+                if not sem_result:
+                    sem_result = StudentSemesterResult(
+                        student_id=sid,
+                        curriculum_id=curr_id,
+                        curriculum_version="1.0",
+                        regulation=regulation,
+                        branch=branch,
+                        specialization=specialization,
+                        semester=sem,
+                        sgpa=computed_sgpa,
+                        calculation_status=calc_status,
+                        total_credits_used=calc_res.get("total_credits_used", 0.0),
+                        official_credits_used=calc_res.get("official_credits_used", 0.0),
+                        student_credits_used=calc_res.get("student_credits_used", 0.0)
+                    )
+                    db.add(sem_result)
+                else:
+                    sem_result.curriculum_id = curr_id
+                    sem_result.regulation = regulation
+                    sem_result.branch = branch
+                    sem_result.specialization = specialization
+                    sem_result.sgpa = computed_sgpa
+                    sem_result.calculation_status = calc_status
+                    sem_result.total_credits_used = calc_res.get("total_credits_used", 0.0)
+                    sem_result.official_credits_used = calc_res.get("official_credits_used", 0.0)
+                    sem_result.student_credits_used = calc_res.get("student_credits_used", 0.0)
 
                 db.commit()
                 return False, no_update, no_update, "", refresh_cnt + 1
@@ -1301,7 +1475,7 @@ def register_callbacks(app):
                 for s in comp_subs:
                     enr = db.query(Enrollment).filter(
                         Enrollment.student_id == sid,
-                        Enrollment.curriculum_subject_id == s.id
+                        (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
                     ).first()
                     saved_gp = float(enr.grade_point) if (enr and enr.grade_point is not None) else None
                     is_audit = (s.subject_type == "AUDIT_COURSE" or (s.theory_or_lab and s.theory_or_lab.lower() == "audit") or s.credits == 0.0)
@@ -1542,26 +1716,45 @@ def register_callbacks(app):
             sid = (session.get("student_id") if has_request_context() else None) or "STU2024001"
             comp_subs = db.query(CurriculumSubject).filter(
                 CurriculumSubject.curriculum_id == curr_id,
-                CurriculumSubject.semester == sem
+                CurriculumSubject.semester == sem,
+                CurriculumSubject.is_compulsory == True
+            ).all()
+
+            custom_subs = db.query(StudentSubjectSelection).filter(
+                StudentSubjectSelection.student_id == sid,
+                StudentSubjectSelection.semester == sem
             ).all()
 
             data = []
             for s in comp_subs:
                 enr = db.query(Enrollment).filter(
                     Enrollment.student_id == sid,
-                    Enrollment.curriculum_subject_id == s.id
+                    (Enrollment.curriculum_subject_id == s.id) | (Enrollment.course_id == s.subject_code)
                 ).first()
                 gp = enr.grade_point if enr else None
                 att = enr.attendance_percentage if enr else None
+                cr_val = enr.credits_used if (enr and enr.credits_used is not None) else (s.official_credits or s.credits or 3.0)
                 data.append({
                     "Subject Code": s.subject_code,
                     "Subject Name": s.subject_name,
                     "Type": s.subject_type,
-                    "Credits": s.credits,
-                    "Grade Point": gp if gp is not None else "—",
-                    "Attendance %": f"{att}%" if att is not None else "—",
+                    "Credits": cr_val,
+                    "Grade Point": f"{gp:.2f}" if gp is not None else "—",
+                    "Attendance %": f"{att:.1f}%" if att is not None else "—",
                     "Status": s.verification_status
                 })
+
+            for sel in custom_subs:
+                data.append({
+                    "Subject Code": sel.subject_code,
+                    "Subject Name": f"{sel.subject_name} [{sel.group_name}]",
+                    "Type": sel.category,
+                    "Credits": sel.credits_used or 3.0,
+                    "Grade Point": f"{sel.grade_point:.2f}" if sel.grade_point is not None else "—",
+                    "Attendance %": "—",
+                    "Status": "Confirmed"
+                })
+
             df = pd.DataFrame(data)
             return dcc.send_data_frame(df.to_excel, f"StudIQ_{regulation}_{branch}_Sem{sem}_Marksheet.xlsx", index=False)
         finally:
